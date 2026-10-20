@@ -16,6 +16,10 @@ derived statistics may be committed, and no SMARD price series is committed yet.
 | JAO | Cross-border auctions | Not used yet | n/a | No |
 | Copernicus Sentinel-2, Sentinel-1 | Imagery (Part A) | Copernicus open licence | Contains modified Copernicus Sentinel data [year] | Derived statistics only (weekend 2) |
 | Landsat (USGS) | Imagery (Part A) | Public domain | Landsat imagery courtesy of the U.S. Geological Survey | Derived statistics only (weekend 2) |
+| swisstopo swissTLM3D, swissALTI3D | Lake shorelines; 2 m terrain model | swisstopo open government data (free use, source must be given) | Source: Federal Office of Topography swisstopo | Outlines in `data/external/outlines/` and derived curves in `data/processed/hypsometry/`. No tiles |
+| NASA SRTM v3 (USGS/SRTMGL1_003) | 30 m terrain, February 2000, below the swissALTI3D floor | Public domain (NASA/USGS) | SRTM: NASA/USGS, public domain | Derived curves only |
+| Copernicus DEM GLO-30 (2024_1) | 30 m terrain, 2011 to 2015, below the swissALTI3D floor | Copernicus DEM licence (free use with attribution) | Produced using Copernicus WorldDEM-30 (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | Derived curves only |
+| JAXA ALOS AW3D30 v4.1 | 30 m surface model, 2006 to 2011, compared only (not chosen anywhere) | JAXA terms of use (free use with credit) | (c) JAXA | Nothing derived from it is used in a curve; its offset and RMSE appear in `reports/checks/curves_global_dem.json` |
 
 Links
 

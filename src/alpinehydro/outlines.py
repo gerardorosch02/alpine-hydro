@@ -140,7 +140,7 @@ def write_geojson(path: Path, geom_lv95, properties: dict) -> None:
         "crs_note": "EPSG:4326 (WGS84 lon/lat), computed from LV95 (EPSG:2056)",
         "features": [feature],
     }
-    path.write_text(json.dumps(fc, indent=1) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(fc, indent=1) + "\n", encoding="utf-8", newline="\n")
 
 
 def load(slug: str, kind: str = "outline"):

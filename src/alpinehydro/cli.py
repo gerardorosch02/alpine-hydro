@@ -20,7 +20,7 @@ CHECKS = config.REPORTS / "checks"
 def _write_check(name: str, data: dict) -> Path:
     CHECKS.mkdir(parents=True, exist_ok=True)
     path = CHECKS / f"{name}.json"
-    path.write_text(json.dumps(data, indent=2, default=str) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(data, indent=2, default=str) + "\n", encoding="utf-8", newline="\n")
     return path
 
 
@@ -124,6 +124,38 @@ def outlines_cmd(
         typer.echo(json.dumps(out[slug], ensure_ascii=True))
     if jrc and not only:
         typer.echo(f"wrote {_write_check('outlines_jrc', out)}")
+
+
+@app.command("curves")
+def curves_cmd(
+    only: list[str] = typer.Option(None, "--only", help="Reservoir slugs, default all."),
+    refresh: bool = typer.Option(False, help="Rebuild the terrain grid and flooding."),
+):
+    """Build the level-area-volume curves (swissALTI3D plus a global DEM below its floor)."""
+    from alpinehydro import hypsometry
+
+    out = {}
+    for slug in _slugs(only):
+        info = hypsometry.build(slug, refresh=refresh)
+        out[slug] = {
+            k: info[k]
+            for k in (
+                "floor_m",
+                "global_dem",
+                "global_floor_m",
+                "global_dem_candidates",
+                "usable_share_swissalti3d_2m",
+                "usable_share_global_dem_30m",
+                "usable_share_fitted",
+                "h0_m",
+                "b",
+                "b_bound_hit",
+                "fit_method",
+            )
+        }
+        typer.echo(f"{slug}: global DEM {info['global_dem']}, b {info['b']}, {info['fit_method']}")
+    if not only:
+        typer.echo(f"wrote {_write_check('curves_global_dem', out)}")
 
 
 def _hero() -> None:

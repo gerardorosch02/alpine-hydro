@@ -24,7 +24,7 @@
 # - Where a plant is international, sfoe2025 prints the Swiss share only (legend
 #   "CH-Anteile (internat. WKA)"). This applies to Emosson (Vallorcine, La Batiaz) and
 #   Lago di Lei (Ferrera 1), so their coefficients are Swiss-share coefficients.
-# - Dam coordinates: register LV95 converted to WGS84 with the swisstopo approximate
+# - Dam coordinates (all dams that close the lake): register LV95 converted to WGS84 with the swisstopo approximate
 #   formulas (about 1 m accuracy).
 #
 # Disagreements above 5% that were resolved (author approval 2026-10-20):
@@ -50,10 +50,14 @@ reservoirs:
     area_km2: 10.85
     area_source: sfoe1983. swissdams 10.8, wikipedia 10.72
     dam: { name: In den Schlagen, lat: 47.15447, lon: 8.77973, source: register }
+    other_dams:
+      - { name: Huehnermatt, lat: 47.14078, lon: 8.75776, source: register }
     energy_kwh_per_m3: 1.004
     energy_source: sfoe2025 row 62, Etzelwerk SBB 85.76 GWh / 85.4 Mm3
     head_check_kwh_per_m3: 1.12
     head_check_source: Altendorf gross head 483 m (swissdams)
+    max_depth_m: 23
+    max_depth_source: sfoe1983. Sets the bed level h0 of the fitted curve
     notes: Concession limits drawdown to 2 m from 1 June to 31 October.
 
   - name: Lac de la Gruyere
@@ -73,6 +77,8 @@ reservoirs:
     energy_source: sfoe2025 row 27, Hauterive 34.97 GWh / 173 Mm3
     head_check_kwh_per_m3: 0.22
     head_check_source: Hauterive gross head 75 to 111 m, midpoint 93 m (swissdams)
+    max_depth_m: 75
+    max_depth_source: sfoe1983. Sets the bed level h0 of the fitted curve
 
   - name: Lac des Dix
     slug: dix
@@ -94,6 +100,8 @@ reservoirs:
       GWh cell repeats the group total 1673.04, so it is not used.
     head_check_kwh_per_m3: 4.37
     head_check_source: Fionnay 878 m + Nendaz 1008 m gross head (swissdams)
+    max_depth_m: 227
+    max_depth_source: sfoe1983. Sets the bed level h0 of the fitted curve
 
   - name: Lac d'Emosson
     slug: emosson
@@ -119,6 +127,8 @@ reservoirs:
       La Batiaz are Swiss share only (CH-Anteile).
     head_check_kwh_per_m3: 3.39
     head_check_source: Vallorcine 805 m + La Batiaz 659.5 m gross head (swissdams), full share, ESA part
+    max_depth_m: 161
+    max_depth_source: sfoe1983. Sets the bed level h0 of the fitted curve
     notes: Lake shared with France. SFOE lists the full volume and the Swiss share of energy.
 
   - name: Lac de Mauvoisin
@@ -138,6 +148,9 @@ reservoirs:
     energy_source: sfoe2025 row 22, Fionnay 189.34 + Riddes 443.52 GWh / 190 Mm3
     head_check_kwh_per_m3: 3.45
     head_check_source: Fionnay 474 m + Riddes 1016 m gross head (swissdams)
+    max_depth_m: 180
+    max_depth_source: sfoe1983, measured from the full level before the raising
+    max_depth_reference_level_m: 1961.5
 
   - name: Lago di Lei
     slug: lei
@@ -161,6 +174,8 @@ reservoirs:
       Ferrera 1 is Swiss share only (CH-Anteile).
     head_check_kwh_per_m3: 2.91
     head_check_source: Ferrera 524 m + Baerenburg 321 m + Sils 413 m gross head (swissdams), full share
+    max_depth_m: 133
+    max_depth_source: sfoe1983. Sets the bed level h0 of the fitted curve
     notes: Lake in Italy, dam in Switzerland.
 
   - name: Grimselsee
@@ -176,7 +191,11 @@ reservoirs:
     area_km2: 2.72
     area_source: sfoe1983, swissdams. wikipedia 2.63
     dam: { name: Spitallamm, lat: 46.57221, lon: 8.32957, source: register }
+    other_dams:
+      - { name: Seeuferegg, lat: 46.57323, lon: 8.33807, source: register }
     energy_kwh_per_m3: 3.211
     energy_source: sfoe2025 row 48, Grimsel 1 29.49 + Handeck 1 124.05 + Innertkirchen 1 147.98 GWh / 93.9 Mm3
     head_check_kwh_per_m3: 2.82
     head_check_source: Handeck 1 547 m + Innertkirchen 1 672 m gross head (swissdams), Grimsel 1 stage not included
+    max_depth_m: 100
+    max_depth_source: sfoe1983. Sets the bed level h0 of the fitted curve
