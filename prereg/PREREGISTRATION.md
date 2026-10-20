@@ -1,12 +1,12 @@
 # Pre-registration: Swiss storage deviation and the CH minus DE-LU spread
 
-Status: DRAFT, written 2026-10-20 (weekend 1) and revised the same day. It
-will be frozen as git tag `v0.1-prereg` on weekend 2, before any price model
-is run. No price slope, price regression or price chart has been looked at
-while writing it. The only price work so far is downloading, resampling and
-checking that two price sources agree with each other. Coverage of the
-control series was checked by counting values per day, without looking at
-their levels.
+Status: FROZEN on 2026-10-20 as git tag `v0.1-prereg`, before any price
+model was run. Any later change is listed under "Deviations from the
+pre-registration" (section 10). No price slope, price regression or price
+chart has been looked at while writing it. The only price work so far is
+downloading, resampling and checking that two price sources agree with each
+other. Coverage of the control series was checked by counting values per
+day, without looking at their levels.
 
 ## 1. Primary hypothesis H1
 
@@ -54,7 +54,7 @@ model always use identical controls, in every variant.
 | Control | Definition | Window | Source and coverage (checked 2026-10-20) |
 |---|---|---|---|
 | French nuclear | Mean MW of actual generation, nuclear (B14) | The 28 Europe/Zurich days ending the day before the origin day | ENTSO-E actual generation per type, FR. Every day from 2015-01-01 to 2026-10-19 present. Hourly until mid-December 2024, then 15-minute. |
-| Swiss nuclear | Mean MW of actual generation, nuclear (B14) | As above | ENTSO-E, CH. Continuous from 2015-07-01; before that only 2015-04-21 to 2015-04-23. Every day from 2015-07-01 to 2026-10-19 present. The first control window needed starts in October 2015, so Swissgrid data are not needed. |
+| Swiss nuclear | Mean MW of actual generation, nuclear (B14) | The 28 days ending 7 days before the origin day (as for HDD), because CH publication timing is not guaranteed | ENTSO-E, CH. Continuous from 2015-07-01; before that only 2015-04-21 to 2015-04-23. Every day from 2015-07-01 to 2026-10-19 present. The first control window needed starts in October 2015, so Swissgrid data are not needed. |
 | German wind | Mean MW of actual generation, wind onshore (B19) plus wind offshore (B18) | As above | ENTSO-E, area DE (country level, so it spans the 2018 DE-AT split). Both series have every day from 2015-01-01 to 2026-10-19. Year-long requests for onshore fail for 2015, 2016 and 2025 (entsoe-py parsing error, one HTTP 599) and return one month for 2021; month-by-month requests return every day. The fetcher must request onshore wind by month. |
 | CH and DE heating degree days | Mean daily HDD, base 15.5 C: HDD = max(0, 15.5 - T), where T is the daily mean 2 m temperature from ERA5-Land, averaged over the land grid cells of the country (area-weighted) | The 28 days ending 7 days before the origin day | ERA5-Land daily statistics (Copernicus CDS), January 1950 onwards, published with a delay of about 6 days. The 7-day lag keeps every day used before known_time. |
 | Climatological HDD for the target window | For each day of the 28-day target window, the mean HDD of the same calendar day (29 February uses 28 February) over the 10 most recent years in which that calendar day falls before the origin day; then the mean over the 28 days. Computed for CH and DE. | The target window, from past years only | ERA5-Land as above. Ten past years are available from 2005 onwards, so this is defined for every origin. |
@@ -66,8 +66,12 @@ type (Article 16(1)(b)) no later than one hour after the operational period,
 so for FR and DE the day before the origin day is complete well before a
 Thursday 23:59 known_time. Switzerland is not bound by the regulation and
 Swissgrid reports voluntarily, so the CH publication delay is not
-guaranteed; the control window ends a full day before the origin day for
-this reason, and the live release log will check it.
+guaranteed; the Swiss nuclear window therefore ends 7 days before the
+origin day, the same lag as HDD.
+
+Generation controls are mean MW over the window. Where the source is in
+15-minute steps (FR from December 2024, DE throughout), the values are
+averaged, never summed, so every control is in MW whatever the resolution.
 
 ### Sample
 
@@ -112,10 +116,12 @@ winters: 2021/22, 2022/23, 2023/24, 2024/25 and 2025/26.
 - Holm correction across the secondary tests (H2, H3a, H3b, N1).
 - Three crisis variants, all reported: full sample; 2021/22 and 2022/23
   excluded; full sample with a crisis-winter interaction on the slope.
-- Robustness variant "explanatory, realised controls": the same nuclear,
-  wind and HDD controls, but realised over the 28-day target window instead
-  of the 28 days before the origin. Realised target-window HDD replaces the
-  climatological HDD; month dummies are unchanged. This variant uses
+- Robustness variant "explanatory, realised controls": every control is
+  replaced by its value realised over the 28-day target window: French
+  nuclear, Swiss nuclear, German wind (onshore plus offshore), and CH and
+  DE HDD. Realised target-window HDD also replaces the climatological HDD.
+  Month dummies are unchanged. B3 and the full model use these same
+  controls in this variant. This variant uses
   information that is not available at the origin, so it is **not a
   forecast** and is reported only to show how much of the effect survives
   once the realised fundamentals of the window are known.
@@ -131,8 +137,14 @@ There is no edge if any of these holds:
    per point (TOST at 5%). This is the smallest effect of interest.
 3. The effect disappears without the crisis winters 2021/22 and 2022/23, or
    the full model beats B3 out of sample in fewer than 3 of the 5 test
-   winters (2021/22 to 2025/26). Note that the crisis-excluded variant leaves
-   only 3 test winters (2023/24 to 2025/26).
+   winters (2021/22 to 2025/26).
+   - The effect disappears if, in the crisis-excluded variant (test winters
+     2023/24, 2024/25 and 2025/26), the out-of-sample R squared against B3 is
+     zero or below, or the slope sign is opposite to the full-sample slope.
+   - In the crisis-excluded variant the full model must also beat B3 out of
+     sample in at least 2 of the 3 test winters.
+   - This variant is a direction check, not a significance test, because 3
+     test winters give too little power.
 
 ## 6. Secondary hypotheses (exploratory, Holm-corrected)
 
@@ -162,7 +174,14 @@ There is no edge if any of these holds:
   after publication, and the latest days of ERA5-Land are preliminary
   (ERA5-Land-T) when first published. The backtest uses current values.
 
-## 9. Commitment
+## 9. Live check
+
+Winter 2026/27 (origins from November 2026 to April 2027) is reported
+separately as a live out-of-sample result, using known_time from the release
+log. It does not enter the no-edge rule, which is decided on the 5 test
+winters 2021/22 to 2025/26 only.
+
+## 10. Commitment
 
 Every pre-registered test above is reported, significant or not, in
 `reports/results.md`. Any change after the freeze is listed with its date and
