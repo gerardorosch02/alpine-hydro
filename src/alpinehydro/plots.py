@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import io
 from pathlib import Path
 
 import matplotlib
@@ -165,6 +166,12 @@ def hero_chart(storage: pd.DataFrame, out_dir: Path = config.FIGURES) -> list[Pa
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = [out_dir / "hero_storage.png", out_dir / "hero_storage.svg"]
     for p in paths:
-        fig.savefig(p, facecolor=SURFACE, metadata={"Date": None} if p.suffix == ".svg" else None)
+        # Save through a byte buffer so the SVG has LF line endings on Windows too.
+        buf = io.BytesIO()
+        fmt = p.suffix[1:]
+        fig.savefig(
+            buf, format=fmt, facecolor=SURFACE, metadata={"Date": None} if fmt == "svg" else None
+        )
+        p.write_bytes(buf.getvalue())
     plt.close(fig)
     return paths
