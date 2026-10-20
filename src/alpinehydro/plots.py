@@ -7,6 +7,9 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
+matplotlib.rcParams["svg.hashsalt"] = (
+    "alpine-hydro"  # stable SVG ids, so rebuilds are byte-identical
+)
 import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
 
