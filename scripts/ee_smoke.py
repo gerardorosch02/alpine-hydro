@@ -1,4 +1,4 @@
-"""Earth Engine smoke test: uv run --extra satellite python scripts/ee_smoke.py"""
+"""Earth Engine smoke test: uv run python scripts/ee_smoke.py"""
 
 import ee
 
