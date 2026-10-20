@@ -18,7 +18,8 @@ norms:
   # A norm is only defined when the full window of past years is present.
 
 entsoe:
-  # Earliest continuous CH day-ahead price found in Step 0 (2014-12-02 00:00 Zurich).
+  # Step 0: CH has isolated days 2014-01-08, 2014-12-02 and 2014-12-23, and is continuous
+  # from 2015-01-01. DE_LU, FR and IT_NORD start on 2015-01-05.
   start: "2014-12-01"
   zones: [CH, DE_LU, FR, IT_NORD]
   # Before the DE-AT split the German price area was DE_AT_LU.

@@ -46,7 +46,8 @@ negative (lower Swiss storage than normal goes with a higher Swiss premium).
 
 ### Sample
 
-CH day-ahead prices on ENTSO-E start on 2014-12-02. The first full winter
+CH day-ahead prices on ENTSO-E are continuous from 2015-01-01 (DE-LU, FR and
+IT-North from 2015-01-05; CH has only isolated days in 2014). The first full winter
 is therefore 2015/16, and the 10-year norm is defined from 2010. With at least
 6 training winters the first test winter is 2021/22.
 

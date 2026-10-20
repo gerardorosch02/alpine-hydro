@@ -66,7 +66,8 @@ def fetch_month(client, zone: str, month_start: pd.Timestamp, refresh: bool = Fa
         s = client.query_day_ahead_prices(area, start=month_start, end=end)
     except NoMatchingDataError:
         s = pd.Series(dtype=float, index=pd.DatetimeIndex([], tz="UTC"))
-    s = s.tz_convert("UTC")
+    # entsoe-py returns a full index with NaN where ENTSO-E has no value; drop those.
+    s = s.dropna().tz_convert("UTC")
     s = s[(s.index >= month_start.tz_convert("UTC")) & (s.index < end.tz_convert("UTC"))]
     s = s[~s.index.duplicated(keep="first")].sort_index()
     df = pd.DataFrame({"price": s.astype(float), "area": area})
