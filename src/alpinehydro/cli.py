@@ -104,6 +104,28 @@ def timing():
     typer.echo(f"wrote {_write_check('timing_ceiling', out)}")
 
 
+def _slugs(only: list[str] | None) -> list[str]:
+    return only or [r["slug"] for r in config.reservoirs()]
+
+
+@app.command("outlines")
+def outlines_cmd(
+    only: list[str] = typer.Option(None, "--only", help="Reservoir slugs, default all."),
+    jrc: bool = typer.Option(True, help="Cross-check with JRC max_extent in Earth Engine."),
+):
+    """Build swissTLM3D outlines and 300 m windows; cross-check with JRC surface water."""
+    from alpinehydro import outlines
+
+    out = {}
+    for slug in _slugs(only):
+        out[slug] = outlines.build(slug)
+        if jrc:
+            out[slug]["jrc"] = outlines.jrc_check(slug)
+        typer.echo(json.dumps(out[slug], ensure_ascii=True))
+    if jrc and not only:
+        typer.echo(f"wrote {_write_check('outlines_jrc', out)}")
+
+
 def _hero() -> None:
     from alpinehydro.fetch import sfoe
     from alpinehydro.plots import hero_chart
@@ -151,6 +173,7 @@ def check_repo():
         if (
             f.startswith(("data/raw/", "data/interim/", "data/external/"))
             and not f.endswith(".gitkeep")
+            and not (f.startswith("data/external/outlines/") and f.endswith((".geojson", ".md")))
         )
         or (f.startswith("data/processed/") and any(k in f.lower() for k in ("price", "entsoe")))
         or f.endswith(".env")

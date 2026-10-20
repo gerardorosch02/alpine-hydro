@@ -1,0 +1,116 @@
+{
+  "sihlsee": {
+    "tlm_name": "Sihlsee",
+    "tlm_release": "swisstlm3d_2026-02",
+    "tlm_segments": 53,
+    "tlm_level_m": 889.02,
+    "tlm_revision_years": [
+      2019,
+      2022
+    ],
+    "area_km2": 10.8134,
+    "jrc": {
+      "slug": "sihlsee",
+      "tlm_area_km2": 10.803,
+      "jrc_max_extent_km2": 10.332,
+      "iou": 0.949
+    }
+  },
+  "gruyere": {
+    "tlm_name": "Lac de la Gruy\u00e8re",
+    "tlm_release": "swisstlm3d_2026-02",
+    "tlm_segments": 67,
+    "tlm_level_m": 674.01,
+    "tlm_revision_years": [
+      2023
+    ],
+    "area_km2": 8.5723,
+    "jrc": {
+      "slug": "gruyere",
+      "tlm_area_km2": 8.573,
+      "jrc_max_extent_km2": 8.393,
+      "iou": 0.902
+    }
+  },
+  "dix": {
+    "tlm_name": "Lac des Dix",
+    "tlm_release": "swisstlm3d_2026-02",
+    "tlm_segments": 55,
+    "tlm_level_m": 2361.92,
+    "tlm_revision_years": [
+      2023
+    ],
+    "area_km2": 3.968,
+    "jrc": {
+      "slug": "dix",
+      "tlm_area_km2": 3.972,
+      "jrc_max_extent_km2": 3.89,
+      "iou": 0.951
+    }
+  },
+  "emosson": {
+    "tlm_name": "Lac d'Emosson",
+    "tlm_release": "swisstlm3d_2026-02",
+    "tlm_segments": 50,
+    "tlm_level_m": 1920.4,
+    "tlm_revision_years": [
+      2023
+    ],
+    "area_km2": 3.0374,
+    "jrc": {
+      "slug": "emosson",
+      "tlm_area_km2": 3.037,
+      "jrc_max_extent_km2": 2.965,
+      "iou": 0.951
+    }
+  },
+  "mauvoisin": {
+    "tlm_name": "Lac de Mauvoisin",
+    "tlm_release": "swisstlm3d_2026-02",
+    "tlm_segments": 67,
+    "tlm_level_m": 1969.07,
+    "tlm_revision_years": [
+      2023
+    ],
+    "area_km2": 2.1943,
+    "jrc": {
+      "slug": "mauvoisin",
+      "tlm_area_km2": 2.196,
+      "jrc_max_extent_km2": 2.144,
+      "iou": 0.93
+    }
+  },
+  "lei": {
+    "tlm_name": "Lago di Lei",
+    "tlm_release": "swisstlm3d_2026-02",
+    "tlm_segments": 5,
+    "tlm_level_m": 1927.3,
+    "tlm_revision_years": [
+      2012,
+      2022
+    ],
+    "area_km2": 4.0425,
+    "jrc": {
+      "slug": "lei",
+      "tlm_area_km2": 4.034,
+      "jrc_max_extent_km2": 3.49,
+      "iou": 0.862
+    }
+  },
+  "grimsel": {
+    "tlm_name": "Grimselsee",
+    "tlm_release": "swisstlm3d_2026-02",
+    "tlm_segments": 25,
+    "tlm_level_m": 1907.65,
+    "tlm_revision_years": [
+      2024
+    ],
+    "area_km2": 2.6982,
+    "jrc": {
+      "slug": "grimsel",
+      "tlm_area_km2": 2.704,
+      "jrc_max_extent_km2": 2.752,
+      "iou": 0.908
+    }
+  }
+}
