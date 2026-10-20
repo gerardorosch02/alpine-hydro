@@ -1,0 +1,60 @@
+{
+  "entsoe_first": "2015-02-23",
+  "entsoe_last": "2026-09-28",
+  "entsoe_weeks": 603,
+  "lag_weeks": 0,
+  "n": 603,
+  "mean_abs_diff_gwh": 1204.2502856384745,
+  "share_within_1gwh": 0.15257048092868988,
+  "max_abs_diff_gwh": 3670.18887,
+  "by_year": {
+    "2015": {
+      "mean_abs_diff_gwh": 2126.127,
+      "share_within_1gwh": 0.0
+    },
+    "2016": {
+      "mean_abs_diff_gwh": 1168.447,
+      "share_within_1gwh": 0.0
+    },
+    "2017": {
+      "mean_abs_diff_gwh": 1316.535,
+      "share_within_1gwh": 0.0
+    },
+    "2018": {
+      "mean_abs_diff_gwh": 1097.377,
+      "share_within_1gwh": 0.0
+    },
+    "2019": {
+      "mean_abs_diff_gwh": 1149.768,
+      "share_within_1gwh": 0.0
+    },
+    "2020": {
+      "mean_abs_diff_gwh": 1257.823,
+      "share_within_1gwh": 0.0
+    },
+    "2021": {
+      "mean_abs_diff_gwh": 1228.131,
+      "share_within_1gwh": 0.0
+    },
+    "2022": {
+      "mean_abs_diff_gwh": 1211.108,
+      "share_within_1gwh": 0.0
+    },
+    "2023": {
+      "mean_abs_diff_gwh": 1922.083,
+      "share_within_1gwh": 0.0
+    },
+    "2024": {
+      "mean_abs_diff_gwh": 1839.662,
+      "share_within_1gwh": 0.019
+    },
+    "2025": {
+      "mean_abs_diff_gwh": 0.0,
+      "share_within_1gwh": 1.0
+    },
+    "2026": {
+      "mean_abs_diff_gwh": 0.0,
+      "share_within_1gwh": 1.0
+    }
+  }
+}
