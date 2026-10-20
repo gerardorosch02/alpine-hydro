@@ -1,0 +1,33 @@
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*credentials*.json
+*service-account*.json
+.config/earthengine/
+*.pem
+*.key
+
+# Licensed or bulky data (never committed)
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/external/*
+!data/external/.gitkeep
+
+# Python and tools
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Notebooks and editors
+.ipynb_checkpoints/
+.obsidian/
+.vscode/
+.idea/

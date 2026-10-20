@@ -1,0 +1,31 @@
+# Placeholder entries for Part A. Geometry, rating curves and capacities come on weekend 2.
+# sfoe_region is the SFOE ogd17 region the reservoir belongs to.
+reservoirs:
+  - name: Lac des Dix
+    canton: VS
+    sfoe_region: Wallis
+    geometry: null
+  - name: Lac d'Emosson
+    canton: VS
+    sfoe_region: Wallis
+    geometry: null
+  - name: Lac de Mauvoisin
+    canton: VS
+    sfoe_region: Wallis
+    geometry: null
+  - name: Lago di Lei
+    canton: GR
+    sfoe_region: Graubuenden
+    geometry: null
+  - name: Grimselsee
+    canton: BE
+    sfoe_region: UebrigCH
+    geometry: null
+  - name: Sihlsee
+    canton: SZ
+    sfoe_region: UebrigCH
+    geometry: null
+  - name: Lac de la Gruyere
+    canton: FR
+    sfoe_region: UebrigCH
+    geometry: null

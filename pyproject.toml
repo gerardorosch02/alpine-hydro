@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "alpinehydro"
+version = "0.1.0"
+description = "Alpine hydro reservoirs and Swiss power prices"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Gerardo Rosales" }]
+dependencies = [
+    "entsoe-py>=0.8.1",
+    "matplotlib>=3.9",
+    "numpy>=2.0",
+    "pandas>=2.2",
+    "pyarrow>=17",
+    "python-dotenv>=1.0",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "typer>=0.12",
+]
+
+[project.optional-dependencies]
+satellite = ["earthengine-api>=1.1"]
+
+[project.scripts]
+alpinehydro = "alpinehydro.cli:app"
+
+[dependency-groups]
+dev = [
+    "detect-secrets>=1.5",
+    "nbstripout>=0.7",
+    "pre-commit>=3.8",
+    "pytest>=8.3",
+    "ruff>=0.6",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/alpinehydro"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+# B008: typer.Option in defaults is the documented Typer pattern.
+ignore = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

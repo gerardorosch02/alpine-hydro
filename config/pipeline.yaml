@@ -1,0 +1,44 @@
+# Pipeline settings. Paths are relative to the repo root unless absolute.
+
+obsidian_vault: C:/Users/gerar/Vaults/Main
+
+sfoe:
+  csv_url: https://www.uvek-gis.admin.ch/BFE/ogd/17/ogd17_fuellungsgrad_speicherseen.csv
+  pdf_collection_url: https://pubdb.bfe.admin.ch/en/sammlungen/energiestatistik-fuellungsgrad-der-speicherseen
+  pdf_download_base: https://pubdb.bfe.admin.ch/de/publication/download/
+  regions: [Wallis, Graubuenden, Tessin, UebrigCH, TotalCH]
+  # Historical known_time: Thursday after the Sunday, 23:59 Europe/Zurich.
+  known_time_weekday: 3   # Monday=0, so Thursday=3
+  known_time_clock: "23:59"
+  timezone: Europe/Zurich
+
+norms:
+  window_years: 10
+  long_window_years: 20
+  # A norm is only defined when the full window of past years is present.
+
+entsoe:
+  # Earliest continuous CH day-ahead price found in Step 0 (2014-12-02 00:00 Zurich).
+  start: "2014-12-01"
+  zones: [CH, DE_LU, FR, IT_NORD]
+  # Before the DE-AT split the German price area was DE_AT_LU.
+  de_split_date: "2018-10-01"
+  timezone: Europe/Zurich
+  # Conservative time a day-ahead price for delivery day D is known: D-1 at this clock.
+  price_known_clock: "13:00"
+
+smard:
+  start: "2018-10-01"
+  # SMARD chart_data filter ids (region DE-LU), checked against ENTSO-E in Step 2.
+  filters: { DE_LU: 4169, CH: 259, FR: 254 }
+
+hypothesis:
+  season_months: [11, 12, 1, 2, 3, 4]
+  horizon_days: 28
+  # Smallest effect of interest: EUR 2/MWh per 10 points of deviation.
+  sesoi_eur_per_10pp: 2.0
+  satellite_head_start_days: 4
+
+hero:
+  band_first_hydro_year: 2000   # hydrological year 2000/01 (from ISO week 40 of 2000)
+  band_last_hydro_year: 2024    # hydrological year 2024/25
