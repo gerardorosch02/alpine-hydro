@@ -1,31 +1,182 @@
-# Placeholder entries for Part A. Geometry, rating curves and capacities come on weekend 2.
-# sfoe_region is the SFOE ogd17 region the reservoir belongs to.
+# Part A reservoir facts, checked 2026-10-20. Values approved by the author on 2026-10-20.
+#
+# Sources (short keys used below):
+#   register   SFOE "Stauanlagen unter Bundesaufsicht", Reservoir.csv and Dam.csv, data of
+#              2023-11-28, https://data.geo.admin.ch/ch.bfe.stauanlagen-bundesaufsicht/
+#   sfoe1983   SFOE "Speicherseen der Schweiz", status 1 January 1983,
+#              https://pubdb.bfe.admin.ch/de/publication/download/924
+#   sfoe2025   SFOE "Energieinhalte der Schweizer Stauseen", status 31.08.2025_v2,
+#              https://pubdb.bfe.admin.ch/fr/publication/download/11377
+#   swissdams  swissdams.ch dam sheets (Swiss Committee on Dams),
+#              https://www.swissdams.ch/de/les-barrages/liste-des-barrages-suisses/<dam>.pdf
+#   wikipedia  "List of dams and reservoirs in Switzerland", read 2026-10-20 (cross-check only)
+#
+# Choices (see the vault note Decisions/2026-10-20 Reservoir volumes and energy coefficients):
+# - gross_volume_mm3 is the total volume at full supply level. The level-area curve is fitted
+#   so that its integral equals this number.
+# - usable_volume_mm3 is the usable volume in sfoe2025, the same table the energy coefficients
+#   come from, so energy and usable volume refer to the same thing.
+# - dead volume = gross - usable. Energy (GWh) = coefficient x max(V(h) - dead, 0).
+#   Per-reservoir fill = (V(h) - dead) / usable.
+# - energy_kwh_per_m3 = sum of the GWh of all turbine stages in the reservoir's sfoe2025 row,
+#   divided by that row's usable volume. Primary value. head_check_kwh_per_m3 is an
+#   independent check from gross head (swissdams) x 9.81 x 0.85 / 3600 and is not used.
+# - Where a plant is international, sfoe2025 prints the Swiss share only (legend
+#   "CH-Anteile (internat. WKA)"). This applies to Emosson (Vallorcine, La Batiaz) and
+#   Lago di Lei (Ferrera 1), so their coefficients are Swiss-share coefficients.
+# - Dam coordinates: register LV95 converted to WGS84 with the swisstopo approximate
+#   formulas (about 1 m accuracy).
+#
+# Disagreements above 5% that were resolved (author approval 2026-10-20):
+# - Sihlsee: the register says 50.8 Mm3. sfoe1983, swissdams and wikipedia say 96.5 to 97.
+#   The register figure is not used.
+# - Lac de la Gruyere: wikipedia says 220. register, sfoe1983 and swissdams say 200.
+# - Grimselsee: 93.9 (usable) to 103 (wikipedia). The register gross 100.49 is used.
+# - Lac de Mauvoisin: wikipedia gives 1961 m, the level before the dam was raised by 13.5 m
+#   in 1989 to 1991 (swissdams). The register gives 1975 m.
+# - Lac des Dix: register 385 against 401 elsewhere (4.2%). 401 used, with the register level.
+
 reservoirs:
-  - name: Lac des Dix
-    canton: VS
-    sfoe_region: Wallis
-    geometry: null
-  - name: Lac d'Emosson
-    canton: VS
-    sfoe_region: Wallis
-    geometry: null
-  - name: Lac de Mauvoisin
-    canton: VS
-    sfoe_region: Wallis
-    geometry: null
-  - name: Lago di Lei
-    canton: GR
-    sfoe_region: Graubuenden
-    geometry: null
-  - name: Grimselsee
-    canton: BE
-    sfoe_region: UebrigCH
-    geometry: null
   - name: Sihlsee
+    slug: sihlsee
     canton: SZ
     sfoe_region: UebrigCH
-    geometry: null
+    full_level_m: 889.34
+    full_level_source: register (Stauziel 889.34 m, also in the Etzelwerk concession)
+    gross_volume_mm3: 96.5
+    gross_volume_source: sfoe1983 and swissdams (In den Schlagen). register says 50.8, not used
+    usable_volume_mm3: 85.4
+    usable_volume_source: sfoe2025 row 62. sfoe1983 91.8; swissdams 92 (Nov to May), 21 (Jun to Oct)
+    area_km2: 10.85
+    area_source: sfoe1983. swissdams 10.8, wikipedia 10.72
+    dam: { name: In den Schlagen, lat: 47.15447, lon: 8.77973, source: register }
+    energy_kwh_per_m3: 1.004
+    energy_source: sfoe2025 row 62, Etzelwerk SBB 85.76 GWh / 85.4 Mm3
+    head_check_kwh_per_m3: 1.12
+    head_check_source: Altendorf gross head 483 m (swissdams)
+    notes: Concession limits drawdown to 2 m from 1 June to 31 October.
+
   - name: Lac de la Gruyere
+    slug: gruyere
     canton: FR
     sfoe_region: UebrigCH
-    geometry: null
+    full_level_m: 677.0
+    full_level_source: register, sfoe1983
+    gross_volume_mm3: 200.0
+    gross_volume_source: register, sfoe1983, swissdams (Rossens). wikipedia 220, not used
+    usable_volume_mm3: 173.0
+    usable_volume_source: sfoe2025 row 27 (Rossens Gruyere). sfoe1983 180
+    area_km2: 9.60
+    area_source: sfoe1983, wikipedia. swissdams 10
+    dam: { name: Rossens, lat: 46.71800, lon: 7.11230, source: register }
+    energy_kwh_per_m3: 0.202
+    energy_source: sfoe2025 row 27, Hauterive 34.97 GWh / 173 Mm3
+    head_check_kwh_per_m3: 0.22
+    head_check_source: Hauterive gross head 75 to 111 m, midpoint 93 m (swissdams)
+
+  - name: Lac des Dix
+    slug: dix
+    canton: VS
+    sfoe_region: Wallis
+    full_level_m: 2364.0
+    full_level_source: register, sfoe1983. wikipedia 2365 (crest is 2365)
+    gross_volume_mm3: 401.0
+    gross_volume_source: sfoe1983, wikipedia. swissdams 400, register 385
+    usable_volume_mm3: 379.5
+    usable_volume_source: sfoe2025 row 2 (Grande Dixence). sfoe1983 400
+    area_km2: 4.03
+    area_source: sfoe1983. swissdams 4, wikipedia 3.65
+    dam: { name: Grande Dixence, lat: 46.08058, lon: 7.40308, source: register }
+    energy_kwh_per_m3: 3.655
+    energy_source: >-
+      sfoe2025 row 2, Fionnay GD 609.03 + Nendaz 778.16 GWh / 379.5 Mm3. Row 1 (Dixence
+      Chandoline, 50 Mm3 via Bieudron, greyed out) is excluded from the group volume but its
+      GWh cell repeats the group total 1673.04, so it is not used.
+    head_check_kwh_per_m3: 4.37
+    head_check_source: Fionnay 878 m + Nendaz 1008 m gross head (swissdams)
+
+  - name: Lac d'Emosson
+    slug: emosson
+    canton: VS
+    sfoe_region: Wallis
+    full_level_m: 1930.0
+    full_level_source: register, sfoe1983, wikipedia
+    gross_volume_mm3: 227.0
+    gross_volume_source: register, sfoe1983, swissdams, wikipedia
+    usable_volume_mm3: 216.2
+    usable_volume_source: >-
+      sfoe2025 rows 10 and 11, Emosson Barberine 51.2 + Emosson 165.0 Mm3. Both rows carry the
+      Emosson dam id 130676875; Vieux Emosson is a separate row (9, dam 130677029). The split
+      is by user: 51.2 Mm3 is the volume reserved for SBB/CFF (turbined at Chatelard
+      Barberine and Vernayaz CFF) when its Barberine lake was flooded, 165 Mm3 is Electricite
+      d'Emosson's part (Vallorcine in France, then La Batiaz). sfoe1983 225
+    area_km2: 3.27
+    area_source: sfoe1983, swissdams, wikipedia
+    dam: { name: Emosson, lat: 46.06749, lon: 6.93202, source: register }
+    energy_kwh_per_m3: 1.976
+    energy_source: >-
+      sfoe2025 rows 10 and 11, (78.16 + 77.21 + 144.50 + 127.23) GWh / 216.2 Mm3. Vallorcine and
+      La Batiaz are Swiss share only (CH-Anteile).
+    head_check_kwh_per_m3: 3.39
+    head_check_source: Vallorcine 805 m + La Batiaz 659.5 m gross head (swissdams), full share, ESA part
+    notes: Lake shared with France. SFOE lists the full volume and the Swiss share of energy.
+
+  - name: Lac de Mauvoisin
+    slug: mauvoisin
+    canton: VS
+    sfoe_region: Wallis
+    full_level_m: 1975.0
+    full_level_source: register. wikipedia 1961 and sfoe1983 1961.5 are before the 1989 to 1991 raising
+    gross_volume_mm3: 211.5
+    gross_volume_source: swissdams (after the raising). register 210, wikipedia 211
+    usable_volume_mm3: 190.0
+    usable_volume_source: sfoe2025 row 22. myswitzerland.com 193
+    area_km2: 2.26
+    area_source: swissdams (226 ha, after the raising). wikipedia and sfoe1983 2.08 (before)
+    dam: { name: Mauvoisin, lat: 45.99806, lon: 7.34879, source: register }
+    energy_kwh_per_m3: 3.331
+    energy_source: sfoe2025 row 22, Fionnay 189.34 + Riddes 443.52 GWh / 190 Mm3
+    head_check_kwh_per_m3: 3.45
+    head_check_source: Fionnay 474 m + Riddes 1016 m gross head (swissdams)
+
+  - name: Lago di Lei
+    slug: lei
+    canton: GR
+    sfoe_region: Graubuenden
+    sfoe_region_source: >-
+      sfoe2025 lists Valle di Lei under Total Hinterrhein (Graubuenden). sfoe1983: the lake is on
+      Italian territory, its use is on Swiss territory (canton Graubuenden).
+    full_level_m: 1931.0
+    full_level_source: register, sfoe1983, wikipedia
+    gross_volume_mm3: 200.0
+    gross_volume_source: register, sfoe1983. swissdams and wikipedia 197
+    usable_volume_mm3: 197.0
+    usable_volume_source: sfoe2025 row 17, sfoe1983
+    area_km2: 4.12
+    area_source: sfoe1983, wikipedia. swissdams 4.10
+    dam: { name: Valle di Lei, lat: 46.48182, lon: 9.45342, source: register }
+    energy_kwh_per_m3: 2.419
+    energy_source: >-
+      sfoe2025 row 17, Ferrera 1 157.65 + Baerenburg 141.99 + Sils 176.99 GWh / 197 Mm3.
+      Ferrera 1 is Swiss share only (CH-Anteile).
+    head_check_kwh_per_m3: 2.91
+    head_check_source: Ferrera 524 m + Baerenburg 321 m + Sils 413 m gross head (swissdams), full share
+    notes: Lake in Italy, dam in Switzerland.
+
+  - name: Grimselsee
+    slug: grimsel
+    canton: BE
+    sfoe_region: UebrigCH
+    full_level_m: 1908.74
+    full_level_source: register. sfoe1983 1908.7
+    gross_volume_mm3: 100.49
+    gross_volume_source: register. sfoe1983 101.0, wikipedia 103
+    usable_volume_mm3: 93.9
+    usable_volume_source: sfoe2025 row 48, sfoe1983, swissdams
+    area_km2: 2.72
+    area_source: sfoe1983, swissdams. wikipedia 2.63
+    dam: { name: Spitallamm, lat: 46.57221, lon: 8.32957, source: register }
+    energy_kwh_per_m3: 3.211
+    energy_source: sfoe2025 row 48, Grimsel 1 29.49 + Handeck 1 124.05 + Innertkirchen 1 147.98 GWh / 93.9 Mm3
+    head_check_kwh_per_m3: 2.82
+    head_check_source: Handeck 1 547 m + Innertkirchen 1 672 m gross head (swissdams), Grimsel 1 stage not included
