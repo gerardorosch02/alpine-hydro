@@ -387,9 +387,8 @@ def build(slug: str, refresh: bool = False) -> dict:
     np.savez_compressed(hybrid_path(slug), z=z_hyb, join=join, lowest=lowest)
 
     # Measured part: lowest measured level to full level in 0.25 m steps.
-    levels = np.round(np.arange(lowest, fsl + STEP / 2, STEP), 2)
-    if levels[-1] < fsl:
-        levels = np.append(levels, fsl)
+    levels = np.round(np.arange(lowest, fsl, STEP), 2)
+    levels = np.append(levels[levels < fsl - 1e-6], fsl)
     if floor not in levels and lowest < floor:
         levels = np.sort(np.append(levels, floor))
     area = level_area(join, levels)

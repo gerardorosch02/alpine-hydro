@@ -40,9 +40,9 @@
     ],
     "usable_share_swissalti3d_2m": 0.297,
     "usable_share_global_dem_30m": 0.0,
-    "usable_share_fitted": 0.69,
+    "usable_share_fitted": 0.703,
     "h0_m": 866.34,
-    "b": 1.9233,
+    "b": 1.8775,
     "b_bound_hit": false,
     "fit_method": "bed at the published maximum depth"
   },
@@ -134,9 +134,9 @@
     ],
     "usable_share_swissalti3d_2m": 0.022,
     "usable_share_global_dem_30m": 0.635,
-    "usable_share_fitted": 0.343,
+    "usable_share_fitted": 0.344,
     "h0_m": 2137.0,
-    "b": 1.0121,
+    "b": 1.009,
     "b_bound_hit": false,
     "fit_method": "bed at the published maximum depth"
   },
@@ -181,9 +181,9 @@
     ],
     "usable_share_swissalti3d_2m": 0.14,
     "usable_share_global_dem_30m": 0.567,
-    "usable_share_fitted": 0.292,
+    "usable_share_fitted": 0.294,
     "h0_m": 1769.0,
-    "b": 1.691,
+    "b": 1.6793,
     "b_bound_hit": false,
     "fit_method": "bed at the published maximum depth"
   },
@@ -229,10 +229,10 @@
     "usable_share_swissalti3d_2m": 0.069,
     "usable_share_global_dem_30m": 0.659,
     "usable_share_fitted": 0.272,
-    "h0_m": 1761.79,
+    "h0_m": 1761.67,
     "b": 1.0,
     "b_bound_hit": true,
-    "fit_method": "published bed gave b=0.70; bound hit, b set to 1 and the bed moved 19.7 m down"
+    "fit_method": "published bed gave b=0.70; bound hit, b set to 1 and the bed moved 19.8 m down"
   },
   "lei": {
     "floor_m": 1927.7,

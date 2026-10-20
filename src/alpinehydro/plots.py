@@ -175,3 +175,131 @@ def hero_chart(storage: pd.DataFrame, out_dir: Path = config.FIGURES) -> list[Pa
         p.write_bytes(buf.getvalue())
     plt.close(fig)
     return paths
+
+
+# ---------------------------------------------------------------- Part A: satellite
+
+HOLLOW = "#9a9993"
+
+
+def _style(ax) -> None:
+    ax.set_facecolor(SURFACE)
+    ax.yaxis.grid(True, color=GRID, lw=0.8)
+    ax.set_axisbelow(True)
+    for side in ("top", "right", "left"):
+        ax.spines[side].set_visible(False)
+    ax.spines["bottom"].set_color(GRID)
+    ax.tick_params(colors=INK_2, length=0)
+
+
+def _save(fig, out_dir: Path, stem: str) -> list[Path]:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    paths = [out_dir / f"{stem}.png"]
+    for p in paths:
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png", facecolor=SURFACE)
+        p.write_bytes(buf.getvalue())
+    plt.close(fig)
+    return paths
+
+
+def reservoir_chart(
+    slug: str, scenes: pd.DataFrame, storage: pd.DataFrame, out_dir: Path = config.FIGURES
+) -> list[Path]:
+    """Level per scene (top) and satellite fill against the SFOE region fill (bottom)."""
+    from alpinehydro import hypsometry
+
+    r = hypsometry.reservoir(slug)
+    info = hypsometry.curve_info(slug)
+    sc = scenes[(scenes["reservoir"] == slug) & scenes["level_m"].notna()].copy()
+    sc["time_utc"] = pd.to_datetime(sc["time_utc"], utc=True).dt.tz_localize(None)
+    ok = sc[sc["flag"] == "ok"]
+    other = sc[sc["flag"] != "ok"]
+    reg = storage[storage["region"] == r["sfoe_region"]]
+    reg = reg[reg["valid_time"] >= sc["time_utc"].min()]
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(11, 7.5), dpi=130, sharex=True)
+    fig.patch.set_facecolor(SURFACE)
+    ax1.plot(
+        other["time_utc"],
+        other["level_m"],
+        "o",
+        mfc="none",
+        mec=HOLLOW,
+        ms=3.5,
+        mew=0.8,
+        label=f"Other scenes, flagged ({len(other)})",
+    )
+    ax1.plot(
+        ok["time_utc"], ok["level_m"], "o", color=MEDIAN, ms=3.5, label=f"ok scenes ({len(ok)})"
+    )
+    ax1.axhline(r["full_level_m"], color=INK_2, lw=0.9, ls="--")
+    ax1.text(
+        sc["time_utc"].min(),
+        r["full_level_m"],
+        " full supply",
+        va="bottom",
+        color=INK_2,
+        fontsize=8,
+    )
+    ax1.axhline(info["floor_m"], color=CURRENT, lw=0.9, ls=":")
+    ax1.text(
+        sc["time_utc"].min(),
+        info["floor_m"],
+        " swissALTI3D floor (2 m data above)",
+        va="bottom",
+        color=CURRENT,
+        fontsize=8,
+    )
+    if info.get("global_floor_m"):
+        ax1.axhline(info["global_floor_m"], color=CURRENT, lw=0.9, ls="-.")
+        ax1.text(
+            sc["time_utc"].min(),
+            info["global_floor_m"],
+            f" {info['global_dem']} floor (30 m data above, fitted below)",
+            va="bottom",
+            color=CURRENT,
+            fontsize=8,
+        )
+    ax1.set_ylabel("Water level, m a.s.l.", color=INK_2)
+    ax1.legend(loc="lower left", frameon=False, fontsize=8.5, labelcolor=INK_2)
+    _style(ax1)
+
+    ax2.plot(
+        reg["valid_time"],
+        reg["fill"] * 100,
+        color=INK_2,
+        lw=1.2,
+        label=f"SFOE {r['sfoe_region']} fill (region)",
+    )
+    ax2.plot(other["time_utc"], other["fill"] * 100, "o", mfc="none", mec=HOLLOW, ms=3.5, mew=0.8)
+    ax2.plot(
+        ok["time_utc"],
+        ok["fill"] * 100,
+        "o",
+        color=MEDIAN,
+        ms=3.5,
+        label=f"{r['name']} fill from satellite",
+    )
+    ax2.set_ylabel("Fill, % of usable volume", color=INK_2)
+    ax2.legend(loc="lower left", frameon=False, fontsize=8.5, labelcolor=INK_2)
+    _style(ax2)
+
+    quality = " (indicative)" if r.get("fill_quality") == "indicative" else ""
+    ax1.set_title(
+        f"{r['name']}: water level and fill from Sentinel-2 and Landsat{quality}",
+        loc="left",
+        color=INK,
+        fontsize=12,
+    )
+    fig.text(
+        0.01,
+        0.01,
+        "Contains modified Copernicus Sentinel data. Landsat courtesy of the U.S. Geological "
+        "Survey. Source: Federal Office of Topography swisstopo; Swiss Federal Office of "
+        "Energy SFOE.",
+        color=INK_2,
+        fontsize=7,
+    )
+    fig.tight_layout(rect=(0, 0.03, 1, 1))
+    return _save(fig, out_dir, f"reservoir_{slug}")

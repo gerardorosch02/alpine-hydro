@@ -158,6 +158,28 @@ def curves_cmd(
         typer.echo(f"wrote {_write_check('curves_global_dem', out)}")
 
 
+@app.command("masks")
+def masks_cmd(
+    only: list[str] = typer.Option(None, "--only", help="Reservoir slugs, default all."),
+    refresh: bool = typer.Option(False, help="Recompute the candidate list."),
+):
+    """Earth Engine batch: clear fraction per scene, then pull arrays for clear scenes."""
+    from alpinehydro import water_mask
+
+    s = water_mask.settings()
+    for slug in _slugs(only):
+        cands = water_mask.candidates(slug, refresh=refresh)
+        keep = cands[cands["clear_fraction"] >= s["min_clear_fraction"]]
+        typer.echo(f"{slug}: {len(cands)} scenes, {len(keep)} at least 90% clear")
+        for i, r in enumerate(keep.itertuples(), 1):
+            try:
+                water_mask.pull(slug, r.sensor, r.date, r.sun_azimuth, r.sun_zenith)
+            except Exception as e:  # keep going; the scene is retried on the next run
+                typer.echo(f"  {r.sensor} {r.date} failed: {str(e)[:200]}")
+            if i % 25 == 0:
+                typer.echo(f"  {i}/{len(keep)}")
+
+
 def _hero() -> None:
     from alpinehydro.fetch import sfoe
     from alpinehydro.plots import hero_chart

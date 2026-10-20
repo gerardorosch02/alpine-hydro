@@ -43,3 +43,21 @@ hypothesis:
 hero:
   band_first_hydro_year: 2000   # hydrological year 2000/01 (from ISO week 40 of 2000)
   band_last_hydro_year: 2024    # hydrological year 2024/25
+
+satellite:
+  s2_start: "2017-03-28"
+  landsat_start: "2013-04-11"
+  # Months used per reservoir: all months for these, June to November for the rest.
+  all_months: [sihlsee, gruyere]
+  season_months: [6, 7, 8, 9, 10, 11]
+  cs_cdf_min: 0.6
+  min_clear_fraction: 0.90
+  nir_max: 0.12
+  shadow_heavy_share: 0.20
+  # snow_ice: bright pixels with high MNDWI (MNDWI is the NDSI) cover this share of the
+  # full-supply lake.
+  snow_ice_share: 0.05
+  # Level checks (Step 5)
+  no_match_m: 3.0
+  # Weekly alignment (Step 6)
+  max_days_from_week_end: 3

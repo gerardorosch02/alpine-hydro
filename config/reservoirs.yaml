@@ -151,6 +151,11 @@ reservoirs:
     max_depth_m: 180
     max_depth_source: sfoe1983, measured from the full level before the raising
     max_depth_reference_level_m: 1961.5
+    fill_quality: indicative
+    fill_quality_reason: >-
+      The fitted curve below the global DEM floor hit the lower bound b = 1 (the published bed
+      gave b = 0.70, so the bed moved 19.7 m down), and 27% of the usable volume lies in that
+      fitted part. Treat Mauvoisin's fill as indicative (decision of 2026-10-20).
 
   - name: Lago di Lei
     slug: lei
