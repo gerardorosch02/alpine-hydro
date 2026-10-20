@@ -1,0 +1,35 @@
+{
+  "DE_LU": {
+    "first_hour": "2018-10-01 00:00:00+02:00",
+    "last_hour": "2026-10-20 23:00:00+02:00",
+    "n_hours": 70608,
+    "corr": 0.9999999999295262,
+    "mean_abs_diff_eur": 0.0003126770337639529,
+    "share_within_0_01": 1.0,
+    "max_abs_diff_eur": 0.005000000000052296,
+    "smard_only_hours": 0,
+    "entsoe_only_hours_in_window": 0
+  },
+  "CH": {
+    "first_hour": "2018-10-01 00:00:00+02:00",
+    "last_hour": "2026-10-21 23:00:00+02:00",
+    "n_hours": 70632,
+    "corr": 1.0,
+    "mean_abs_diff_eur": 0.0,
+    "share_within_0_01": 1.0,
+    "max_abs_diff_eur": 0.0,
+    "smard_only_hours": 0,
+    "entsoe_only_hours_in_window": 0
+  },
+  "FR": {
+    "first_hour": "2018-10-01 00:00:00+02:00",
+    "last_hour": "2026-10-21 23:00:00+02:00",
+    "n_hours": 70632,
+    "corr": 0.9999999999459267,
+    "mean_abs_diff_eur": 0.0002964661909616581,
+    "share_within_0_01": 1.0,
+    "max_abs_diff_eur": 0.005000000000052296,
+    "smard_only_hours": 0,
+    "entsoe_only_hours_in_window": 0
+  }
+}
