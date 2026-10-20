@@ -1,0 +1,24 @@
+{
+  "dev_10y_pp": {
+    "dev_col": "dev_10y_pp",
+    "n_weeks": 431,
+    "first_week": "2010-01-03",
+    "last_week": "2026-04-26",
+    "sd_weekly_change_pp": 1.5024840032978548,
+    "sd_4day_linear_pp": 0.8585622875987742,
+    "sd_4day_sqrt_pp": 1.1357711490225353,
+    "ceiling_linear_eur": 0.17171245751975484,
+    "ceiling_sqrt_eur": 0.22715422980450706
+  },
+  "dev_20y_pp": {
+    "dev_col": "dev_20y_pp",
+    "n_weeks": 172,
+    "first_week": "2020-01-05",
+    "last_week": "2026-04-26",
+    "sd_weekly_change_pp": 1.440456948339915,
+    "sd_4day_linear_pp": 0.8231182561942371,
+    "sd_4day_sqrt_pp": 1.0888831027435513,
+    "ceiling_linear_eur": 0.16462365123884742,
+    "ceiling_sqrt_eur": 0.21777662054871028
+  }
+}
