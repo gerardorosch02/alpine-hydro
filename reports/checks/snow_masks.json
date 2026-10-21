@@ -1,0 +1,72 @@
+{
+ "computed_utc": "2026-10-21",
+ "dem": "COPERNICUS/DEM/GLO30_2024_1",
+ "outlines": "swisstopo swissBOUNDARIES3D 2026-01, canton layer, simplified 50 m",
+ "note": "area_km2_modis500: 500 m MODIS pixels whose mean GLO-30 elevation is at or above the band, MODIS inland water removed; area_km2_dem30: 30 m DEM cells at or above the band. region_km2 from the 30 m reduction of the simplified outline.",
+ "rows": [
+  {
+   "region": "Wallis",
+   "band_m": 1800,
+   "area_km2_dem30": 3532.617,
+   "area_km2_modis500": 3513.063,
+   "region_km2": 5223.435,
+   "share_of_region": 0.676
+  },
+  {
+   "region": "Wallis",
+   "band_m": 2000,
+   "area_km2_dem30": 3126.405,
+   "area_km2_modis500": 3112.149,
+   "region_km2": 5223.435,
+   "share_of_region": 0.599
+  },
+  {
+   "region": "Graubuenden",
+   "band_m": 1800,
+   "area_km2_dem30": 4825.449,
+   "area_km2_modis500": 4815.143,
+   "region_km2": 7104.307,
+   "share_of_region": 0.679
+  },
+  {
+   "region": "Graubuenden",
+   "band_m": 2000,
+   "area_km2_dem30": 4013.936,
+   "area_km2_modis500": 4018.128,
+   "region_km2": 7104.307,
+   "share_of_region": 0.565
+  },
+  {
+   "region": "Tessin",
+   "band_m": 1800,
+   "area_km2_dem30": 927.849,
+   "area_km2_modis500": 918.439,
+   "region_km2": 2811.909,
+   "share_of_region": 0.33
+  },
+  {
+   "region": "Tessin",
+   "band_m": 2000,
+   "area_km2_dem30": 657.738,
+   "area_km2_modis500": 655.263,
+   "region_km2": 2811.909,
+   "share_of_region": 0.234
+  },
+  {
+   "region": "Total",
+   "band_m": 1800,
+   "area_km2_dem30": 9285.915,
+   "area_km2_modis500": 9246.646,
+   "region_km2": 15139.651,
+   "share_of_region": 0.613
+  },
+  {
+   "region": "Total",
+   "band_m": 2000,
+   "area_km2_dem30": 7798.079,
+   "area_km2_modis500": 7785.54,
+   "region_km2": 15139.651,
+   "share_of_region": 0.515
+  }
+ ]
+}
