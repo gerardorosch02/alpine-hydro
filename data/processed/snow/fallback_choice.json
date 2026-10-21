@@ -1,0 +1,91 @@
+{
+  "rule": "eligible if the lowest per-canton correlation >= 0.9 and median publication lag <= 5 days; lowest pooled MAD wins (deviations W1-W3)",
+  "comparison": {
+    "per_region": {
+      "Graubuenden": {
+        "n_days": 525,
+        "corr": 0.992,
+        "mad": 0.0444,
+        "fit_a": 0.0489,
+        "fit_b": 0.9821
+      },
+      "Tessin": {
+        "n_days": 524,
+        "corr": 0.9865,
+        "mad": 0.0525,
+        "fit_a": 0.0487,
+        "fit_b": 0.9929
+      },
+      "Total": {
+        "n_days": 536,
+        "corr": 0.9933,
+        "mad": 0.0434,
+        "fit_a": 0.0594,
+        "fit_b": 0.9689
+      },
+      "Wallis": {
+        "n_days": 539,
+        "corr": 0.9876,
+        "mad": 0.0457,
+        "fit_a": 0.0869,
+        "fit_b": 0.9316
+      }
+    },
+    "pooled_three_cantons": {
+      "n": 1588,
+      "corr": 0.9888,
+      "mad": 0.0475
+    }
+  },
+  "publication_lag": {
+    "granules": 27,
+    "median_days": 0.3,
+    "p90_days": 2.48,
+    "window": "last 30 days to 2026-10-21"
+  },
+  "selection": {
+    "candidates": {
+      "viirs_vj210a1": {
+        "corr": 0.9865,
+        "mad": 0.0475,
+        "lag_days": 0.3,
+        "eligible": true,
+        "why": "eligible"
+      }
+    },
+    "chosen": "viirs_vj210a1"
+  },
+  "chosen": "viirs_vj210a1",
+  "fit": {
+    "Wallis": {
+      "n_days": 539,
+      "corr": 0.9876,
+      "mad": 0.0457,
+      "fit_a": 0.0869,
+      "fit_b": 0.9316
+    },
+    "Graubuenden": {
+      "n_days": 525,
+      "corr": 0.992,
+      "mad": 0.0444,
+      "fit_a": 0.0489,
+      "fit_b": 0.9821
+    },
+    "Tessin": {
+      "n_days": 524,
+      "corr": 0.9865,
+      "mad": 0.0525,
+      "fit_a": 0.0487,
+      "fit_b": 0.9929
+    },
+    "Total": {
+      "n_days": 536,
+      "corr": 0.9933,
+      "mad": 0.0434,
+      "fit_a": 0.0594,
+      "fit_b": 0.9689
+    }
+  },
+  "product": "NSIDC VJ210A1 v2 (NOAA-21 VIIRS)",
+  "credit": "Riggs, G. A., D. K. Hall and M. O. Roman. VIIRS/NOAA-21 Snow Cover Daily L3 Global 375m SIN Grid, Version 2 (VJ210A1). NASA National Snow and Ice Data Center DAAC."
+}
