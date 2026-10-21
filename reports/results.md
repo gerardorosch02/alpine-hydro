@@ -274,7 +274,7 @@ this clipping; against B3 it does not.
 +0.190. Five test winters give only 126 distinct resamples.
 
 **6. Holm correction (secondary tests).** Family so far: H2 only; recomputed when H3b and
-N1 are added. See H2 below.
+N1 are added. See H2 below; the updated table (H2, H3a, H3b) is in Part C.
 
 **7. Crisis variants:**
 
@@ -314,6 +314,171 @@ Not yet possible. The latest SFOE CSV week is Sunday 27 September 2026 (the PDF 
 releases it. `alpinehydro live-forecast` then writes to `data/processed/live_forecasts.csv`.
 The live winter does not enter the no-edge rule.
 
+## Part C: snow and refill (weekend 4, H3 analysis plan)
+
+The details of H3a and H3b were fixed in `prereg/H3_ANALYSIS_PLAN.md` and frozen as tag
+`v0.2-h3plan` before any snow series was computed. Everything below follows that plan;
+the choices it left open are listed under "Deviations from the H3 analysis plan" at the
+end of this file. Machine-readable results: `reports/checks/h3_results.json`. Committed
+inputs: `data/processed/snow/` (daily MODIS and ERA5-Land series, the feature table and one
+October to December spread per year; no price series).
+
+### H3a verdict: no added skill from snow
+
+The primary version (three-region total, MODIS, 1 May issue, 1800 m band, end-of-September
+fill, walk-forward) has a skill score against C1 of **+0.175**, which is above 0, but its
+Clark-West p is **0.134** and its Holm-adjusted p is **0.268**. The pass mark needs both a
+positive skill score and a Holm-adjusted p below 0.05, so the verdict is **"no added skill
+from snow"**.
+
+Snow moved the forecast the right way more often than not (RMSE 3.25 points against 3.58
+for C1 and 3.84 for C0), but 15 test years are too few to tell that apart from luck.
+
+![Snow tracker](figures/snow_tracker.png)
+
+### Every H3a test, in the plan's order
+
+Sample: years 2001 to 2026. MODIS has only 2 valid days in the 1 May 2001 window (the plan
+needs 4), so 2001 is dropped from the MODIS 1 May models. With at least 10 training years
+the first MODIS test year is then 2012, not 2011 (15 test years, deviation P3). The
+ERA5-Land versions keep 2011 to 2026 (16 test years). In the full-sample fit of the
+primary version, end-of-season fill rises by 19.8 points per unit of FSC, so about
+**+2.0 points per 10 points of snow cover** (starting storage: +0.32 per point).
+
+**1. Walk-forward skill scores (primary scoring).**
+
+| Version | Skill vs C1 | Skill vs C0 | RMSE full / C1 / C0 (points) |
+|---|---|---|---|
+| **Primary: Total, MODIS, 1 May, 1800 m** | **+0.175** | **+0.282** | 3.25 / 3.58 / 3.84 |
+
+**2. Clark-West, full model against C1** (one-sided, t with n − 1 df): t = 1.15,
+**p = 0.134**, n = 15.
+
+**3. Diebold-Mariano against C0** (Harvey-Leybourne-Newbold, h = 1, two-sided):
+statistic −0.88 (negative means the snow model is more accurate), p = 0.394.
+
+**4. Leave-one-year-out (secondary scoring, not a forecast claim)**, 2002 to 2026, n = 25:
+skill vs C1 +0.135, vs C0 +0.190; Clark-West p = 0.018; Diebold-Mariano −0.93 (p = 0.363).
+With every other year available for fitting, the snow term clears Clark-West. As a real
+forecast it does not.
+
+**5. Secondary versions (no multiple-testing correction).** Total region, end-of-September
+fill, walk-forward (WF) and leave-one-year-out (LOYO). "ERA5-Land anomaly" is the
+robustness version with a strict trailing 10-year anomaly.
+
+| Source | Issue | Band | Test years | WF skill vs C1 | WF skill vs C0 | WF CW p | WF DM vs C0 (p) | LOYO skill vs C1 | LOYO CW p |
+|---|---|---|---|---|---|---|---|---|---|
+| **MODIS** | **1 May** | **1800** | **15 (2012-2026)** | **+0.175** | **+0.282** | **0.134** | **−0.88 (0.394)** | **+0.135** | **0.018** |
+| ERA5-Land | 1 May | 1800 | 16 (2011-2026) | +0.190 | +0.291 | 0.048 | −1.13 (0.275) | +0.138 | 0.023 |
+| ERA5-Land anomaly | 1 May | 1800 | 16 (2011-2026) | +0.135 | +0.243 | 0.041 | −1.01 (0.330) | +0.107 | 0.026 |
+| MODIS | 1 May | 2000 | 15 (2012-2026) | +0.200 | +0.304 | 0.123 | −0.97 (0.351) | +0.116 | 0.017 |
+| ERA5-Land | 1 May | 2000 | 16 (2011-2026) | +0.186 | +0.287 | 0.048 | −1.14 (0.273) | +0.132 | 0.024 |
+| MODIS | 1 April | 1800 | 15 (2012-2026) | −0.014 | +0.136 | 0.137 | −0.54 (0.599) | +0.120 | 0.037 |
+| ERA5-Land | 1 April | 1800 | 16 (2011-2026) | +0.063 | +0.214 | 0.093 | −1.74 (0.103) | −0.009 | 0.208 |
+| MODIS | 1 April | 2000 | 15 (2012-2026) | +0.181 | +0.302 | 0.100 | −1.28 (0.223) | +0.104 | 0.067 |
+| ERA5-Land | 1 April | 2000 | 16 (2011-2026) | +0.061 | +0.212 | 0.094 | −1.74 (0.101) | −0.012 | 0.221 |
+
+*MODIS against ERA5-Land.* On 1 May they are close (skill vs C1 +0.18 and +0.19).
+ERA5-Land has one more test year (2011) and a nominal Clark-West p just under 0.05, but it
+is a secondary version and nothing in this table is corrected for the number of versions.
+*1 April against 1 May.* 1 May is better for both sources. On 1 April the MODIS 1800 m
+version has no skill against C1 (−0.01): snow cover at 1800 m is still near 90% in most
+years and says little about the melt to come. The 2000 m band does better on 1 April
+(+0.18). *ERA5-Land strict anomaly:* slightly weaker than raw SWE (+0.135 against +0.190),
+so the raw-value choice did not flatter ERA5-Land. ERA5-Land SWE in Wallis never falls
+below about 1,430 mm, even in summer, because the glacier cells of ERA5-Land hold a large
+constant snowpack. The intercept absorbs that constant.
+
+By region (1 May, 1800 m, walk-forward skill vs C1 / Clark-West p):
+
+| Region | MODIS | ERA5-Land |
+|---|---|---|
+| Wallis | −0.036 / 0.572 (14 test years; 2001 and 2012 dropped) | −0.043 / 0.657 |
+| Graubuenden | −0.184 / 0.313 | −0.188 / 0.438 |
+| Tessin | +0.423 / 0.044 (2019 dropped) | +0.241 / 0.032 |
+| Total | +0.175 / 0.134 | +0.190 / 0.048 |
+
+Wallis and Graubuenden show no skill. Tessin, the smallest and lowest region (33% of the
+canton is above 1800 m), shows the most.
+
+*Refill target (GWh, spring minimum to end of September), 1 May, 1800 m:*
+
+| Region | MODIS skill vs C1 / vs C0 / CW p | ERA5-Land skill vs C1 / vs C0 / CW p |
+|---|---|---|
+| Total | +0.060 / +0.657 / 0.255 | +0.094 / +0.668 / 0.118 |
+| Wallis | −0.056 / +0.781 / 0.807 | −0.035 / +0.808 / 0.659 |
+| Graubuenden | −0.251 / +0.393 / 0.353 | −0.209 / +0.413 / 0.464 |
+| Tessin | +0.345 / +0.394 / 0.049 | +0.212 / +0.256 / 0.045 |
+
+For refill, starting storage (C1) already beats climatology by a wide margin, and snow
+adds little on top except in Tessin.
+
+![Forecast against actual](figures/h3a_forecast_vs_actual.png)
+
+![Snow against refill](figures/h3_snow_vs_refill.png)
+
+### 2026 case study
+
+The walk-forward model for 2026 was fitted on 2002 to 2025 only. On 1 May 2026 the MODIS
+snow cover of the three regions at or above 1800 m was 70% (8-day mean to 28 April), the
+third lowest since 2002, and starting storage was 9.2% full.
+
+| Forecast made on 1 May 2026 | End-of-September fill (points) | Forecast minus actual |
+|---|---|---|
+| Snow model (MODIS) | 82.6 | +8.6 |
+| C1, starting storage only | 85.0 | +11.0 |
+| C0, 10-year average | 85.7 | +11.7 |
+| **Actual, 27 September 2026** | **74.0** | |
+
+Snow pointed the right way: it cut 2.4 points from the storage-only forecast. But it
+missed most of the shortfall. The 2026 drought was a summer story (a record low every week
+from 5 July), which a 1 May snow reading cannot see. 2022 looks the same: forecast 85.5
+against an actual 80.9.
+
+### H3b: the forecast fill deviation and the October to December premium
+
+x is the walk-forward 1 May forecast of the three-region end-of-September fill minus its
+10-year norm. y is the mean daily CH minus DE-LU baseload spread from 1 October to
+31 December. 11 years, 2015 to 2025.
+
+- Slope: **−36.9 EUR/MWh per 10 points** (95% interval −76.1 to +2.3, HC3 standard
+  errors, t with 9 df; two-sided p = 0.062). The sign is the expected one: a lower forecast
+  fill goes with a higher Swiss premium.
+- Clark-West against an intercept-only model (expanding window, at least 5 training years,
+  test years 2020 to 2025): t = 2.79, one-sided **p = 0.019**, out-of-sample skill +0.25.
+- **Smallest detectable effect: 54.5 EUR/MWh per 10 points** (80% power, 5% two-sided).
+- The forecast deviations only range from −4.3 to +3.6 points, so "per 10 points" is an
+  extrapolation. One year, 2021 (57 EUR/MWh at the start of the gas crisis), sits far above
+  the rest. Six out-of-sample years cannot carry a claim.
+
+![H3b scatter](figures/h3b_scatter.png)
+
+### Updated Holm table (secondary family)
+
+| Test | Raw p | Holm-adjusted p | Below 0.05 |
+|---|---|---|---|
+| H3b: Clark-West, spread on forecast fill deviation | 0.019 | 0.058 | no |
+| H3a: Clark-West, primary version against C1 | 0.134 | 0.268 | no |
+| H2: Clark-West, CH minus IT-North, March to April | 0.987 | 0.987 | no |
+| N1 | not run (deviation D14) | | |
+
+No secondary test survives the Holm correction.
+
+### Daily snow series and continuity
+
+- MODIS: the 1800 m band every day from 24 February 2000 to 17 October 2026; the 2000 m
+  band only 14 March to 5 May each year (deviation P1). 3.4% of 1800 m days fall below the
+  70% valid share, most in May (16%) and June (10%), almost none in winter.
+- Band areas (`reports/checks/snow_masks.json`), at or above 1800 m on the 500 m grid:
+  Wallis 3,513 km² (68% of the canton), Graubuenden 4,815 km² (68%), Tessin 918 km² (33%),
+  total 9,247 km² (61%). At 2000 m: 3,112, 4,018, 655 and 7,786 km². The 30 m DEM count
+  agrees within 1%.
+- **VIIRS continuity: not available in Earth Engine.** `NOAA/VIIRS/001/VNP10A1` is listed
+  in the catalogue but cannot be loaded ("not found"), `NASA/VIIRS/002/VNP10A1_RAW` holds
+  no images, and the `NASA/LANCE` VIIRS collections are fire products. The fallback check
+  moves to weekend 5, with two candidates: NSIDC VNP10A1 through earthaccess (free
+  Earthdata login) and the Copernicus HR-S&I fractional snow cover.
+
 ## Deviations from the pre-registration
 
 The frozen text is `prereg/PREREGISTRATION.md` at tag `v0.1-prereg`; it is not edited.
@@ -336,3 +501,21 @@ was committed before the first fit). None changes a rule after seeing a result.
 | D11 | 2026-10-21 | Crisis-interaction variant | Full-sample in-sample OLS with x, a crisis-winter dummy and x × crisis (2021/22, 2022/23) | The text asks for "a crisis-winter interaction on the slope"; the level dummy keeps the interaction from absorbing a level shift. Reported only; not part of the rule. |
 | D12 | 2026-10-21 | Verdict labels | If rule line 2 holds: "no effect (equivalence)". Else if line 1 or 3 holds: "no edge". Else: "edge". | The rule defines "no edge"; line 2 is the equivalence case, the stronger statement. |
 | D13 | 2026-10-21 | Benchmark inputs | B1 and B2 use the raw 28-day spread before the origin (not winsorised); B0 and B2 average the clipped training y; controls are not winsorised | The text winsorises only x and y. |
+| D14 | 2026-10-21 | N1 (satellite nowcast of the next SFOE release) | Not run. The Holm family is H2, H3a and H3b. | Part A was closed after the Wallis validation, and the timing ceiling was about EUR 0.2/MWh (section 7 of the pre-registration). Decided in weekend 4, before any H3 fit. |
+
+## Deviations from the H3 analysis plan
+
+The plan is `prereg/H3_ANALYSIS_PLAN.md` at tag `v0.2-h3plan`; it is not edited. Every
+entry was decided on **2026-10-21**. P1 to P5 were fixed before the first H3 fit; P6 to P8
+concern reporting only.
+
+| # | Date | Point | Choice | Reason |
+|---|---|---|---|---|
+| P1 | 2026-10-21 | MODIS 2000 m band | Pulled only for 14 March to 5 May of each year; the 1800 m band is daily throughout. | EECU budget (owner's choice). The 2000 m features only need the 1 April and 1 May windows, so every planned 2000 m test is still run. |
+| P2 | 2026-10-21 | How the band mask is applied | The 500 m band mask is turned into polygons once per canton and band on the MODIS grid (`data/processed/snow/band_polygons.geojson`), and daily values are summed per polygon. Total is built from the canton sums. | Recomputing the mask from the 30 m DEM cost about 600 EECU-s per call, and a union of the three cantons failed in Earth Engine ("object too large"). Same pixels: polygon areas match the raster areas within 0.1%, and Total is still the mean over all valid pixels of the three cantons. |
+| P3 | 2026-10-21 | Test years when a feature year is missing | "At least 10 training years" is applied after dropping years with a missing feature. MODIS 1 May (Total) loses 2001, so its first test year is 2012 (15 test years). Wallis MODIS 1 May loses 2001 and 2012 (14 test years). | The plan says both "test years 2011 to 2026" and "at least 10 training years". When a year is missing they conflict; the training floor was kept. |
+| P4 | 2026-10-21 | End of the daily series | Each series stops on the last day with an image (MODIS 17 October 2026, ERA5-Land 11 October 2026). | So no day is filled only by carrying earlier days forward. No test uses these days. |
+| P5 | 2026-10-21 | H3b target in the repo | One number per year (`data/processed/snow/h3b_q4_spread.csv`, from cached ENTSO-E prices) is committed, as the weekend 4 brief asked. | This relaxes the weekend 1 note that no derived statistics of ENTSO-E price levels are committed. Eleven yearly means are a minimal extract, credited to the ENTSO-E Transparency Platform. No daily or hourly price is committed. |
+| P6 | 2026-10-21 | Extra numbers | The full-sample snow slope of each version, and Diebold-Mariano in leave-one-year-out, are also reported. | Description only; neither enters the verdict. |
+| P7 | 2026-10-21 | Snow against refill figure | The x axis is each region's 1 May FSC minus its own 2001-2026 mean. | Display only. It uses all years and is not a forecast feature. |
+| P8 | 2026-10-21 | VIIRS continuity check (weekend 4 brief, not the plan) | Not done; moved to weekend 5. | No usable VIIRS snow collection in Earth Engine (see "Daily snow series and continuity"). |

@@ -6,7 +6,7 @@ in where free satellite data can and can't track Alpine storage: it reads water 
 of single reservoirs from Sentinel-2 and Landsat images and checks them against the
 official weekly numbers of the Swiss Federal Office of Energy (SFOE). Part B is a
 pre-registered test of whether the storage deviation predicts the Swiss minus German
-day-ahead price spread. Part C will forecast the summer refill from snow cover.
+day-ahead price spread. Part C asks whether satellite snow cover forecasts the summer refill.
 **Price results come later**; nothing here is a price claim.
 
 ![Swiss hydro storage and the Valais satellite check](reports/figures/hero_storage.png)
@@ -55,6 +55,22 @@ lakes usable at once.
 
 ![Coverage map](reports/figures/coverage_map.png)
 
+## Part C: snow and refill
+
+The published storage level is already known to the market, so an outsider's edge is
+more likely in the inflow. Part C builds a daily snow series from MODIS (Terra and Aqua,
+500 m, from February 2000) for all land at or above 1800 m in Wallis, Graubuenden and
+Tessin, and asks, under an analysis plan frozen before any fit (`prereg/H3_ANALYSIS_PLAN.md`,
+tag `v0.2-h3plan`), whether snow on 1 May forecasts how full those regions are at the end
+of September, beyond what starting storage already says. **Verdict: no added skill from
+snow.** Walk-forward over 2012 to 2026, the snow model beats storage alone (skill score
++0.18) and the 10-year average (+0.28), but the Clark-West p is 0.13 (0.27 after Holm
+correction), so it could be luck. In 2026, the 1 May forecast was 82.6% against an actual
+74.0%: snow pointed the right way, but the drought came in summer. Full results:
+[reports/results.md](reports/results.md).
+
+![Snow tracker](reports/figures/snow_tracker.png)
+
 ## Limitations
 
 - **Ice and snow, December to May.** Lakes freeze or carry snow, so winter levels are
@@ -101,8 +117,9 @@ its own and not part of the pre-registration. Price results come later.
 | Landsat 8 and 9 (USGS) | Water masks | Derived tables only |
 | swisstopo swissTLM3D, swissALTI3D, swissSURFACE3D | Outlines, terrain, survey dates | Outlines and derived curves only |
 | SRTM, Copernicus DEM GLO-30 | Terrain below the swissALTI3D floor | Derived curves only |
-| ERA5-Land (Copernicus Climate Change Service) | Frost days for the lake-ice flag | Frost-day counts only |
-| ENTSO-E, SMARD | Prices (Part B) | Never |
+| ERA5-Land (Copernicus Climate Change Service) | Frost days for the lake-ice flag; snow water equivalent (Part C) | Frost-day counts; regional daily SWE |
+| MODIS MOD10A1/MYD10A1 v6.1 (NASA NSIDC) | Daily snow cover (Part C) | Regional daily means only |
+| ENTSO-E, SMARD | Prices (Parts B and C) | No price series; 11 yearly mean spreads for H3b |
 
 Credits: Source: Swiss Federal Office of Energy SFOE. Contains modified Copernicus
 Sentinel data 2017-2026. Landsat courtesy of the U.S. Geological Survey. Source: Federal
