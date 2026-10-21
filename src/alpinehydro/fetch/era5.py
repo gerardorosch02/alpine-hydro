@@ -13,6 +13,8 @@ Credit: Contains modified Copernicus Climate Change Service information (ERA5-La
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 
 from alpinehydro import config
@@ -79,3 +81,112 @@ def fetch(country: str, first_year: int = 2004, refresh: bool = False, log=print
 def hdd(country: str) -> pd.Series:
     """Daily heating degree days, base 15.5 C."""
     return (HDD_BASE_C - fetch(country)).clip(lower=0).rename("hdd")
+
+
+# ---------------------------------------------------------------- CDS route (deviation D15)
+
+CDS_DIR = config.RAW / "cds"
+CDS_DATASET = "derived-era5-land-daily-statistics"
+BOXES = {"CH": [47.9, 5.9, 45.8, 10.6], "DE": [55.1, 5.8, 47.2, 15.1]}  # N, W, S, E
+
+
+def outline(country: str) -> dict:
+    """The LSIB_SIMPLE/2017 outline used by the Earth Engine route, cached once as GeoJSON."""
+    import json
+
+    path = OUT_DIR / f"{country}_lsib_simple_2017.geojson"
+    if not path.exists():
+        import ee
+
+        from alpinehydro.earthengine import init
+
+        init()
+        geom = (
+            ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017")
+            .filter(ee.Filter.eq("country_na", COUNTRIES[country]))
+            .geometry()
+            .getInfo()
+        )
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(geom), encoding="utf-8")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _cds_month(country: str, year: int, month: int, refresh: bool = False) -> Path:
+    import os
+
+    import cdsapi
+
+    path = CDS_DIR / f"{country}_{year}-{month:02d}.nc"
+    if path.exists() and not refresh:
+        return path
+    config.secret("CDSAPI_KEY")  # fails without revealing anything if missing
+    c = cdsapi.Client(
+        url=os.environ["CDSAPI_URL"], key=os.environ["CDSAPI_KEY"], quiet=True, progress=False
+    )
+    req = {
+        "variable": ["2m_temperature"],
+        "year": str(year),
+        "month": [f"{month:02d}"],
+        "day": [f"{d:02d}" for d in range(1, 32)],
+        "daily_statistic": "daily_mean",
+        "time_zone": "utc+00:00",
+        "frequency": "1_hourly",
+        "area": BOXES[country],
+    }
+    CDS_DIR.mkdir(parents=True, exist_ok=True)
+    c.retrieve(CDS_DATASET, req).download(str(path))
+    return path
+
+
+def _country_mean(path: Path, country: str) -> pd.Series:
+    """Area-weighted mean over land cells whose centre lies inside the outline."""
+    import h5py
+    import numpy as np
+    from shapely import contains_xy
+    from shapely.geometry import shape
+
+    geom = shape(outline(country))
+    with h5py.File(path, "r") as h:
+        lat, lon = h["latitude"][:], h["longitude"][:]
+        t2m = h["t2m"][:].astype("float64")
+        days = h["valid_time"][:]
+        units = h["valid_time"].attrs["units"]
+    units = units.decode() if isinstance(units, bytes) else units
+    base = pd.Timestamp(units.split("since")[1].strip())
+    lon2, lat2 = np.meshgrid(lon, lat)
+    inside = contains_xy(geom, lon2, lat2)
+    w = np.cos(np.deg2rad(lat2)) * inside
+    out = {}
+    for i, d in enumerate(days):
+        v = t2m[i]
+        ok = np.isfinite(v) & (w > 0)
+        if ok.sum() == 0:
+            continue
+        out[base + pd.Timedelta(days=float(d))] = float((v[ok] * w[ok]).sum() / w[ok].sum())
+    return pd.Series(out, name="t2m_c").sort_index() - 273.15
+
+
+def fetch_cds(country: str, start: str, end: str | None = None) -> pd.Series:
+    """Daily country-mean temperature (C) from the CDS, month by month.
+
+    Months that may still grow (the last 2 months) are always requested again.
+    """
+    end_ts = pd.Timestamp(end) if end else pd.Timestamp.today().normalize()
+    recent = pd.Timestamp.today().normalize() - pd.DateOffset(months=2)
+    parts = []
+    for m in pd.date_range(pd.Timestamp(start).replace(day=1), end_ts, freq="MS"):
+        path = _cds_month(country, m.year, m.month, refresh=m >= recent.replace(day=1))
+        parts.append(_country_mean(path, country))
+    s = pd.concat(parts).sort_index()
+    return s[~s.index.duplicated(keep="last")].rename_axis("day")
+
+
+def hdd_live(country: str, days_back: int = 70) -> pd.Series:
+    """HDD for live origins (D15): CDS values for the last `days_back` days, Earth Engine
+    history before that (used only for the climatological HDD of past years)."""
+    hist = hdd(country)
+    start = (pd.Timestamp.today().normalize() - pd.Timedelta(days=days_back)).strftime("%Y-%m-%d")
+    cds = (HDD_BASE_C - fetch_cds(country, start)).clip(lower=0)
+    cds = cds[cds.index >= pd.Timestamp(start)]
+    return pd.concat([hist[hist.index < pd.Timestamp(start)], cds]).sort_index().rename("hdd")

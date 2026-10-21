@@ -108,17 +108,31 @@ The price test (Part B) is pre-registered and frozen at tag
 ([prereg/PREREGISTRATION.md](prereg/PREREGISTRATION.md)). Part A's validation target is
 its own and not part of the pre-registration. Price results come later.
 
+## Live winter 2026/27
+
+- SFOE values come from the CSV where it has the week and from the weekly PDF for newer
+  weeks (the CSV runs about two weeks behind). Every overlapping week matches exactly.
+- A keyless GitHub Action (`sfoe-check.yml`, Tuesday to Friday) records when each SFOE
+  week first appears, parses the PDF and redraws the hero chart.
+- `alpinehydro weekly`, run on the owner's laptop, updates the MODIS snow tracker (with a
+  VIIRS NOAA-21 fallback if MODIS goes silent for 7 days), makes the pre-registered H1
+  live forecast for each new SFOE week from November to April, fills in the realised
+  28-day spread once a window has passed, and logs the run in
+  [reports/weekly_log.md](reports/weekly_log.md).
+- The live check is reported separately and does not enter the no-edge rule.
+
 ## Data and licences
 
 | Source | Used for | Committed |
 |---|---|---|
-| SFOE ogd17 weekly storage | Storage by region, validation | Yes, processed CSV |
+| SFOE ogd17 weekly storage and weekly PDF | Storage by region, validation, live weeks | Yes, processed CSVs |
 | Copernicus Sentinel-2 | Water masks | Derived tables only |
 | Landsat 8 and 9 (USGS) | Water masks | Derived tables only |
 | swisstopo swissTLM3D, swissALTI3D, swissSURFACE3D | Outlines, terrain, survey dates | Outlines and derived curves only |
 | SRTM, Copernicus DEM GLO-30 | Terrain below the swissALTI3D floor | Derived curves only |
 | ERA5-Land (Copernicus Climate Change Service) | Frost days for the lake-ice flag; snow water equivalent (Part C) | Frost-day counts; regional daily SWE |
 | MODIS MOD10A1/MYD10A1 v6.1 (NASA NSIDC) | Daily snow cover (Part C) | Regional daily means only |
+| VIIRS VJ210A1 v2, NOAA-21 (NASA NSIDC) | MODIS fallback for the snow tracker | Regional daily means only |
 | ENTSO-E, SMARD | Prices (Parts B and C) | No price series; 11 yearly mean spreads for H3b |
 
 Credits: Source: Swiss Federal Office of Energy SFOE. Contains modified Copernicus

@@ -126,9 +126,12 @@ def forecast(write: bool = True) -> dict:
     )
     spread = features.daily_spread("CH", "DE_LU")
     spread_it = features.daily_spread("CH", "IT_NORD")
-    row, _ = features.origin_features(
-        next(r.itertuples()), spread, spread_it, features.daily_controls()
-    )
+    from alpinehydro.fetch import era5
+
+    controls = features.daily_controls()
+    # Deviation D15: live HDD windows from the CDS (about 6 days late, Earth Engine ~10).
+    controls["hdd_ch"], controls["hdd_de"] = era5.hdd_live("CH"), era5.hdd_live("DE")
+    row, _ = features.origin_features(next(r.itertuples()), spread, spread_it, controls)
     missing = [k for k in models.PRIMARY_CONTROLS if not np.isfinite(row[k])]
     if missing:
         status["made"] = False
