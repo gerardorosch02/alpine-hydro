@@ -214,7 +214,9 @@ def reservoir_chart(
     sc = scenes[(scenes["reservoir"] == slug) & scenes["level_m"].notna()].copy()
     sc["time_utc"] = pd.to_datetime(sc["time_utc"], utc=True).dt.tz_localize(None)
     ok = sc[sc["flag"] == "ok"]
-    other = sc[sc["flag"] != "ok"]
+    is_ice = sc["flag"].str.contains("ice_likely")
+    ice = sc[is_ice]
+    other = sc[(sc["flag"] != "ok") & ~is_ice]
     reg = storage[storage["region"] == r["sfoe_region"]]
     reg = reg[reg["valid_time"] >= sc["time_utc"].min()]
 
@@ -229,6 +231,15 @@ def reservoir_chart(
         ms=3.5,
         mew=0.8,
         label=f"Other scenes, flagged ({len(other)})",
+    )
+    ax1.plot(
+        ice["time_utc"],
+        ice["level_m"],
+        "x",
+        color=HOLLOW,
+        ms=3.5,
+        mew=0.8,
+        label=f"Lake ice likely ({len(ice)})",
     )
     ax1.plot(
         ok["time_utc"], ok["level_m"], "o", color=MEDIAN, ms=3.5, label=f"ok scenes ({len(ok)})"
@@ -247,9 +258,12 @@ def reservoir_chart(
         sc["time_utc"].min(),
         info["floor_m"],
         " swissALTI3D floor (2 m data above)",
-        va="bottom",
+        va="top",
+        ha="left",
         color=CURRENT,
         fontsize=8,
+        bbox={"facecolor": SURFACE, "edgecolor": "none", "pad": 1},
+        zorder=5,
     )
     if info.get("global_floor_m"):
         ax1.axhline(info["global_floor_m"], color=CURRENT, lw=0.9, ls="-.")
@@ -262,7 +276,14 @@ def reservoir_chart(
             fontsize=8,
         )
     ax1.set_ylabel("Water level, m a.s.l.", color=INK_2)
-    ax1.legend(loc="lower left", frameon=False, fontsize=8.5, labelcolor=INK_2)
+    ax1.legend(
+        loc="lower right",
+        bbox_to_anchor=(1, 1),
+        ncol=3,
+        frameon=False,
+        fontsize=8.5,
+        labelcolor=INK_2,
+    )
     _style(ax1)
 
     ax2.plot(
@@ -273,6 +294,7 @@ def reservoir_chart(
         label=f"SFOE {r['sfoe_region']} fill (region)",
     )
     ax2.plot(other["time_utc"], other["fill"] * 100, "o", mfc="none", mec=HOLLOW, ms=3.5, mew=0.8)
+    ax2.plot(ice["time_utc"], ice["fill"] * 100, "x", color=HOLLOW, ms=3.5, mew=0.8)
     ax2.plot(
         ok["time_utc"],
         ok["fill"] * 100,
@@ -282,7 +304,14 @@ def reservoir_chart(
         label=f"{r['name']} fill from satellite",
     )
     ax2.set_ylabel("Fill, % of usable volume", color=INK_2)
-    ax2.legend(loc="lower left", frameon=False, fontsize=8.5, labelcolor=INK_2)
+    ax2.legend(
+        loc="lower right",
+        bbox_to_anchor=(1, 1),
+        ncol=3,
+        frameon=False,
+        fontsize=8.5,
+        labelcolor=INK_2,
+    )
     _style(ax2)
 
     quality = " (indicative)" if r.get("fill_quality") == "indicative" else ""
@@ -297,9 +326,10 @@ def reservoir_chart(
         0.01,
         "Contains modified Copernicus Sentinel data. Landsat courtesy of the U.S. Geological "
         "Survey. Source: Federal Office of Topography swisstopo; Swiss Federal Office of "
-        "Energy SFOE.",
+        "Energy SFOE.\nContains modified Copernicus Climate Change Service information "
+        "(ERA5-Land, ice flag only).",
         color=INK_2,
         fontsize=7,
     )
-    fig.tight_layout(rect=(0, 0.03, 1, 1))
+    fig.tight_layout(rect=(0, 0.045, 1, 1))
     return _save(fig, out_dir, f"reservoir_{slug}")

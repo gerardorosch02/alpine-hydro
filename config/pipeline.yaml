@@ -61,3 +61,9 @@ satellite:
   no_match_m: 3.0
   # Weekly alignment (Step 6)
   max_days_from_week_end: 3
+  # Lake ice (decision of 2026-10-21): a below_floor scene is ice_likely if its water area is
+  # under ice_area_share of the area at the swissALTI3D floor and ERA5-Land had at least
+  # ice_frost_days days with daily mean 2 m temperature below 0 C in the ice_window_days before.
+  ice_area_share: 0.5
+  ice_frost_days: 10
+  ice_window_days: 30

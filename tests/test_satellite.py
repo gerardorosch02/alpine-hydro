@@ -108,3 +108,22 @@ def test_weekly_alignment_within_three_days():
     assert pd.Timestamp("2023-07-23").date() not in set(out["valid_time"])
     last = out.iloc[-1]
     assert last["scene_id"] == "d" and last["status"] == "no_match"
+
+
+def test_dahiti_pairs_within_three_days():
+    from alpinehydro import dahiti
+
+    scenes = pd.DataFrame(
+        {
+            "time_utc": ["2024-07-01T10:00:00Z", "2024-07-10T10:00:00Z", "2024-07-20T10:00:00Z"],
+            "flag": ["ok", "ok", "cloud"],
+            "level_m": [887.5, 887.0, 880.0],
+        }
+    )
+    levels = pd.DataFrame(
+        {"date": pd.to_datetime(["2024-07-02", "2024-07-15", "2024-07-20"]), "wse": [887.0] * 3}
+    )
+    out = dahiti.compare(scenes, levels, 3)
+    # Only the scene of 1 July has a DAHITI point within 3 days; the 20 July scene is cloud.
+    assert out["n"] == 1
+    assert out["mean_difference_m"] == pytest.approx(0.5)

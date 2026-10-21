@@ -11,6 +11,13 @@ If they differ by more than 3 m the scene is flagged no_match.
 If the water area is smaller than the area at the lowest measured level, the level is
 read from the fitted A(h) instead (method "area, fitted curve") and the scene is flagged
 below_floor. Volume comes from the curve V(h); fill = max(V - dead, 0) / usable.
+
+Levels are searched in 0.05 m steps over the measured part of the curve.
+
+Lake ice (decision of 2026-10-21): a below_floor scene is also flagged ice_likely if its
+water area is under half the lake area at the swissALTI3D floor and the ERA5-Land daily
+mean 2 m temperature at the lake was below 0 C on at least 10 of the 30 days before it.
+Ice that is dark in MNDWI and NIR is not caught by snow_ice, and it shrinks the water area.
 """
 
 from __future__ import annotations
@@ -20,7 +27,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from alpinehydro import config, hypsometry, water_mask
+from alpinehydro import config, era5, hypsometry, water_mask
 
 OUT = config.PROCESSED / "satellite"
 CREDITS = [
@@ -31,7 +38,9 @@ CREDITS = [
     "DEM GLO-30 (produced using Copernicus WorldDEM-30 (c) DLR e.V. 2010-2014 and (c) "
     "Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European "
     "Union and ESA), see data/processed/hypsometry/",
+    era5.CREDIT + ", used only for the ice_likely flag",
 ]
+LEVEL_STEP_M = 0.05
 
 
 def iou_level(join: np.ndarray, water: np.ndarray, valid: np.ndarray, levels: np.ndarray):
@@ -83,13 +92,17 @@ def scene_rows(slug: str) -> pd.DataFrame:
     join, z = hyb["join"], hyb["z"]
     curve = hypsometry.load_curve(slug)
     measured = curve[curve["source"] != "fitted, not measured"]
-    levels = measured["level_m"].to_numpy()
+    lowest = float(measured["level_m"].iloc[0])
+    levels = np.append(np.round(np.arange(lowest, fsl, LEVEL_STEP_M), 2), fsl)
     a_lowest = float(measured["area_km2"].iloc[0])
+    floor = float(hypsometry.curve_info(slug)["floor_m"])
+    a_floor = float(np.interp(floor, curve["level_m"], curve["area_km2"]))
     usable = float(r["usable_volume_mm3"])
     dead = float(r["gross_volume_mm3"]) - usable
     lake_max = join <= fsl
     keep = ~g.near_dam & g.window
     cands = water_mask.candidates(slug)
+    frost = era5.frost_days(era5.fetch(slug), cands["time_utc"], s["ice_window_days"])
     rows = []
     for c in cands.itertuples():
         path = water_mask.mask_path(slug, c.sensor, c.date)
@@ -115,6 +128,8 @@ def scene_rows(slug: str) -> pd.DataFrame:
             level = level_from_area(curve, area)
             method = "area, fitted curve"
             flags.append("below_floor")
+            if area < s["ice_area_share"] * a_floor and frost[c.Index] >= s["ice_frost_days"]:
+                flags.append("ice_likely")
         else:
             level = lvl_iou
             method = "iou"
@@ -136,6 +151,7 @@ def scene_rows(slug: str) -> pd.DataFrame:
                 "fill": round(max(volume - dead, 0.0) / usable, 4),
                 "snow_ice_share": m["snow_ice_share"],
                 "shadow_share": m["shadow_share"],
+                "frost_days_30": int(frost[c.Index]),
             }
         )
     return pd.DataFrame(rows)
@@ -167,7 +183,9 @@ def write_scenes() -> Path:
     header = [f"# {c}" for c in credit_lines(df)]
     header += [
         "# One row per scene (sensor family and UTC day). flag 'ok' means usable; other flags:",
-        "# cloud, snow_ice, shadow_heavy, fallback_threshold, below_floor, no_match.",
+        "# cloud, snow_ice, shadow_heavy, fallback_threshold, below_floor, ice_likely, no_match.",
+        "# ice_likely: below_floor, water area under half the area at the swissALTI3D floor and",
+        "# at least 10 ERA5-Land frost days (daily mean below 0 C) in the 30 days before.",
         "# level_m is level_iou_m unless method is 'area, fitted curve' (below_floor).",
         "# fill = max(volume - dead volume, 0) / usable volume (config/reservoirs.yaml).",
     ]
