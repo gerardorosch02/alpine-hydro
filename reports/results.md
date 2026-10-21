@@ -307,12 +307,33 @@ interval is far outside the band, so "no effect" is not shown either.
 p = 0.987; out-of-sample R² against B3 −0.143. Holm-adjusted p (family: H2 only so far) =
 0.987. No sign of an effect.
 
-### Live check, winter 2026/27
+### Live check 2026/27
 
-Not yet possible. The latest SFOE CSV week is Sunday 27 September 2026 (the PDF is at
-12 October). The first live origin is the week of Sunday 1 November 2026, once SFOE
-releases it. `alpinehydro live-forecast` then writes to `data/processed/live_forecasts.csv`.
-The live winter does not enter the no-edge rule.
+Pre-registration section 9. Each SFOE week with a valid Sunday from November 2026 to
+April 2027 gets one forecast of the next 28-day mean CH minus DE-LU spread, from the full
+H1 model and B3 trained on the winters 2015/16 to 2025/26. known_time is when the week was
+first seen (the weekly PDF, through `sfoe_pdf_log.csv`, is about two weeks ahead of the
+CSV). The HDD controls of live origins come from the CDS (deviation D15). The realised
+mean spread is filled in once the whole 28-day window has passed. Run by
+`alpinehydro weekly`; log in [weekly_log.md](weekly_log.md).
+
+**Rule.** The live winter does not enter the no-edge rule, which was decided on the five
+test winters. The full live verdict is reported only after April 2027, once the last
+window of an April origin has passed. Until then the table below is a record, not a
+result: no claim is made from a partial winter.
+
+Status on 2026-10-21: the latest SFOE week is Sunday 11 October 2026 (from the PDF; the
+CSV ends at 27 September). No live origin yet. The first is the week of Sunday
+1 November 2026. The forecast is made on the first weekly run after SFOE publishes that
+week. A dry run on 2026-10-21, with that week injected in memory, reached the controls
+and was refused only because the Earth Engine HDD window was under the 90% floor, which
+led to D15.
+
+| Valid Sunday | known_time | Window | Full model (EUR/MWh) | B3 (EUR/MWh) | Realised (EUR/MWh) |
+|---|---|---|---|---|---|
+| none yet | | | | | |
+
+![Live forecasts](figures/live_forecasts.png)
 
 ## Part C: snow and refill (weekend 4, H3 analysis plan)
 
@@ -478,6 +499,29 @@ No secondary test survives the Holm correction.
   no images, and the `NASA/LANCE` VIIRS collections are fire products. The fallback check
   moves to weekend 5, with two candidates: NSIDC VNP10A1 through earthaccess (free
   Earthdata login) and the Copernicus HR-S&I fractional snow cover.
+
+### MODIS fallback for the snow tracker (weekend 5)
+
+NASA projects the end of MODIS science at Terra February 2027 and Aqua September 2027
+([NASA Science](https://science.nasa.gov/science-research/earth-science/terra-the-end-of-an-era/),
+updated 20 March 2026). Suomi NPP data delivery ends on 1 to 2 November 2026, so the
+NOAA-21 product VJ210A1 was evaluated instead of VNP10A1 (deviation W1). The rule was
+fixed before the comparison (W3): eligible if every canton correlates with MODIS at 0.9 or
+more and the median publication lag is 5 days or less; then the lower mean absolute
+difference.
+
+| Region | Days | Correlation | Mean abs. difference (FSC) | Fit: MODIS = a + b VIIRS |
+|---|---|---|---|---|
+| Wallis | 539 | 0.988 | 0.046 | 0.087 + 0.932 x |
+| Graubuenden | 525 | 0.992 | 0.044 | 0.049 + 0.982 x |
+| Tessin | 524 | 0.987 | 0.053 | 0.049 + 0.993 x |
+| Three regions | 536 | 0.993 | 0.043 | 0.059 + 0.969 x |
+
+Pooled over the cantons: mean absolute difference 0.048. Median lag 0.3 days (90th
+percentile 2.5 days, last 30 days). **VJ210A1 is eligible and is the fallback.** Copernicus
+HR-WSI was not evaluated, because it was only to be tried if VIIRS failed (W2). The tracker
+uses the corrected VIIRS value only after 7 days in a row without a valid MODIS day; it is
+never used in an H3 test.
 
 ## Deviations from the pre-registration
 

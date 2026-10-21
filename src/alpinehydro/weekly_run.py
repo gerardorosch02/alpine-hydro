@@ -235,7 +235,7 @@ STEPS: dict[str, Callable[[dict], dict]] = {
 def _entry(ctx: dict, results: dict, figs: list[Path]) -> str:
     lines = [f"## Run of {ctx['now']}", ""]
     for name, r in results.items():
-        lines.append(f"- {name.capitalize()}: {r.get('summary', '')}.")
+        lines.append(f"- {name[0].upper() + name[1:]}: {r.get('summary', '')}.")
     if figs:
         names = ", ".join(sorted({p.stem for p in figs}))
         lines.append(f"- Figures rebuilt: {names}.")
