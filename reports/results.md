@@ -519,3 +519,16 @@ concern reporting only.
 | P6 | 2026-10-21 | Extra numbers | The full-sample snow slope of each version, and Diebold-Mariano in leave-one-year-out, are also reported. | Description only; neither enters the verdict. |
 | P7 | 2026-10-21 | Snow against refill figure | The x axis is each region's 1 May FSC minus its own 2001-2026 mean. | Display only. It uses all years and is not a forecast feature. |
 | P8 | 2026-10-21 | VIIRS continuity check (weekend 4 brief, not the plan) | Not done; moved to weekend 5. | No usable VIIRS snow collection in Earth Engine (see "Daily snow series and continuity"). |
+
+## Deviations from the weekend 5 plan (MODIS fallback)
+
+The weekend 5 brief fixed the fallback candidates and the selection rule before any
+candidate was compared with MODIS. These entries were written on **2026-10-21**, before any
+fallback data were downloaded. The rule itself (correlation at least 0.9, typical
+publication lag at most 5 days, then the lower mean absolute difference) is unchanged.
+
+| # | Date | Point | Choice | Reason |
+|---|---|---|---|---|
+| W1 | 2026-10-21 | VIIRS product | NSIDC VJ210A1 v2 (NOAA-21 VIIRS, same algorithm, variable and 375 m sinusoidal grid) replaces VNP10A1. | Suomi NPP data delivery ends on 1 or 2 November 2026 (NOAA and NASA Earthdata notices), so VNP10A1 cannot serve as a live fallback. NOAA names NOAA-21 as the primary successor. Owner's choice. |
+| W2 | 2026-10-21 | Copernicus candidate | Copernicus HR-S&I ended in February 2025; its successor HR-WSI (Copernicus Data Space Ecosystem) is evaluated only if VJ210A1 fails the eligibility rule. In that case the daily gap-filled 60 m product (GFSC) replaces the 20 m FSC, and the owner is asked before a CDSE account is created. | HR-S&I no longer exists. The 20 m FSC is one file per Sentinel-2 pass (not daily) and about 20 GB for two winters. Owner's choice. |
+| W3 | 2026-10-21 | Details the brief left open | FSC from the VIIRS `NDSI_Snow_Cover` (0 to 100) with the same Salomonson and Appel formula as MODIS. Same 8-day per-pixel gap fill and 70% valid-share rule. Band: the committed MODIS band polygons, rasterised by pixel centre on the 375 m grid. Correlation: Pearson on days where both are valid, 1 October to 30 June of 2024/25 and 2025/26, computed per canton; the candidate is eligible only if every canton reaches 0.9. Mean absolute difference: pooled over the three cantons. Typical publication lag: the median, over the granules of the last 30 days, of the time between the end of the acquisition day and the granule's first appearance in NASA CMR. | Fixed before any fallback value was seen. |
