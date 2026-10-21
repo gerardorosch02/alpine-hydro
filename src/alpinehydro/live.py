@@ -2,11 +2,10 @@
 
 - Model: the full H1 model (and B3, for comparison) trained on every origin of the winters
   2015/16 to 2025/26, with cut-offs from that training set.
-- Origin: the latest SFOE week, if its valid Sunday falls in November to April and it has
-  no forecast yet. known_time is the time the week was first seen in the release log of
-  the source whose value is used (the CSV here); the target window starts after it.
-- If the PDF log shows a newer week than the CSV, the CSV is behind and the forecast is
-  not made: the value would have to come from the PDF, which needs a decision first.
+- Origin: the latest SFOE week in the merged table (sfoe_storage_merged.csv: CSV where it
+  has the week, weekly PDF for newer weeks), if its valid Sunday falls in November to April
+  and it has no forecast yet. known_time is the time the week was first seen: the PDF log
+  for a PDF week, the CSV release log for a CSV week. The target window starts after it.
 - Output: data/processed/live_forecasts.csv (committed: forecasts and inputs only). The
   realised mean spread, one derived number per window, is added later in realised_spread.
 """
@@ -57,22 +56,22 @@ def train() -> dict:
 
 
 def latest_week() -> dict:
-    """Latest CSV week, its first-seen time, and whether the PDF shows a newer week."""
-    from alpinehydro.fetch import sfoe
+    """Latest week of the merged table, its source and its first-seen time."""
+    from alpinehydro.fetch import sfoe_pdf
 
-    s = sfoe.load_processed()
-    total = s[s["region"] == "TotalCH"]
-    last = total["valid_time"].max()
-    rel = pd.read_csv(config.PROCESSED / "sfoe_release_log.csv", parse_dates=["valid_sunday"])
-    seen = rel.loc[rel["valid_sunday"] == last, "first_seen_utc"]
-    pdf = pd.read_csv(config.PROCESSED / "sfoe_pdf_log.csv", parse_dates=["monday_in_filename"])
-    pdf_last = pdf["monday_in_filename"].max() - pd.Timedelta(days=1)
-    return {
-        "valid_sunday": last,
-        "first_seen_utc": pd.Timestamp(seen.iloc[0]) if len(seen) else None,
-        "pdf_valid_sunday": pdf_last,
-        "csv_behind": bool(pdf_last > last),
-    }
+    s = sfoe_pdf.load_merged()
+    total = s[s["region"] == "TotalCH"].sort_values("valid_time")
+    row = total.iloc[-1]
+    last = row["valid_time"]
+    if row["source"] == "pdf":
+        seen = row["known_time"].tz_convert("UTC")
+        src = "SFOE weekly PDF, first seen in sfoe_pdf_log.csv"
+    else:
+        rel = pd.read_csv(config.PROCESSED / "sfoe_release_log.csv", parse_dates=["valid_sunday"])
+        hit = rel.loc[rel["valid_sunday"] == last, "first_seen_utc"]
+        seen = pd.Timestamp(hit.iloc[0]) if len(hit) else None
+        src = "SFOE CSV, first seen in sfoe_release_log.csv"
+    return {"valid_sunday": last, "first_seen_utc": seen, "source": src, "storage": s}
 
 
 def next_possible(after: pd.Timestamp) -> pd.Timestamp:
@@ -84,27 +83,22 @@ def next_possible(after: pd.Timestamp) -> pd.Timestamp:
 
 
 def forecast(write: bool = True) -> dict:
-    from alpinehydro.fetch import sfoe
     from alpinehydro.norms import add_norms
 
     w = latest_week()
     vs = w["valid_sunday"]
-    status = {
-        "latest_csv_week": str(vs.date()),
-        "latest_pdf_week": str(w["pdf_valid_sunday"].date()),
-    }
+    status = {"latest_week": str(vs.date()), "latest_week_source": w["source"]}
     if vs.month not in features.SEASON_MONTHS:
         first = next_possible(vs)
         status["made"] = False
         status["reason"] = (
-            f"latest CSV week {vs.date()} is outside November to April; the first live origin "
-            f"is the week of Sunday {first.date()}, available once SFOE releases it (the CSV "
-            f"has lagged the PDF by about two weeks)"
+            f"latest SFOE week {vs.date()} is outside November to April; the first live origin "
+            f"is the week of Sunday {first.date()}, made as soon as SFOE releases it (PDF or CSV)"
         )
         return status
-    if w["csv_behind"]:
+    if w["first_seen_utc"] is None:
         status["made"] = False
-        status["reason"] = "the CSV is behind the PDF; decide how to source the value first"
+        status["reason"] = f"week {vs.date()} has no first-seen time in the release logs"
         return status
     done = pd.read_csv(OUT, comment="#") if OUT.exists() else pd.DataFrame(columns=COLUMNS)
     if str(vs.date()) in set(done["valid_sunday"].astype(str)):
@@ -112,7 +106,7 @@ def forecast(write: bool = True) -> dict:
         status["reason"] = "this origin already has a forecast"
         return status
     kt = w["first_seen_utc"].tz_convert(TZ)
-    d = add_norms(sfoe.load_processed().query("region == 'TotalCH'"), windows=(10,))
+    d = add_norms(w["storage"].query("region == 'TotalCH'"), windows=(10,))
     x = float(d.loc[d["valid_time"] == vs, "dev_10y_pp"].iloc[0])
     od = kt.tz_localize(None).normalize()
     start = features.target_start(kt)
@@ -148,7 +142,7 @@ def forecast(write: bool = True) -> dict:
     out = {
         "valid_sunday": str(vs.date()),
         "known_time": kt.isoformat(),
-        "known_time_source": "SFOE CSV, first seen in sfoe_release_log.csv",
+        "known_time_source": w["source"],
         "origin_day": str(od.date()),
         "target_start": str(start.date()),
         "target_end": str(row["target_end"].date()),

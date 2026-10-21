@@ -26,6 +26,7 @@ BAND_RANGE = "#cde2fb"
 BAND_IQR = "#86b6ef"
 MEDIAN = "#184f95"
 CURRENT = "#eb6834"
+PREVIOUS = "#f3b18f"
 
 MONTH_TICKS = [
     (40, "Oct"),
@@ -54,7 +55,10 @@ def hydro_year(iso_year: pd.Series, iso_week: pd.Series) -> pd.Series:
 
 
 def hero_table(storage: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, int]:
-    """Return (band statistics, current-year line, latest row, current hydro year)."""
+    """Return (band statistics, current-year line, latest row, current hydro year).
+
+    The current-year line keeps every column of `storage`, so a `source` column (csv or
+    pdf, from sfoe_storage_merged.csv) survives for marking PDF weeks."""
     cfg = config.pipeline()["hero"]
     total = storage[storage["region"] == "TotalCH"]
     d = add_norms(total, windows=(10,))
@@ -113,6 +117,17 @@ def hero_chart(
     )
     ax.fill_between(x, band["q25"], band["q75"], color=BAND_IQR, lw=0, label="Interquartile range")
     ax.plot(x, band["median"], color=MEDIAN, lw=1.6, ls=(0, (5, 3)), label="Median")
+    if len(current) < 13:
+        # Early in a hydrological year, keep last year's line so the summer stays visible.
+        prev = _hydro_year_line(storage, cy - 1)
+        ax.plot(
+            prev["pos"],
+            prev["fill_pct"],
+            color=PREVIOUS,
+            lw=1.8,
+            solid_capstyle="round",
+            label=f"{cy - 1}/{str(cy)[2:]}",
+        )
     ax.plot(
         current["pos"],
         current["fill_pct"],
@@ -121,15 +136,27 @@ def hero_chart(
         solid_capstyle="round",
         label=f"{cy}/{str(cy + 1)[2:]}",
     )
+    is_pdf = current["source"].eq("pdf") if "source" in current else pd.Series(False, current.index)
     ax.plot(
-        [current["pos"].iloc[-1]],
-        [current["fill_pct"].iloc[-1]],
+        current.loc[~is_pdf, "pos"].iloc[-1:],
+        current.loc[~is_pdf, "fill_pct"].iloc[-1:],
         "o",
         color=CURRENT,
         ms=6,
         mec=SURFACE,
         mew=1.5,
     )
+    if is_pdf.any():
+        ax.plot(
+            current.loc[is_pdf, "pos"],
+            current.loc[is_pdf, "fill_pct"],
+            "o",
+            mfc=SURFACE,
+            mec=CURRENT,
+            ms=6,
+            mew=1.6,
+            label="Weekly PDF (CSV not out yet)",
+        )
 
     ticks, labels = zip(*MONTH_TICKS, strict=True)
     ax.set_xticks([(t - 40) % 52 for t in ticks], labels)
@@ -163,6 +190,8 @@ def hero_chart(
     )
     ax.legend(loc="lower left", frameon=False, fontsize=9, labelcolor=INK_2)
     credit = "Source: Swiss Federal Office of Energy SFOE. Weekly totals, Sunday 24:00."
+    if is_pdf.any():
+        credit += " Hollow dots: SFOE weekly PDF."
     if wallis is not None:
         _hero_wallis(axw, storage, wallis, cy)
         credit += (
@@ -184,6 +213,15 @@ def hero_chart(
         p.write_bytes(buf.getvalue())
     plt.close(fig)
     return paths
+
+
+def _hydro_year_line(storage: pd.DataFrame, hy: int) -> pd.DataFrame:
+    total = storage[storage["region"] == "TotalCH"].copy()
+    iso = total["valid_time"].dt.isocalendar()
+    total["hy"] = hydro_year(iso["year"].astype(int), iso["week"].astype(int))
+    total["pos"] = hydro_position(iso["week"].astype(int).clip(upper=52))
+    total["fill_pct"] = total["fill"] * 100
+    return total[total["hy"] == hy].sort_values("valid_time").drop_duplicates("pos", keep="last")
 
 
 def _hero_wallis(ax, storage: pd.DataFrame, wallis: pd.DataFrame, cy: int) -> None:

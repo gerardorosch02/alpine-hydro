@@ -11,7 +11,7 @@ Credit: ENTSO-E Transparency Platform. No daily or hourly price is committed.
 | Source | What | Licence | Credit line | Committed |
 |---|---|---|---|---|
 | SFOE ogd17 | Weekly reservoir storage by region | opendata.swiss "terms_by": open use, commercial use allowed, source must be given (ogd17 catalogue entry) | Source: Swiss Federal Office of Energy SFOE | Yes: `data/processed/sfoe_storage_weekly.csv`, release and PDF logs |
-| SFOE weekly PDF | Same storage, published earlier than the CSV | As above | Source: Swiss Federal Office of Energy SFOE | No (only headers and hash in `sfoe_pdf_log.csv`) |
+| SFOE weekly PDF | Same storage, published earlier than the CSV | As above | Source: Swiss Federal Office of Energy SFOE | Parsed storage values only (from weekend 5): `sfoe_storage_pdf.csv`, `sfoe_storage_merged.csv`, `sfoe_merge_log.csv`; headers and hash in `sfoe_pdf_log.csv`. The PDF itself and its Rhine flow columns (BAFU data) are not committed |
 | ENTSO-E Transparency Platform | Day-ahead prices (art. 12.1.d), reservoir filling (art. 16.1.d) | Terms of Use of 29 March 2023. Neither item is on the CC-BY 4.0 "List of data available for free re-use" (18 October 2023) | ENTSO-E Transparency Platform | No price series. Summary statistics of my own checks, and (from weekend 4) one mean October to December CH minus DE-LU spread per year, 2015 to 2025, in `data/processed/snow/h3b_q4_spread.csv`, credited "ENTSO-E Transparency Platform" |
 | SMARD (Bundesnetzagentur) | Day-ahead prices DE-LU, CH, FR | CC BY 4.0 (smard.de/home/datennutzung, checked 2026-10-20) | Bundesnetzagentur \| SMARD.de | Not yet. Allowed, but kept in `data/interim/` until needed |
 | Energy-Charts | Prices | Not used | n/a | No |

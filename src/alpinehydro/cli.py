@@ -45,6 +45,14 @@ def log_release():
     typer.echo(json.dumps(sfoe.log_release(), indent=2))
 
 
+@app.command("sfoe-update")
+def sfoe_update(refresh: bool = typer.Option(False, help="Download the CSV again.")):
+    """Parse the cached weekly PDF, cross-check it against the CSV and merge the two."""
+    from alpinehydro.fetch import sfoe_pdf
+
+    typer.echo(json.dumps(sfoe_pdf.update(refresh_csv=refresh), indent=2))
+
+
 @app.command("fetch-entsoe")
 def fetch_entsoe(
     zones: list[str] = typer.Option(None, help="Zones, default from config."),
@@ -236,7 +244,9 @@ def _figures(example: bool) -> None:
         m = validate.metrics(scored)
         m["pass"] = bool(m.get("r2", -1) >= validate.PASS_R2)
         paths += plots.validation_scatter(wallis, m)
-    paths += plots.hero_chart(st, wallis)
+    from alpinehydro.fetch import sfoe_pdf
+
+    paths += plots.hero_chart(sfoe_pdf.load_merged(), wallis)
     slugs = list(dict.fromkeys(sc["reservoir"]))
     order = [s for s in SATELLITE_SLUGS if s in slugs]
     paths += plots.coverage_map(plots.coverage_table(sc, st, order))
@@ -431,14 +441,14 @@ def live_forecast_cmd():
 
 @app.command("status")
 def status():
-    """Show the latest SFOE week, fill and deviation from the norms."""
-    from alpinehydro.fetch import sfoe
+    """Show the latest SFOE week (CSV or newer PDF), fill and deviation from the norms."""
+    from alpinehydro.fetch import sfoe_pdf
     from alpinehydro.norms import add_norms
 
-    storage = sfoe.load_processed()
+    storage = sfoe_pdf.load_merged()
     d = add_norms(storage[storage["region"] == "TotalCH"]).iloc[-1]
     typer.echo(
-        f"week ending {d['valid_time'].date()}: fill {d['fill'] * 100:.1f}%, "
+        f"week ending {d['valid_time'].date()} ({d['source']}): fill {d['fill'] * 100:.1f}%, "
         f"10y norm {d['norm_10y'] * 100:.1f}% ({d['dev_10y_pp']:+.1f} pp), "
         f"20y norm {d['norm_20y'] * 100:.1f}% ({d['dev_20y_pp']:+.1f} pp)"
     )

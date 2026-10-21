@@ -17,6 +17,7 @@ dependencies = [
     "matplotlib>=3.9",
     "numpy>=2.0",
     "pandas>=2.2",
+    "pdfplumber>=0.11.10",
     "pyarrow>=17",
     "pyproj>=3.7.2",
     "pyshp>=3.1.6",
