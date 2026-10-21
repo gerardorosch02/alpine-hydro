@@ -157,14 +157,115 @@ def forecast(write: bool = True) -> dict:
         "realised_spread": "",
     }
     if write:
-        table = pd.concat([done, pd.DataFrame([out])], ignore_index=True)[COLUMNS]
-        header = [
-            "# Live H1 forecasts, winter 2026/27 (pre-registration section 9). Forecasts and",
-            "# their inputs only; realised_spread will hold one derived number per window (the",
-            "# mean CH minus DE-LU baseload spread), never a price series.",
-        ]
-        text = "\n".join(header) + "\n" + table.to_csv(index=False, lineterminator="\n")
-        OUT.write_bytes(text.encode("utf-8"))
+        _write(pd.concat([done, pd.DataFrame([out])], ignore_index=True))
     status["made"] = True
     status["forecast"] = out
     return status
+
+
+HEADER = [
+    "# Live H1 forecasts, winter 2026/27 (pre-registration section 9). Forecasts and",
+    "# their inputs only; realised_spread will hold one derived number per window (the",
+    "# mean CH minus DE-LU baseload spread), never a price series.",
+]
+
+
+def _write(table: pd.DataFrame, path=OUT) -> bool:
+    """Write the table; returns False (and leaves the file) if nothing changed."""
+    nl = chr(10)
+    text = nl.join(HEADER) + nl + table[COLUMNS].to_csv(index=False, lineterminator=nl)
+    if path.exists() and path.read_bytes() == text.encode("utf-8"):
+        return False
+    path.write_bytes(text.encode("utf-8"))
+    return True
+
+
+def load(path=OUT) -> pd.DataFrame:
+    if not path.exists():
+        return pd.DataFrame(columns=COLUMNS)
+    return pd.read_csv(path, comment="#", dtype={"realised_spread": "object"})
+
+
+def needs_forecast(today: pd.Timestamp | None = None) -> bool:
+    """True if the latest SFOE week is a season origin without a forecast yet."""
+    w = latest_week()
+    vs = w["valid_sunday"]
+    if vs.month not in features.SEASON_MONTHS:
+        return False
+    return str(vs.date()) not in set(load()["valid_sunday"].astype(str))
+
+
+def pending_realised(today: pd.Timestamp, table: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Forecast rows whose 28-day window has fully passed and that have no realised value."""
+    t = load() if table is None else table
+    if t.empty:
+        return t
+    blank = t["realised_spread"].isna() | (t["realised_spread"].astype(str).str.strip() == "")
+    return t[blank & (pd.to_datetime(t["target_end"]) < today.normalize())]
+
+
+def fill_realised(spread: pd.Series, today: pd.Timestamp, path=OUT) -> dict:
+    """Fill realised_spread (mean daily CH minus DE-LU spread, 2 decimals) for every window
+    that has fully passed and has all 28 delivery days complete in the price cache."""
+    t = load(path)
+    todo = pending_realised(today, t)
+    filled, waiting = [], []
+    for i, r in todo.iterrows():
+        days = pd.date_range(r["target_start"], r["target_end"], freq="D")
+        got = spread.reindex(days)
+        if got.notna().sum() < features.WINDOW_DAYS:
+            waiting.append(r["valid_sunday"])
+            continue
+        t.loc[i, "realised_spread"] = f"{got.mean():.2f}"
+        filled.append(r["valid_sunday"])
+    changed = _write(t, path) if filled else False
+    return {"filled": filled, "waiting_for_prices": waiting, "changed": changed}
+
+
+def chart(out_dir=config.FIGURES) -> list:
+    """Live forecasts (full model and B3) per origin, and the realised spread where known."""
+    from alpinehydro.plots import CURRENT, GRID, INK, INK_2, MEDIAN, SURFACE, _save, _style, plt
+
+    t = load()
+    fig, ax = plt.subplots(figsize=(8, 4.2), dpi=150)
+    fig.patch.set_facecolor(SURFACE)
+    if t.empty:
+        ax.text(
+            0.5,
+            0.5,
+            "No live forecast yet. The first origin is the SFOE week of Sunday 1 November 2026.",
+            ha="center",
+            va="center",
+            color=INK_2,
+            fontsize=10,
+            transform=ax.transAxes,
+        )
+        ax.set_xticks([])
+        ax.set_yticks([])
+    else:
+        x = pd.to_datetime(t["valid_sunday"])
+        real = pd.to_numeric(t["realised_spread"], errors="coerce")
+        ax.plot(x, t["forecast_full"], "o-", color=CURRENT, lw=1.6, ms=5, label="Full H1 model")
+        ax.plot(x, t["forecast_b3"], "s--", color=MEDIAN, lw=1.0, ms=4, label="B3, controls only")
+        ax.plot(x, real, "D", color=INK, ms=5, label="Realised 28-day mean")
+        ax.axhline(0, color=GRID, lw=0.8)
+        ax.set_ylabel("CH minus DE-LU, EUR/MWh (28-day mean)", color=INK_2)
+        ax.legend(frameon=False, fontsize=8, labelcolor=INK_2)
+    ax.set_title(
+        "Live check 2026/27: forecast of the next 28-day spread, by SFOE week",
+        loc="left",
+        color=INK,
+        fontsize=11,
+    )
+    _style(ax)
+    fig.text(
+        0.01,
+        0.01,
+        "Storage: Swiss Federal Office of Energy SFOE. Realised spread: one derived mean per"
+        " window from ENTSO-E Transparency Platform day-ahead prices. Not part of the no-edge"
+        " rule.",
+        color=INK_2,
+        fontsize=6.5,
+    )
+    fig.tight_layout(rect=(0, 0.04, 1, 1))
+    return _save(fig, out_dir, "live_forecasts")

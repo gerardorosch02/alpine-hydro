@@ -72,8 +72,19 @@ def season_table(modis: pd.DataFrame, band: int = 1800) -> pd.DataFrame:
     return d
 
 
-def snow_tracker(modis: pd.DataFrame, out_dir: Path = config.FIGURES) -> list[Path]:
+TRACKER_CSV = config.PROCESSED / "snow" / "tracker_daily.csv"
+
+
+def snow_tracker(
+    modis: pd.DataFrame, out_dir: Path = config.FIGURES, tracker: pd.DataFrame | None = None
+) -> list[Path]:
+    """MODIS seasons; with `tracker` (the weekly tracker series), fallback days of the
+    current season are added as hollow dots and labelled."""
     d = season_table(modis)
+    fb = None
+    if tracker is not None and (tracker["source"] == "fallback").any():
+        t = tracker[tracker["source"] == "fallback"].assign(band_m=1800)
+        fb = season_table(t)
     cur_season = int(d["season"].max())
     prev = cur_season - 1
     hist = d[(d["season"] >= 2000) & (d["season"] <= 2024)]
@@ -106,6 +117,17 @@ def snow_tracker(modis: pd.DataFrame, out_dir: Path = config.FIGURES) -> list[Pa
         ):
             s = d[(d["region"] == region) & (d["season"] == season)].sort_values("doy")
             ax.plot(s["doy"], s["fsc"] * 100, color=col, lw=lw, label=lab)
+        if fb is not None:
+            f = fb[fb["region"] == region]
+            ax.plot(
+                f["doy"],
+                f["fsc"] * 100,
+                "o",
+                mfc=SURFACE,
+                mec=CURRENT,
+                ms=3,
+                label="Fallback (VIIRS, corrected)",
+            )
         ax.set_title(
             f"{REGION_LABEL[region]}, at or above 1800 m", loc="left", color=INK, fontsize=10
         )
@@ -326,7 +348,8 @@ def all_figures(out_dir: Path = config.FIGURES) -> list[Path]:
 
     modis = snow.read_csv(features_snow.MODIS_CSV)
     f = features_snow.load()
-    paths = snow_tracker(modis, out_dir) + snow_vs_refill(f, out_dir)
+    tracker = snow.read_csv(TRACKER_CSV) if TRACKER_CSV.exists() else None
+    paths = snow_tracker(modis, out_dir, tracker) + snow_vs_refill(f, out_dir)
     if evaluate_snow.OUT.exists():
         res = json.loads(evaluate_snow.OUT.read_text(encoding="utf-8"))
         paths += forecast_vs_actual(res, out_dir)

@@ -1,0 +1,42 @@
+name: SFOE check
+
+# Once a day, Tuesday to Friday: record when each SFOE CSV week and weekly PDF first
+# appears, parse the PDF, merge it with the CSV and redraw the hero chart. Keyless: no
+# repository secrets, no Earth Engine, no ENTSO-E. The only token is the built-in
+# GITHUB_TOKEN, used to push the derived files back.
+on:
+  schedule:
+    - cron: "0 14 * * 2-5"  # 14:00 UTC; the PDF has appeared on Tuesday mornings
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sfoe-check
+  cancel-in-progress: false
+
+jobs:
+  sfoe:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.0  # setup-uv publishes no floating v10 tag
+      - name: Install from the lock file
+        run: uv sync --locked
+      - name: Release log (CSV weeks and PDF versions)
+        run: uv run alpinehydro log-release
+      - name: Parse the PDF and merge with the CSV
+        run: uv run alpinehydro sfoe-update
+      - name: Hero chart and commit, only if an SFOE file changed
+        run: |
+          if [ -z "$(git status --porcelain -- 'data/processed/sfoe_*')" ]; then
+            echo "Nothing new from SFOE."
+            exit 0
+          fi
+          uv run alpinehydro hero
+          git add -- 'data/processed/sfoe_*' reports/figures/hero_storage.png reports/figures/hero_storage.svg
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "SFOE check $(date -u +%Y-%m-%dT%H:%MZ): release log, PDF parse, hero chart"
+          git push

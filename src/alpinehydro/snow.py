@@ -467,8 +467,86 @@ def write_csv(df: pd.DataFrame, path: Path, header: list[str]) -> Path:
     for line in header:
         buf.write(f"# {line}\n")
     df.to_csv(buf, index=False, float_format="%.4f", lineterminator="\n")
-    path.write_text(buf.getvalue(), encoding="utf-8")
+    path.write_bytes(buf.getvalue().encode("utf-8"))
     return path
+
+
+def _body(path: Path) -> str:
+    if not path.exists():
+        return ""
+    lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+    return "".join(x for x in lines if not x.startswith("#"))
+
+
+MODIS_HEADER = [
+    MODIS_CITATION,
+    "fsc: mean fractional snow cover (FSC = -0.01 + 1.45 NDSI, clipped 0-1) over valid",
+    "pixels of the band; Terra where valid, else Aqua; gaps filled from the previous",
+    "8 days; valid_share: valid over band pixels; missing: valid_share below 0.70",
+    "regions: swisstopo swissBOUNDARIES3D cantons; band: GLO-30 mean elevation per",
+    "500 m pixel at or above band_m. Total: all valid pixels of the three cantons.",
+    "band_m 1800: every day from 2000-02-24; band_m 2000 (robustness): only",
+    "14 March to 5 May of each year (the 1 April and 1 May feature windows).",
+]
+MODIS_CACHE = config.INTERIM / "snow"
+
+
+def write_modis_table(tag: str = EE_TAG, cache: Path = MODIS_CACHE) -> bool:
+    """Combine the yearly MODIS caches into modis_daily.csv. Returns True if the rows changed.
+
+    The file is rewritten only when its rows change, so a rerun with nothing new leaves it
+    (and its pulled_utc stamp) untouched.
+    """
+    from alpinehydro import features_snow
+
+    parts = sorted(cache.glob("modis_*.csv"))
+    df = pd.concat([pd.read_csv(p) for p in parts], ignore_index=True)
+    df = df.drop_duplicates(["date", "region", "band_m"], keep="last")
+    df = finalise_modis(df).reset_index(drop=True)
+    buf = io.StringIO()
+    df.to_csv(buf, index=False, float_format="%.4f", lineterminator="\n")
+    if buf.getvalue() == _body(features_snow.MODIS_CSV):
+        return False
+    stamp = f"pulled_utc: {today_utc()}; Earth Engine workload tag {tag}"
+    write_csv(df, features_snow.MODIS_CSV, [*MODIS_HEADER, stamp])
+    return True
+
+
+def update_modis_recent(tag: str, overlap_days: int = 3, cache: Path = MODIS_CACHE) -> dict:
+    """Pull the 1800 m band from a few days before the last cached day to the latest image.
+
+    The last days are pulled again because a Terra or Aqua image can arrive a day late.
+    Reuses the committed band polygons (no mask is rebuilt). Writes the yearly caches
+    and modis_daily.csv.
+    """
+    import ee
+
+    files = sorted(cache.glob("modis_1800_*.csv"))
+    last = pd.to_datetime(pd.read_csv(files[-1])["date"]).max()
+    end = latest_image_day("modis") + pd.Timedelta(days=1)
+    start = last - pd.Timedelta(days=overlap_days - 1)
+    if end <= last + pd.Timedelta(days=1):
+        changed = write_modis_table(tag, cache)
+        return {"modis_new_days": 0, "modis_latest": str(last.date()), "changed": changed}
+    earthengine.init()
+    ee.data.setWorkloadTag(tag)
+    new = modis_daily(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d"), bands=(1800,))
+    new["date"] = pd.to_datetime(new["date"])
+    for y, part in new.groupby(new["date"].dt.year):
+        path = cache / f"modis_1800_{y}.csv"
+        old = pd.read_csv(path, parse_dates=["date"]) if path.exists() else part.iloc[:0]
+        both = pd.concat([old, part], ignore_index=True)
+        both = both.drop_duplicates(["date", "region", "band_m"], keep="last")
+        both = both.sort_values(["band_m", "region", "date"])
+        both["date"] = both["date"].dt.date
+        both.to_csv(path, index=False)
+    changed = write_modis_table(tag, cache)
+    latest = new["date"].max()
+    return {
+        "modis_new_days": int((latest - last).days),
+        "modis_latest": str(latest.date()),
+        "changed": changed,
+    }
 
 
 def read_csv(path: Path) -> pd.DataFrame:

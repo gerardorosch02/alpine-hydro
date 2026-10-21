@@ -53,6 +53,87 @@ def sfoe_update(refresh: bool = typer.Option(False, help="Download the CSV again
     typer.echo(json.dumps(sfoe_pdf.update(refresh_csv=refresh), indent=2))
 
 
+@app.command("hero")
+def hero_cmd():
+    """Rebuild the hero storage chart from committed files only (no keys)."""
+    import pandas as pd
+
+    from alpinehydro import plots, validate
+    from alpinehydro.fetch import sfoe_pdf
+
+    wallis = None
+    if validate.OUT.exists():
+        wallis = pd.read_csv(validate.OUT, comment="#", parse_dates=["valid_time"])
+    for p in plots.hero_chart(sfoe_pdf.load_merged(), wallis):
+        typer.echo(f"wrote {p.relative_to(config.ROOT)}")
+
+
+@app.command("weekly")
+def weekly_live_cmd():
+    """Live run: release log, SFOE merge, snow, live forecast, realised spreads, figures, log.
+
+    Safe to repeat: if nothing is new, no file changes.
+    """
+    from alpinehydro import weekly_run
+
+    r = weekly_run.run(echo=typer.echo)
+    if any("failed" in w for w in r["warnings"]):
+        raise typer.Exit(2)
+
+
+@app.command("safe-commit")
+def safe_commit_cmd(message: str = typer.Option(..., "--message", "-m")):
+    """Commit only the weekly-run allowlist; abort (exit 3) if anything else changed."""
+    from alpinehydro import safe_commit
+
+    r = safe_commit.commit(config.ROOT, message)
+    typer.echo(json.dumps(r))
+    if not r["committed"] and r["reason"].startswith("aborted"):
+        raise typer.Exit(3)
+
+
+@app.command("fallback-evaluate")
+def fallback_evaluate_cmd():
+    """Build the VIIRS VJ210A1 series on the overlap winters and apply the fixed rule."""
+    import pandas as pd
+
+    from alpinehydro import fallback, features_snow, snow
+    from alpinehydro.fetch import viirs
+
+    parts = [viirs.series(s, e) for s, e in fallback.OVERLAP_SEASONS]
+    v = pd.concat(parts, ignore_index=True)
+    viirs.write(v)
+    modis = snow.read_csv(features_snow.MODIS_CSV)
+    cmp = fallback.compare(v, modis)
+    lag = viirs.publication_lag_days()
+    min_corr = min(cmp["per_region"][r]["corr"] for r in fallback.REGIONS3)
+    res = {
+        "viirs_vj210a1": {
+            "corr": min_corr,
+            "mad": cmp["pooled_three_cantons"]["mad"],
+            "lag_days": lag["median_days"],
+        }
+    }
+    sel = fallback.select(res)
+    out = {
+        "rule": "eligible if the lowest per-canton correlation >= 0.9 and median publication"
+        " lag <= 5 days; lowest pooled MAD wins (deviations W1-W3)",
+        "comparison": cmp,
+        "publication_lag": lag,
+        "selection": sel,
+        "chosen": sel["chosen"],
+        "fit": {r: cmp["per_region"][r] for r in [*fallback.REGIONS3, "Total"]}
+        if sel["chosen"]
+        else None,
+        "product": "NSIDC VJ210A1 v2 (NOAA-21 VIIRS)",
+        "credit": viirs.CREDIT,
+    }
+    path = config.PROCESSED / "snow" / "fallback_choice.json"
+    path.write_bytes((json.dumps(out, indent=2) + "\n").encode("utf-8"))
+    _write_check("modis_fallback", out)
+    typer.echo(json.dumps(out["selection"], indent=2))
+
+
 @app.command("fetch-entsoe")
 def fetch_entsoe(
     zones: list[str] = typer.Option(None, help="Zones, default from config."),
@@ -202,8 +283,8 @@ def scenes_cmd(only: list[str] = typer.Option(None, "--only", help="Reservoir sl
     typer.echo(f"wrote {storage.write_scenes().relative_to(config.ROOT)}")
 
 
-@app.command("weekly")
-def weekly_cmd():
+@app.command("satellite-weekly")
+def satellite_weekly_cmd():
     """Weekly series aligned to the SFOE week end: data/processed/satellite/weekly.csv."""
     from alpinehydro import weekly
 
@@ -364,22 +445,8 @@ def snow_series_cmd(
     df = df.drop_duplicates(["date", "region", "band_m"], keep="last")
     stamp = f"pulled_utc: {snow.today_utc()}; Earth Engine workload tag {snow.EE_TAG}"
     if source == "modis":
-        df = snow.finalise_modis(df)
-        out = snow.write_csv(
-            df,
-            features_snow.MODIS_CSV,
-            [
-                snow.MODIS_CITATION,
-                "fsc: mean fractional snow cover (FSC = -0.01 + 1.45 NDSI, clipped 0-1) over valid",
-                "pixels of the band; Terra where valid, else Aqua; gaps filled from the previous",
-                "8 days; valid_share: valid over band pixels; missing: valid_share below 0.70",
-                "regions: swisstopo swissBOUNDARIES3D cantons; band: GLO-30 mean elevation per",
-                "500 m pixel at or above band_m. Total: all valid pixels of the three cantons.",
-                "band_m 1800: every day from 2000-02-24; band_m 2000 (robustness): only",
-                "14 March to 5 May of each year (the 1 April and 1 May feature windows).",
-                stamp,
-            ],
-        )
+        snow.write_modis_table()
+        out = features_snow.MODIS_CSV
     else:
         out = snow.write_csv(
             df,
