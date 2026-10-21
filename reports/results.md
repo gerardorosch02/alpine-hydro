@@ -86,3 +86,21 @@ Both ceilings are below EUR 0.5/MWh. The timing edge from a few days'
 satellite head start is likely worthless. Part A should be framed as
 per-reservoir detail (which reservoirs, which valleys, how they fill),
 not as a faster version of the SFOE number.
+
+## Part A: satellite storage (weekend 2, in progress)
+
+The Wallis validation and the coverage figures will be added here when the
+Dix, Emosson and Mauvoisin batches are done.
+
+**Lac de la Gruyère: fill not usable.** Its scenes table is kept for the
+coverage figure, but its levels and fill are not used. Two problems meet at
+the same heights. Below the swissALTI3D floor (674.02 m), the GLO-30 band is
+nearly flat: the lake area grows by only 0.02 km² per metre from 669 to
+674 m, against 0.38 km² per metre in the 3 m above the floor. And the summer
+water masks cover about 7.9 km², 3 to 5% short of the 8.30 km² lake at the
+floor. On this curve that shortfall alone moves the level by about 6 m. The
+result is a level series flat at 667 to 670 m all year, with no seasonal
+cycle. Of 1,478 scenes, 543 were at least 90% clear; 18 were ok and 425 were
+no_match.
+
+![Gruyère levels](figures/reservoir_gruyere.png)

@@ -79,6 +79,14 @@ reservoirs:
     head_check_source: Hauterive gross head 75 to 111 m, midpoint 93 m (swissdams)
     max_depth_m: 75
     max_depth_source: sfoe1983. Sets the bed level h0 of the fitted curve
+    fill_quality: not usable
+    fill_quality_reason: >-
+      Below the swissALTI3D floor (674.02 m) the GLO-30 band is nearly flat: the lake area
+      grows only 0.02 km2 per metre from 669 to 674 m, against 0.38 km2 per metre above the
+      floor. Summer water masks also cover about 7.9 km2, 3 to 5% short of the 8.30 km2 lake
+      at the floor, and on this curve that shortfall alone moves the level by about 6 m. The
+      levels come out flat at 667 to 670 m all year (decision of 2026-10-21). The scenes table
+      is kept for the coverage figure.
 
   - name: Lac des Dix
     slug: dix

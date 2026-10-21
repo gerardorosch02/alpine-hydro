@@ -13,6 +13,7 @@ authors = [{ name = "Gerardo Rosales" }]
 dependencies = [
     "earthengine-api>=1.7.49",
     "entsoe-py>=0.8.1",
+    "laspy[lazrs,requests]>=2.7.0",
     "matplotlib>=3.9",
     "numpy>=2.0",
     "pandas>=2.2",

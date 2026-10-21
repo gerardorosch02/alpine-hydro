@@ -1,0 +1,1701 @@
+{
+ "source": "swissSURFACE3D lidar GPS time and class 9 (water) heights per 1 km tile; Source: Federal Office of Topography swisstopo",
+ "rows": [
+  {
+   "reservoir": "sihlsee",
+   "tile": "2700-1220",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.009,
+   "days": {
+    "2024-03-22": 17243412
+   },
+   "water_points": 97627,
+   "water_median_m": 886.99,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2700-1221",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.409,
+   "days": {
+    "2024-03-22": 11421432
+   },
+   "water_points": 3168728,
+   "water_median_m": 886.95,
+   "water_iqr_m": 0.0,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2700-1222",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.524,
+   "days": {
+    "2024-03-22": 9720187
+   },
+   "water_points": 2981069,
+   "water_median_m": 886.95,
+   "water_iqr_m": 0.0,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2701-1217",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.01,
+   "days": {
+    "2024-07-09": 30852133
+   },
+   "water_points": 49297,
+   "water_median_m": 888.48,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2701-1218",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.047,
+   "days": {
+    "2024-03-22": 14979268
+   },
+   "water_points": 568783,
+   "water_median_m": 886.95,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2701-1219",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.452,
+   "days": {
+    "2024-03-22": 13820910
+   },
+   "water_points": 2001921,
+   "water_median_m": 886.94,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2701-1220",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.792,
+   "days": {
+    "2024-03-22": 8588683
+   },
+   "water_points": 3267293,
+   "water_median_m": 886.95,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2701-1221",
+   "alti_year": 2026,
+   "lidar_year": null,
+   "flat_km2": 0.999,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2026 for 2701-1221"
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2701-1222",
+   "alti_year": 2026,
+   "lidar_year": 2018,
+   "flat_km2": 0.972,
+   "days": {
+    "2018-05-27": 4052018
+   },
+   "water_points": 3743939,
+   "water_median_m": 887.41,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2701-1223",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.165,
+   "days": {
+    "2024-03-22": 21581826
+   },
+   "water_points": 1992339,
+   "water_median_m": 886.95,
+   "water_iqr_m": 0.0,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2702-1217",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.451,
+   "days": {
+    "2024-03-22": 25095155
+   },
+   "water_points": 5103186,
+   "water_median_m": 886.95,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2702-1218",
+   "alti_year": 2026,
+   "lidar_year": 2018,
+   "flat_km2": 0.935,
+   "days": {
+    "2018-05-27": 5898474
+   },
+   "water_points": 4797424,
+   "water_median_m": 887.44,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2702-1219",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.976,
+   "days": {
+    "2024-03-22": 2380131
+   },
+   "water_points": 1777750,
+   "water_median_m": 886.94,
+   "water_iqr_m": 0.01,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2702-1220",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.789,
+   "days": {
+    "2024-03-22": 6837400
+   },
+   "water_points": 2930700,
+   "water_median_m": 886.94,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2702-1221",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.5,
+   "days": {
+    "2024-03-22": 14366200
+   },
+   "water_points": 4151139,
+   "water_median_m": 886.94,
+   "water_iqr_m": 0.0,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2702-1222",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.41,
+   "days": {
+    "2024-03-22": 11867705
+   },
+   "water_points": 3436160,
+   "water_median_m": 886.95,
+   "water_iqr_m": 0.0,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2702-1223",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.019,
+   "days": {
+    "2024-03-22": 26216117
+   },
+   "water_points": 295638,
+   "water_median_m": 886.95,
+   "water_iqr_m": 0.0,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2703-1216",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.415,
+   "days": {
+    "2024-03-22": 19187202
+   },
+   "water_points": 2717657,
+   "water_median_m": 886.96,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2703-1217",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.527,
+   "days": {
+    "2024-03-22": 30785293
+   },
+   "water_points": 4561793,
+   "water_median_m": 886.96,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2703-1218",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.165,
+   "days": {
+    "2024-03-22": 35093609
+   },
+   "water_points": 1652321,
+   "water_median_m": 886.96,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2703-1219",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.024,
+   "days": {
+    "2024-03-22": 21055131
+   },
+   "water_points": 195897,
+   "water_median_m": 886.95,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2703-1220",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.004,
+   "days": {
+    "2024-03-22": 17032879
+   },
+   "water_points": 72291,
+   "water_median_m": 886.94,
+   "water_iqr_m": 29.12,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2704-1215",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.004,
+   "days": {
+    "2024-03-22": 17405069
+   },
+   "water_points": 232986,
+   "water_median_m": 886.96,
+   "water_iqr_m": 0.06,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2704-1216",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.308,
+   "days": {
+    "2024-03-22": 12427257
+   },
+   "water_points": 2196626,
+   "water_median_m": 886.97,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "sihlsee",
+   "tile": "2704-1217",
+   "alti_year": 2026,
+   "lidar_year": 2024,
+   "flat_km2": 0.031,
+   "days": {
+    "2024-07-09": 8524,
+    "2024-07-18": 22226224
+   },
+   "water_points": 51200,
+   "water_median_m": 892.38,
+   "water_iqr_m": 8.52,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2572-1167",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.007,
+   "days": {
+    "2018-10-15": 11053180,
+    "2019-03-29": 4586984
+   },
+   "water_points": 0,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2572-1168",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.127,
+   "days": {
+    "2019-03-29": 9429104
+   },
+   "water_points": 76192,
+   "water_median_m": 665.33,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2572-1169",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.005,
+   "days": {
+    "2019-03-29": 9625301,
+    "2019-03-30": 1111776
+   },
+   "water_points": 0,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1162",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.053,
+   "days": {
+    "2018-10-15": 20421589
+   },
+   "water_points": 42385,
+   "water_median_m": 675.65,
+   "water_iqr_m": 1.19,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1163",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.353,
+   "days": {
+    "2018-10-15": 11320565
+   },
+   "water_points": 16724,
+   "water_median_m": 674.95,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1164",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.435,
+   "days": {
+    "2018-10-15": 9715528
+   },
+   "water_points": 541070,
+   "water_median_m": 674.99,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1165",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.535,
+   "days": {
+    "2018-10-15": 11478827
+   },
+   "water_points": 1648480,
+   "water_median_m": 675.0,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1166",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.357,
+   "days": {
+    "2018-10-15": 12583322
+   },
+   "water_points": 1359355,
+   "water_median_m": 675.04,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1167",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.343,
+   "days": {
+    "2018-10-15": 15740559,
+    "2019-03-29": 806535
+   },
+   "water_points": 6782,
+   "water_median_m": 675.09,
+   "water_iqr_m": 0.29,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1168",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.623,
+   "days": {
+    "2018-10-15": 4161047,
+    "2019-03-29": 2450870,
+    "2019-03-30": 54987
+   },
+   "water_points": 88114,
+   "water_median_m": 665.33,
+   "water_iqr_m": 9.7,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1169",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.827,
+   "days": {
+    "2019-03-29": 2759750,
+    "2019-03-30": 2170112
+   },
+   "water_points": 688918,
+   "water_median_m": 665.17,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1170",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.141,
+   "days": {
+    "2019-03-29": 9601555,
+    "2019-03-30": 11390710
+   },
+   "water_points": 823,
+   "water_median_m": 665.27,
+   "water_iqr_m": 0.38,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1171",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.296,
+   "days": {
+    "2019-03-29": 1505,
+    "2019-03-30": 4042,
+    "2024-10-29": 11196843,
+    "2024-11-15": 6793092,
+    "2025-04-05": 4863831,
+    "2025-04-06": 320623
+   },
+   "water_points": 4654142,
+   "water_median_m": 672.53,
+   "water_iqr_m": 0.0,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1172",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.362,
+   "days": {
+    "2019-03-28": 28257,
+    "2019-03-29": 2789329,
+    "2019-03-30": 10774842
+   },
+   "water_points": 424427,
+   "water_median_m": 665.12,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2573-1173",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.062,
+   "days": {
+    "2019-03-28": 8344,
+    "2019-03-29": 57015,
+    "2019-03-30": 15904747
+   },
+   "water_points": 16393,
+   "water_median_m": 665.12,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1162",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.124,
+   "days": {
+    "2018-10-15": 18264610
+   },
+   "water_points": 74980,
+   "water_median_m": 675.08,
+   "water_iqr_m": 1.51,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1163",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.451,
+   "days": {
+    "2018-10-15": 9746619
+   },
+   "water_points": 169627,
+   "water_median_m": 674.94,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1164",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.396,
+   "days": {
+    "2018-10-15": 12655019
+   },
+   "water_points": 163911,
+   "water_median_m": 674.99,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1165",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.147,
+   "days": {
+    "2018-10-15": 16600615
+   },
+   "water_points": 572555,
+   "water_median_m": 674.99,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1166",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.001,
+   "days": {
+    "2018-10-15": 14808074
+   },
+   "water_points": 969,
+   "water_median_m": 675.04,
+   "water_iqr_m": 0.1,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1167",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.004,
+   "days": {
+    "2018-10-15": 16299214
+   },
+   "water_points": 17736,
+   "water_median_m": 675.06,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1168",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.149,
+   "days": {
+    "2018-10-15": 12447708,
+    "2019-03-29": 710087,
+    "2019-03-30": 608324
+   },
+   "water_points": 334370,
+   "water_median_m": 675.06,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1169",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.455,
+   "days": {
+    "2018-10-15": 5774104,
+    "2019-03-29": 3533651,
+    "2019-03-30": 2897222
+   },
+   "water_points": 1058,
+   "water_median_m": 665.17,
+   "water_iqr_m": 0.13,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1170",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.758,
+   "days": {
+    "2019-03-29": 2973273,
+    "2019-03-30": 3635425
+   },
+   "water_points": 48802,
+   "water_median_m": 665.15,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1171",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.63,
+   "days": {
+    "2019-03-29": 4905,
+    "2019-03-30": 23347,
+    "2024-10-29": 5164664,
+    "2024-11-15": 603779,
+    "2025-04-05": 7651641,
+    "2025-04-06": 810130
+   },
+   "water_points": 7651610,
+   "water_median_m": 672.53,
+   "water_iqr_m": 0.0,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1172",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.099,
+   "days": {
+    "2019-03-30": 11873968
+   },
+   "water_points": 11911,
+   "water_median_m": 665.14,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1173",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.334,
+   "days": {
+    "2019-03-30": 11850241
+   },
+   "water_points": 5864,
+   "water_median_m": 665.13,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2574-1174",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.028,
+   "days": {
+    "2019-03-30": 10898078
+   },
+   "water_points": 17153,
+   "water_median_m": 604.29,
+   "water_iqr_m": 0.55,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2575-1170",
+   "alti_year": 2021,
+   "lidar_year": 2018,
+   "flat_km2": 0.216,
+   "days": {
+    "2018-10-15": 7182277,
+    "2019-03-29": 613113,
+    "2019-03-30": 7290603
+   },
+   "water_points": 10574,
+   "water_median_m": 665.15,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2575-1173",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.009,
+   "days": {
+    "2019-03-30": 11010272
+   },
+   "water_points": 1,
+   "water_median_m": 665.17,
+   "water_iqr_m": 0.0,
+   "error": null
+  },
+  {
+   "reservoir": "gruyere",
+   "tile": "2575-1174",
+   "alti_year": 2021,
+   "lidar_year": 2019,
+   "flat_km2": 0.019,
+   "days": {
+    "2019-03-30": 14782615
+   },
+   "water_points": 20775,
+   "water_median_m": 605.76,
+   "water_iqr_m": 1.26,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2596-1098",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.0,
+   "days": {
+    "2021-09-22": 9464472,
+    "2021-09-24": 477662
+   },
+   "water_points": 210,
+   "water_median_m": 2359.43,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2596-1099",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.207,
+   "days": {
+    "2021-09-22": 8648518
+   },
+   "water_points": 610993,
+   "water_median_m": 2359.36,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2596-1100",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.66,
+   "days": {
+    "2021-09-22": 5199618
+   },
+   "water_points": 1713858,
+   "water_median_m": 2359.34,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2596-1101",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.713,
+   "days": {
+    "2021-09-22": 5216860
+   },
+   "water_points": 2128658,
+   "water_median_m": 2359.32,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2596-1102",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.304,
+   "days": {
+    "2021-09-22": 8084734
+   },
+   "water_points": 876017,
+   "water_median_m": 2359.27,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2596-1103",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.017,
+   "days": {
+    "2021-09-22": 10499624
+   },
+   "water_points": 26203,
+   "water_median_m": 2359.27,
+   "water_iqr_m": 0.01,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2597-1097",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.059,
+   "days": {
+    "2021-09-22": 2161962,
+    "2021-09-24": 7596092
+   },
+   "water_points": 654,
+   "water_median_m": 2359.37,
+   "water_iqr_m": 0.13,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2597-1098",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.642,
+   "days": {
+    "2021-09-22": 2902443,
+    "2021-09-24": 1324194
+   },
+   "water_points": 696415,
+   "water_median_m": 2359.42,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2597-1099",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.535,
+   "days": {
+    "2021-09-22": 5073751,
+    "2021-09-24": 216267
+   },
+   "water_points": 701750,
+   "water_median_m": 2359.38,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2597-1100",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.22,
+   "days": {
+    "2021-09-22": 8251458
+   },
+   "water_points": 420446,
+   "water_median_m": 2359.35,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2597-1101",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.049,
+   "days": {
+    "2021-09-22": 9477094
+   },
+   "water_points": 146843,
+   "water_median_m": 2359.33,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2597-1102",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.358,
+   "days": {
+    "2021-09-22": 7843525
+   },
+   "water_points": 724920,
+   "water_median_m": 2359.28,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2597-1103",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.124,
+   "days": {
+    "2021-09-22": 11102435
+   },
+   "water_points": 28459,
+   "water_median_m": 2359.26,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "dix",
+   "tile": "2598-1097",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.001,
+   "days": {
+    "2021-09-22": 164692,
+    "2021-09-24": 9520211,
+    "2021-10-08": 13262
+   },
+   "water_points": 354,
+   "water_median_m": 2359.29,
+   "water_iqr_m": 0.08,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2558-1103",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.124,
+   "days": {
+    "2021-10-01": 8684594
+   },
+   "water_points": 905,
+   "water_median_m": 1925.4,
+   "water_iqr_m": 0.06,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2558-1104",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.311,
+   "days": {
+    "2021-10-01": 7191742
+   },
+   "water_points": 30335,
+   "water_median_m": 1925.41,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2558-1105",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.054,
+   "days": {
+    "2021-10-01": 9836982
+   },
+   "water_points": 4669,
+   "water_median_m": 1925.41,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2559-1101",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.112,
+   "days": {
+    "2021-10-01": 9692479
+   },
+   "water_points": 47550,
+   "water_median_m": 1925.34,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2559-1102",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.546,
+   "days": {
+    "2021-10-01": 5242594
+   },
+   "water_points": 333256,
+   "water_median_m": 1925.34,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2559-1103",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.621,
+   "days": {
+    "2021-10-01": 4239034
+   },
+   "water_points": 28601,
+   "water_median_m": 1925.37,
+   "water_iqr_m": 0.03,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2559-1104",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.461,
+   "days": {
+    "2021-10-01": 6116185
+   },
+   "water_points": 199837,
+   "water_median_m": 1925.37,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2559-1105",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.084,
+   "days": {
+    "2021-10-01": 9465941
+   },
+   "water_points": 589,
+   "water_median_m": 1925.45,
+   "water_iqr_m": 0.08,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2560-1101",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.209,
+   "days": {
+    "2021-10-01": 4954093,
+    "2022-04-29": 1892446,
+    "2022-06-11": 4802945
+   },
+   "water_points": 6272,
+   "water_median_m": 1895.66,
+   "water_iqr_m": 0.01,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2560-1102",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.497,
+   "days": {
+    "2021-10-01": 5324834
+   },
+   "water_points": 15317,
+   "water_median_m": 1925.3,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2561-1101",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.001,
+   "days": {
+    "2021-10-01": 78427,
+    "2022-04-29": 18589080,
+    "2022-06-11": 11859890
+   },
+   "water_points": 158,
+   "water_median_m": 1925.3,
+   "water_iqr_m": 0.08,
+   "error": null
+  },
+  {
+   "reservoir": "emosson",
+   "tile": "2561-1102",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.001,
+   "days": {
+    "2021-10-01": 8994995,
+    "2022-04-29": 1296836,
+    "2022-06-11": 1480946
+   },
+   "water_points": 59,
+   "water_median_m": 1925.44,
+   "water_iqr_m": 1.69,
+   "error": null
+  },
+  {
+   "reservoir": "mauvoisin",
+   "tile": "2592-1093",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.03,
+   "days": {
+    "2021-09-22": 2804007,
+    "2021-09-24": 7076014,
+    "2022-06-11": 23850
+   },
+   "water_points": 72327,
+   "water_median_m": 1969.8,
+   "water_iqr_m": 0.13,
+   "error": null
+  },
+  {
+   "reservoir": "mauvoisin",
+   "tile": "2592-1094",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.0,
+   "days": {
+    "2021-09-22": 3084303,
+    "2021-09-24": 1532829,
+    "2022-06-11": 24616954
+   },
+   "water_points": 4689,
+   "water_median_m": 1797.26,
+   "water_iqr_m": 0.08,
+   "error": null
+  },
+  {
+   "reservoir": "mauvoisin",
+   "tile": "2593-1088",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.0,
+   "days": {
+    "2021-09-22": 1625851,
+    "2021-10-08": 129091,
+    "2021-10-09": 165179,
+    "2021-10-10": 7696929,
+    "2022-06-11": 888836
+   },
+   "water_points": 0,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": null
+  },
+  {
+   "reservoir": "mauvoisin",
+   "tile": "2593-1089",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.169,
+   "days": {
+    "2021-09-22": 23827,
+    "2021-09-24": 21272,
+    "2021-10-08": 1999150,
+    "2021-10-09": 1021929,
+    "2021-10-10": 3456581,
+    "2022-06-11": 5775660
+   },
+   "water_points": 21217,
+   "water_median_m": 1914.8,
+   "water_iqr_m": 56.19,
+   "error": null
+  },
+  {
+   "reservoir": "mauvoisin",
+   "tile": "2593-1090",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.345,
+   "days": {
+    "2021-09-24": 613550,
+    "2021-10-08": 2989459,
+    "2021-10-09": 1383517,
+    "2021-10-10": 430553,
+    "2022-06-11": 4461228
+   },
+   "water_points": 29629,
+   "water_median_m": 1970.64,
+   "water_iqr_m": 55.97,
+   "error": null
+  },
+  {
+   "reservoir": "mauvoisin",
+   "tile": "2593-1091",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.609,
+   "days": {
+    "2021-09-24": 1767026,
+    "2021-10-08": 2027396,
+    "2021-10-09": 267318,
+    "2022-06-11": 593231
+   },
+   "water_points": 176210,
+   "water_median_m": 1969.88,
+   "water_iqr_m": 55.88,
+   "error": null
+  },
+  {
+   "reservoir": "mauvoisin",
+   "tile": "2593-1092",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.513,
+   "days": {
+    "2021-09-24": 3560479,
+    "2021-10-08": 1161924,
+    "2022-06-11": 1261834
+   },
+   "water_points": 444548,
+   "water_median_m": 1914.78,
+   "water_iqr_m": 55.09,
+   "error": null
+  },
+  {
+   "reservoir": "mauvoisin",
+   "tile": "2593-1093",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.425,
+   "days": {
+    "2021-09-22": 238122,
+    "2021-09-24": 5071479,
+    "2021-10-08": 47851,
+    "2022-06-11": 2412124
+   },
+   "water_points": 1098080,
+   "water_median_m": 1914.75,
+   "water_iqr_m": 0.06,
+   "error": null
+  },
+  {
+   "reservoir": "mauvoisin",
+   "tile": "2593-1094",
+   "alti_year": 2024,
+   "lidar_year": 2021,
+   "flat_km2": 0.025,
+   "days": {
+    "2021-09-22": 3561888,
+    "2021-09-24": 5809266,
+    "2022-06-11": 2965513
+   },
+   "water_points": 140393,
+   "water_median_m": 1914.73,
+   "water_iqr_m": 0.06,
+   "error": null
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2753-1142",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.177,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2753-1142"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2753-1143",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.448,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2753-1143"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2753-1144",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.539,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2753-1144"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2753-1145",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.366,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2753-1145"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2753-1146",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.299,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2753-1146"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2753-1147",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.12,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2753-1147"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2754-1144",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.009,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2754-1144"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2754-1145",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.19,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2754-1145"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2754-1146",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.315,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2754-1146"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2754-1147",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.441,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2754-1147"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2754-1148",
+   "alti_year": 2023,
+   "lidar_year": null,
+   "flat_km2": 0.529,
+   "days": {},
+   "water_points": null,
+   "water_median_m": null,
+   "water_iqr_m": null,
+   "error": "no swissSURFACE3D tile before 2023 for 2754-1148"
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2754-1149",
+   "alti_year": 2023,
+   "lidar_year": 2020,
+   "flat_km2": 0.463,
+   "days": {
+    "2020-08-01": 9909560
+   },
+   "water_points": 1010840,
+   "water_median_m": 1920.54,
+   "water_iqr_m": 0.02,
+   "error": null
+  },
+  {
+   "reservoir": "lei",
+   "tile": "2755-1149",
+   "alti_year": 2023,
+   "lidar_year": 2020,
+   "flat_km2": 0.008,
+   "days": {
+    "2020-08-01": 12822215,
+    "2020-08-07": 1287402
+   },
+   "water_points": 53,
+   "water_median_m": 1920.54,
+   "water_iqr_m": 0.05,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2663-1156",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.015,
+   "days": {
+    "2023-07-11": 15380548
+   },
+   "water_points": 661,
+   "water_median_m": 1896.65,
+   "water_iqr_m": 0.15,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2663-1157",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.255,
+   "days": {
+    "2023-07-11": 12737733
+   },
+   "water_points": 112194,
+   "water_median_m": 1899.16,
+   "water_iqr_m": 5.57,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2664-1156",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.246,
+   "days": {
+    "2023-07-11": 7545958
+   },
+   "water_points": 9148,
+   "water_median_m": 1896.57,
+   "water_iqr_m": 0.08,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2664-1157",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.256,
+   "days": {
+    "2023-07-11": 8585294
+   },
+   "water_points": 38396,
+   "water_median_m": 1896.54,
+   "water_iqr_m": 0.07,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2665-1156",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.054,
+   "days": {
+    "2023-07-11": 8905464,
+    "2023-08-19": 464490
+   },
+   "water_points": 255174,
+   "water_median_m": 2365.26,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2665-1157",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.409,
+   "days": {
+    "2023-07-11": 7642127,
+    "2023-08-19": 432064
+   },
+   "water_points": 654335,
+   "water_median_m": 1896.57,
+   "water_iqr_m": 0.05,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2666-1157",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.447,
+   "days": {
+    "2023-07-11": 7408655,
+    "2023-08-19": 5581620
+   },
+   "water_points": 634698,
+   "water_median_m": 1896.62,
+   "water_iqr_m": 0.06,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2666-1158",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.025,
+   "days": {
+    "2023-07-11": 9840433,
+    "2023-08-19": 5843694
+   },
+   "water_points": 19937,
+   "water_median_m": 1896.62,
+   "water_iqr_m": 0.05,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2667-1157",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.171,
+   "days": {
+    "2023-07-11": 3659328,
+    "2023-08-19": 12122856
+   },
+   "water_points": 11431,
+   "water_median_m": 1896.57,
+   "water_iqr_m": 0.07,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2667-1158",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.332,
+   "days": {
+    "2023-07-11": 2524299,
+    "2023-08-10": 124493,
+    "2023-08-19": 7784511
+   },
+   "water_points": 334334,
+   "water_median_m": 1896.57,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2668-1157",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.144,
+   "days": {
+    "2023-07-11": 3040087,
+    "2023-08-10": 20516,
+    "2023-08-19": 10780845
+   },
+   "water_points": 18457,
+   "water_median_m": 2159.78,
+   "water_iqr_m": 0.04,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2668-1158",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.238,
+   "days": {
+    "2023-07-11": 1012499,
+    "2023-08-10": 2045789,
+    "2023-08-19": 8718014
+   },
+   "water_points": 5627,
+   "water_median_m": 1761.35,
+   "water_iqr_m": 0.67,
+   "error": null
+  },
+  {
+   "reservoir": "grimsel",
+   "tile": "2669-1158",
+   "alti_year": 2025,
+   "lidar_year": 2023,
+   "flat_km2": 0.029,
+   "days": {
+    "2023-07-11": 213822,
+    "2023-08-10": 2432500,
+    "2023-08-19": 10717479
+   },
+   "water_points": 380,
+   "water_median_m": 1896.63,
+   "water_iqr_m": 0.16,
+   "error": null
+  }
+ ]
+}

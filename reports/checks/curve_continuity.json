@@ -1,0 +1,75 @@
+{
+ "rule": "area gained per metre in the 5 m below the swissALTI3D floor / the same in the 5 m above (or up to full supply if less); broken if below 0.25. Stated 2026-10-21 before the Dix, Emosson and Mauvoisin batches.",
+ "rows": [
+  {
+   "reservoir": "sihlsee",
+   "floor_m": 886.94,
+   "full_level_m": 889.34,
+   "above_span_m": 2.4,
+   "area_per_m_below_km2": 0.8085,
+   "area_per_m_above_km2": 0.4971,
+   "ratio": 1.627,
+   "broken": false
+  },
+  {
+   "reservoir": "gruyere",
+   "floor_m": 674.02,
+   "full_level_m": 677.0,
+   "above_span_m": 2.98,
+   "area_per_m_below_km2": 0.02,
+   "area_per_m_above_km2": 0.3758,
+   "ratio": 0.053,
+   "broken": true
+  },
+  {
+   "reservoir": "dix",
+   "floor_m": 2361.92,
+   "full_level_m": 2364.0,
+   "above_span_m": 2.08,
+   "area_per_m_below_km2": 0.0188,
+   "area_per_m_above_km2": 0.0441,
+   "ratio": 0.427,
+   "broken": false
+  },
+  {
+   "reservoir": "emosson",
+   "floor_m": 1920.4,
+   "full_level_m": 1930.0,
+   "above_span_m": 5,
+   "area_per_m_below_km2": 0.0158,
+   "area_per_m_above_km2": 0.0359,
+   "ratio": 0.439,
+   "broken": false
+  },
+  {
+   "reservoir": "mauvoisin",
+   "floor_m": 1969.06,
+   "full_level_m": 1975.0,
+   "above_span_m": 5,
+   "area_per_m_below_km2": 0.0073,
+   "area_per_m_above_km2": 0.0322,
+   "ratio": 0.225,
+   "broken": true
+  },
+  {
+   "reservoir": "lei",
+   "floor_m": 1927.7,
+   "full_level_m": 1931.0,
+   "above_span_m": 3.3,
+   "area_per_m_below_km2": 0.0578,
+   "area_per_m_above_km2": 0.0029,
+   "ratio": 20.069,
+   "broken": false
+  },
+  {
+   "reservoir": "grimsel",
+   "floor_m": 1907.65,
+   "full_level_m": 1908.74,
+   "above_span_m": 1.09,
+   "area_per_m_below_km2": 0.0209,
+   "area_per_m_above_km2": 0.0841,
+   "ratio": 0.248,
+   "broken": true
+  }
+ ]
+}

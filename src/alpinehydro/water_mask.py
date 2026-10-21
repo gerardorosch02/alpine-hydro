@@ -86,13 +86,18 @@ def _prepare_landsat(img):
     ).copyProperties(img, ["system:time_start"])
 
 
-def _collection(slug: str, sensor: str):
-    """Filtered, prepared ee.ImageCollection for one sensor family ('s2' or 'landsat')."""
+def _collection(slug: str, sensor: str, mlist: list[int] | None = None):
+    """Filtered, prepared ee.ImageCollection for one sensor family ('s2' or 'landsat').
+
+    mlist overrides the months of the reservoir (used by one-off checks).
+    """
     import ee
 
     s = settings()
     win = _window_ee(slug)
-    mfilter = ee.Filter.Or(*[ee.Filter.calendarRange(m, m, "month") for m in months(slug)])
+    mfilter = ee.Filter.Or(
+        *[ee.Filter.calendarRange(m, m, "month") for m in (mlist or months(slug))]
+    )
     end = dt.date.today().isoformat()
     if sensor == "s2":
         cs = ee.ImageCollection("GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED")
@@ -114,14 +119,14 @@ def _collection(slug: str, sensor: str):
     return col, _prepare_landsat
 
 
-def scene_list(slug: str, sensor: str) -> pd.DataFrame:
+def scene_list(slug: str, sensor: str, months: list[int] | None = None) -> pd.DataFrame:
     """One row per (sensor family, UTC day): metadata only, no pixels."""
     import ee
 
     from alpinehydro.earthengine import init
 
     init()
-    col, _ = _collection(slug, sensor)
+    col, _ = _collection(slug, sensor, months)
     if sensor == "s2":
         keys = ["system:index", "system:time_start", "SPACECRAFT_NAME"]
         keys += ["MEAN_SOLAR_AZIMUTH_ANGLE", "MEAN_SOLAR_ZENITH_ANGLE"]
@@ -155,15 +160,17 @@ def _scene_id(sensor: str, index: str) -> str:
     return index
 
 
-def _day_image(slug: str, sensor: str, date: str):
+def _day_image(slug: str, sensor: str, date: str, months: list[int] | None = None):
     import ee
 
-    col, prep = _collection(slug, sensor)
+    col, prep = _collection(slug, sensor, months)
     d0 = ee.Date(date)
     return col.filterDate(d0, d0.advance(1, "day")).map(prep).mosaic()
 
 
-def clear_fractions(slug: str, sensor: str, dates: list[str], chunk: int = 50) -> pd.Series:
+def clear_fractions(
+    slug: str, sensor: str, dates: list[str], chunk: int = 50, months: list[int] | None = None
+) -> pd.Series:
     """Share of the window that is clear and covered, per day (one reduceRegion each)."""
     import ee
 
@@ -178,7 +185,7 @@ def clear_fractions(slug: str, sensor: str, dates: list[str], chunk: int = 50) -
         part = dates[i : i + chunk]
 
         def frac(d, win=win, scale=scale):
-            img = _day_image(slug, sensor, d).select("clear").unmask(0)
+            img = _day_image(slug, sensor, d, months).select("clear").unmask(0)
             v = img.reduceRegion(ee.Reducer.mean(), win, scale=scale, maxPixels=1e8)
             return v.get("clear")
 
@@ -229,7 +236,14 @@ def mask_path(slug: str, sensor: str, date: str) -> Path:
     return MASK_DIR / slug / f"{sensor}_{date}.npz"
 
 
-def pull(slug: str, sensor: str, date: str, sun_azimuth: float, sun_zenith: float) -> Path:
+def pull(
+    slug: str,
+    sensor: str,
+    date: str,
+    sun_azimuth: float,
+    sun_zenith: float,
+    months: list[int] | None = None,
+) -> Path:
     """Fetch MNDWI, NIR, clear and lit arrays for one scene (cached)."""
     import ee
 
@@ -240,7 +254,7 @@ def pull(slug: str, sensor: str, date: str, sun_azimuth: float, sun_zenith: floa
         return path
     init()
     ee.data.setWorkloadTag(WORKLOAD_TAG)
-    img = _day_image(slug, sensor, date)
+    img = _day_image(slug, sensor, date, months)
     mndwi = img.normalizedDifference(["green", "swir1"])
     dem_col = ee.ImageCollection("COPERNICUS/DEM/GLO30_2024_1").select("DEM")
     dem = dem_col.mosaic().setDefaultProjection("EPSG:32632", None, 30)

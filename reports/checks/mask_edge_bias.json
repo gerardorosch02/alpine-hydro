@@ -1,0 +1,231 @@
+{
+ "rule": "Sentinel-2 scenes within 5 days of the lidar day, at least 90% clear: lake water area of the mask against the curve area at the lidar water level. Clean test only where that level is in the swissALTI3D 2 m part of the curve.",
+ "credit": "Contains modified Copernicus Sentinel data 2018-2024; Source: Federal Office of Topography swisstopo",
+ "rows": [
+  {
+   "date": "2024-03-19",
+   "clear_fraction": 1.0,
+   "flags": "ok",
+   "water_km2": 9.536,
+   "ref_km2": 9.949,
+   "shortfall_km2": 0.413,
+   "shortfall_pct": 4.15,
+   "reservoir": "sihlsee",
+   "lidar_day": "2024-03-22",
+   "lidar_water_m": 886.95
+  },
+  {
+   "date": "2024-03-21",
+   "clear_fraction": 0.0,
+   "reservoir": "sihlsee",
+   "lidar_day": "2024-03-22",
+   "lidar_water_m": 886.95
+  },
+  {
+   "date": "2024-03-24",
+   "clear_fraction": 0.01,
+   "reservoir": "sihlsee",
+   "lidar_day": "2024-03-22",
+   "lidar_water_m": 886.95
+  },
+  {
+   "date": "2024-03-26",
+   "clear_fraction": 0.0,
+   "reservoir": "sihlsee",
+   "lidar_day": "2024-03-22",
+   "lidar_water_m": 886.95
+  },
+  {
+   "date": "2018-05-22",
+   "clear_fraction": 0.854,
+   "reservoir": "sihlsee",
+   "lidar_day": "2018-05-27",
+   "lidar_water_m": 887.42
+  },
+  {
+   "date": "2018-05-25",
+   "clear_fraction": 1.0,
+   "flags": "ok",
+   "water_km2": 9.908,
+   "ref_km2": 10.277,
+   "shortfall_km2": 0.369,
+   "shortfall_pct": 3.59,
+   "reservoir": "sihlsee",
+   "lidar_day": "2018-05-27",
+   "lidar_water_m": 887.42
+  },
+  {
+   "date": "2018-05-30",
+   "clear_fraction": 1.0,
+   "flags": "ok",
+   "water_km2": 10.136,
+   "ref_km2": 10.277,
+   "shortfall_km2": 0.141,
+   "shortfall_pct": 1.37,
+   "reservoir": "sihlsee",
+   "lidar_day": "2018-05-27",
+   "lidar_water_m": 887.42
+  },
+  {
+   "date": "2018-10-12",
+   "clear_fraction": 1.0,
+   "flags": "ok",
+   "water_km2": 7.547,
+   "ref_km2": 8.661,
+   "shortfall_km2": 1.114,
+   "shortfall_pct": 12.86,
+   "reservoir": "gruyere",
+   "lidar_day": "2018-10-15",
+   "lidar_water_m": 675.0
+  },
+  {
+   "date": "2018-10-17",
+   "clear_fraction": 0.954,
+   "flags": "ok",
+   "water_km2": 7.324,
+   "ref_km2": 8.661,
+   "shortfall_km2": 1.337,
+   "shortfall_pct": 15.44,
+   "reservoir": "gruyere",
+   "lidar_day": "2018-10-15",
+   "lidar_water_m": 675.0
+  },
+  {
+   "date": "2019-03-26",
+   "clear_fraction": 0.876,
+   "reservoir": "gruyere",
+   "lidar_day": "2019-03-30",
+   "lidar_water_m": 665.13
+  },
+  {
+   "date": "2019-03-31",
+   "clear_fraction": 1.0,
+   "flags": "ok",
+   "water_km2": 5.282,
+   "ref_km2": 5.529,
+   "shortfall_km2": 0.247,
+   "shortfall_pct": 4.47,
+   "reservoir": "gruyere",
+   "lidar_day": "2019-03-30",
+   "lidar_water_m": 665.13
+  },
+  {
+   "date": "2021-09-21",
+   "clear_fraction": 1.0,
+   "flags": "ok",
+   "water_km2": 3.74,
+   "ref_km2": 3.826,
+   "shortfall_km2": 0.085,
+   "shortfall_pct": 2.23,
+   "reservoir": "dix",
+   "lidar_day": "2021-09-22",
+   "lidar_water_m": 2359.34
+  },
+  {
+   "date": "2021-09-26",
+   "clear_fraction": 0.0,
+   "reservoir": "dix",
+   "lidar_day": "2021-09-22",
+   "lidar_water_m": 2359.34
+  },
+  {
+   "date": "2021-09-26",
+   "clear_fraction": 0.0,
+   "reservoir": "emosson",
+   "lidar_day": "2021-10-01",
+   "lidar_water_m": 1925.37
+  },
+  {
+   "date": "2021-10-01",
+   "clear_fraction": 1.0,
+   "flags": "ok",
+   "water_km2": 2.842,
+   "ref_km2": 3.151,
+   "shortfall_km2": 0.309,
+   "shortfall_pct": 9.82,
+   "reservoir": "emosson",
+   "lidar_day": "2021-10-01",
+   "lidar_water_m": 1925.37
+  },
+  {
+   "date": "2020-07-30",
+   "clear_fraction": 0.85,
+   "reservoir": "lei",
+   "lidar_day": "2020-08-01",
+   "lidar_water_m": 1920.54
+  },
+  {
+   "date": "2020-08-04",
+   "clear_fraction": 0.0,
+   "reservoir": "lei",
+   "lidar_day": "2020-08-01",
+   "lidar_water_m": 1920.54
+  },
+  {
+   "date": "2023-07-08",
+   "clear_fraction": 0.069,
+   "reservoir": "grimsel",
+   "lidar_day": "2023-07-11",
+   "lidar_water_m": 1896.62
+  },
+  {
+   "date": "2023-07-10",
+   "clear_fraction": 0.517,
+   "reservoir": "grimsel",
+   "lidar_day": "2023-07-11",
+   "lidar_water_m": 1896.62
+  },
+  {
+   "date": "2023-07-13",
+   "clear_fraction": 0.032,
+   "reservoir": "grimsel",
+   "lidar_day": "2023-07-11",
+   "lidar_water_m": 1896.62
+  },
+  {
+   "date": "2023-07-15",
+   "clear_fraction": 0.749,
+   "reservoir": "grimsel",
+   "lidar_day": "2023-07-11",
+   "lidar_water_m": 1896.62
+  },
+  {
+   "date": "2023-08-14",
+   "clear_fraction": 0.414,
+   "reservoir": "grimsel",
+   "lidar_day": "2023-08-19",
+   "lidar_water_m": 1896.57
+  },
+  {
+   "date": "2023-08-17",
+   "clear_fraction": 0.0,
+   "reservoir": "grimsel",
+   "lidar_day": "2023-08-19",
+   "lidar_water_m": 1896.57
+  },
+  {
+   "date": "2023-08-19",
+   "clear_fraction": 1.0,
+   "flags": "ok",
+   "water_km2": 2.529,
+   "ref_km2": 2.294,
+   "shortfall_km2": -0.235,
+   "shortfall_pct": -10.25,
+   "reservoir": "grimsel",
+   "lidar_day": "2023-08-19",
+   "lidar_water_m": 1896.57
+  },
+  {
+   "date": "2023-08-22",
+   "clear_fraction": 0.995,
+   "flags": "ok",
+   "water_km2": 2.567,
+   "ref_km2": 2.294,
+   "shortfall_km2": -0.273,
+   "shortfall_pct": -11.9,
+   "reservoir": "grimsel",
+   "lidar_day": "2023-08-19",
+   "lidar_water_m": 1896.57
+  }
+ ]
+}
