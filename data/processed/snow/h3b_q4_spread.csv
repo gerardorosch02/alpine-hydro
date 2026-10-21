@@ -1,0 +1,15 @@
+# H3b target: mean daily CH minus DE-LU day-ahead baseload spread,
+# 1 October to 31 December, one number per year (no price series).
+# Built from cached ENTSO-E Transparency Platform day-ahead prices.
+year,q4_spread_eur_mwh,days,days_expected
+2015,15.4620,92,92
+2016,20.6430,92,92
+2017,26.9500,92,92
+2018,12.6840,92,92
+2019,5.6240,92,92
+2020,4.9450,92,92
+2021,56.9620,92,92
+2022,35.0610,92,92
+2023,14.2650,92,92
+2024,8.6230,92,92
+2025,19.1640,92,92

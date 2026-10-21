@@ -46,9 +46,13 @@ BANDS_M = (1800, 2000)
 MODIS_START = "2000-02-24"
 ERA5_START = "1990-01-01"
 GAP_FILL_DAYS = 8
+# 2000 m robustness band: MODIS pulled only for these days of each year (covers the
+# 1 April and 1 May feature windows; the 8-day gap fill looks back before the start).
+SPRING_WINDOW = ("03-14", "05-06")
 MIN_VALID_SHARE = 0.70
 SNOW_DIR = config.PROCESSED / "snow"
 EE_TAG = "alpinehydro-weekend4"
+BAND_POLYGONS = SNOW_DIR / "band_polygons.geojson"
 # The MODIS sinusoidal 500 m grid (MOD10A1 NDSI_Snow_Cover), passed explicitly to every
 # reduction: a projection object without a transform made Earth Engine fail.
 MODIS_GRID = {
@@ -163,13 +167,21 @@ def _modis_proj():
     return ee.ImageCollection("MODIS/061/MOD10A1").first().select("NDSI_Snow_Cover").projection()
 
 
+def _dem():
+    """GLO-30 over the three cantons only. Mosaicking all tiles cost ~1,300 EECU-s a call."""
+    import ee
+
+    box = ee.Geometry.Rectangle([5.9, 45.7, 10.6, 47.1])
+    col = ee.ImageCollection("COPERNICUS/DEM/GLO30_2024_1").filterBounds(box).select("DEM")
+    return col.mosaic().setDefaultProjection(col.first().projection())
+
+
 def _band_masks():
     """One 0/1 band per elevation threshold on the MODIS grid, inland water removed."""
     import ee
 
     proj = _modis_proj()
-    dem_col = ee.ImageCollection("COPERNICUS/DEM/GLO30_2024_1").select("DEM")
-    dem = dem_col.mosaic().setDefaultProjection(dem_col.first().projection())
+    dem = _dem()
     dem500 = dem.reduceResolution(ee.Reducer.mean(), maxPixels=1024).reproject(proj)
     # MODIS uses a static land/water mask; class 237 is inland water.
     water = (
@@ -188,8 +200,7 @@ def mask_areas() -> pd.DataFrame:
 
     earthengine.init()
     fc = _regions_fc()
-    dem_col = ee.ImageCollection("COPERNICUS/DEM/GLO30_2024_1").select("DEM")
-    dem = dem_col.mosaic().setDefaultProjection(dem_col.first().projection())
+    dem = _dem()
     area30 = ee.Image.cat(
         [ee.Image.pixelArea().updateMask(dem.gte(t)).rename(f"a{t}") for t in BANDS_M]
         + [ee.Image.pixelArea().rename("all")]
@@ -228,11 +239,27 @@ def _fsc(img):
     )
 
 
+def _ranked(img, terra: int):
+    """FSC plus a rank band: later days rank higher, and Terra above Aqua on the same day.
+
+    The rank band is built from the FSC band itself, so it keeps the MODIS projection and
+    mask (a constant image in another projection made mosaics very costly).
+    """
+    import ee
+
+    f = _fsc(img)
+    day = ee.Number(img.get("system:time_start")).divide(86400000).floor()
+    rank = f.multiply(0).add(day.multiply(2).add(terra)).toDouble().rename("rank")
+    return ee.Image(f.addBands(rank).copyProperties(img, ["system:time_start"]))
+
+
 def _modis_daily_collection(start: str, end: str):
     """Combined Terra/Aqua FSC per day, gap-filled from the previous 8 days.
 
     The Earth Engine MOD10A1/MYD10A1 v6.1 carry no view zenith band, so the zenith
-    is always unknown: Terra where Terra is valid, else Aqua.
+    is always unknown: Terra where Terra is valid, else Aqua. For output day d, one
+    qualityMosaic over days d-8 to d picks, per pixel, the most recent valid day, and
+    on that day Terra before Aqua. That is the plan's rule applied in one step.
     """
     import ee
 
@@ -240,72 +267,108 @@ def _modis_daily_collection(start: str, end: str):
     pad = s.advance(-GAP_FILL_DAYS, "day")
     terra = ee.ImageCollection("MODIS/061/MOD10A1").filterDate(pad, e)
     aqua = ee.ImageCollection("MODIS/061/MYD10A1").filterDate(pad, e)
-    empty = ee.Image.constant(0).rename("fsc").updateMask(ee.Image.constant(0)).toFloat()
-
-    def combined(day_offset):
-        d = pad.advance(day_offset, "day")
-        nxt = d.advance(1, "day")
-        aq = ee.ImageCollection([empty]).merge(aqua.filterDate(d, nxt).map(_fsc)).mosaic()
-        te = ee.ImageCollection([empty]).merge(terra.filterDate(d, nxt).map(_fsc)).mosaic()
-        # mosaic() puts the last image on top: Terra where valid, else Aqua.
-        fsc = ee.ImageCollection([aq.select("fsc"), te.select("fsc")]).mosaic()
-        t = ee.Image.constant(d.millis().divide(86400000)).toFloat().rename("t")
-        return fsc.addBands(t.updateMask(fsc.mask())).set("system:time_start", d.millis())
-
-    n_days = e.difference(pad, "day").round()
-    daily = ee.ImageCollection(ee.List.sequence(0, n_days.subtract(1)).map(combined))
+    both = terra.map(lambda i: _ranked(i, 1)).merge(aqua.map(lambda i: _ranked(i, 0)))
+    # A fully masked MODIS image keeps the bands present when a window has no image.
+    blank = _ranked(ee.ImageCollection("MODIS/061/MOD10A1").first(), 0).updateMask(0)
 
     def filled(day_offset):
         d = s.advance(day_offset, "day")
-        window = daily.filterDate(d.advance(-GAP_FILL_DAYS, "day"), d.advance(1, "day"))
-        return window.qualityMosaic("t").select("fsc").set("system:time_start", d.millis())
+        window = both.filterDate(d.advance(-GAP_FILL_DAYS, "day"), d.advance(1, "day"))
+        mosaic = ee.ImageCollection([blank]).merge(window).qualityMosaic("rank")
+        return mosaic.select("fsc").set("system:time_start", d.millis())
 
     n_out = e.difference(s, "day").round()
     return ee.ImageCollection(ee.List.sequence(0, n_out.subtract(1)).map(filled))
 
 
-def _reduce_daily(daily, value_band: str):
-    """Per day and canton: sums of the value, of valid band pixels and of band pixels.
+def build_band_polygons() -> Path:
+    """Vectorise the 500 m band masks once per canton and band (MODIS grid).
 
-    Sums (weighted by pixel coverage) let the Total be built exactly as the mean over
-    all valid pixels of the three cantons.
+    Computing the mask from the 30 m DEM costs about 600 EECU-s per call, so it is done
+    once and the daily reductions use these polygons instead. The pixels are the same.
     """
     import ee
 
+    earthengine.init()
+    ee.data.setWorkloadTag(EE_TAG)
     masks = _band_masks()
-    fc = _regions_fc()
-
-    def per_day(img):
-        bands = []
-        v = img.select(value_band)
+    feats = []
+    for region in CANTONS:
+        geom = ee.Geometry(canton_geojson(region)["geometry"])
         for t in BANDS_M:
             m = masks.select(f"b{t}")
-            ok = m.And(v.mask().gt(0))
-            bands += [
-                v.updateMask(ok).rename(f"s{t}"),
-                ok.updateMask(ok).rename(f"nv{t}"),
-                m.updateMask(m).rename(f"nb{t}"),
-            ]
-        stats = _reduce_each(ee.Image.cat(bands), ee.Reducer.sum(), fc, **MODIS_GRID)
-        date = ee.Date(img.get("system:time_start")).format("YYYY-MM-dd")
-        return stats.map(lambda f: f.set("date", date))
+            vec = m.updateMask(m).reduceToVectors(
+                geometry=geom,
+                maxPixels=1e10,
+                geometryType="polygon",
+                eightConnected=False,
+                **MODIS_GRID,
+            )
+            info = _get_info(vec.geometry(maxError=1), f"vectors {region} {t}")
+            feats.append(
+                {"type": "Feature", "geometry": info, "properties": {"region": region, "band_m": t}}
+            )
+    BAND_POLYGONS.parent.mkdir(parents=True, exist_ok=True)
+    fc = {
+        "type": "FeatureCollection",
+        "credit": CREDIT + "; Copernicus GLO-30 DEM",
+        "note": "500 m MODIS pixels whose mean GLO-30 elevation is at or above band_m, "
+        "inland water removed, inside each canton",
+        "features": feats,
+    }
+    BAND_POLYGONS.write_text(json.dumps(fc), encoding="utf-8")
+    return BAND_POLYGONS
 
-    return daily.map(per_day).flatten()
+
+def _band_fc(bands: tuple[int, ...] = BANDS_M):
+    import ee
+
+    fc = json.loads(BAND_POLYGONS.read_text(encoding="utf-8"))
+    return ee.FeatureCollection(
+        [
+            ee.Feature(ee.Geometry(f["geometry"]), f["properties"])
+            for f in fc["features"]
+            if f["properties"]["band_m"] in bands
+        ]
+    )
 
 
-def _rows(fc_info: dict) -> list[dict]:
+def _reduce_stack(daily, value_band: str, days: list[str], bands=BANDS_M):
+    """Per canton and band: sums of the value, of valid pixels and of band pixels, per day.
+
+    The days of a chunk are stacked as bands of one image and reduced once per band
+    polygon. Sums (weighted by pixel coverage) let the Total be built exactly as the
+    mean over all valid pixels of the three cantons.
+    """
+    import ee
+
+    n = len(days)
+    stack = daily.select(value_band).toBands().rename([f"s_{i}" for i in range(n)])
+    img = ee.Image.cat(
+        stack,
+        stack.mask().gt(0).rename([f"nv_{i}" for i in range(n)]),
+        ee.Image.constant(1).rename("nb"),
+    )
+    return _band_fc(bands).map(
+        lambda f: ee.Feature(
+            None, img.reduceRegion(ee.Reducer.sum(), f.geometry(), maxPixels=1e10, **MODIS_GRID)
+        ).copyProperties(f, ["region", "band_m"])
+    )
+
+
+def _rows(fc_info: dict, days: list[str]) -> list[dict]:
     rows = []
     for f in fc_info["features"]:
         p = f["properties"]
-        for t in BANDS_M:
+        for i, day in enumerate(days):
             rows.append(
                 {
-                    "date": p["date"],
+                    "date": day,
                     "region": p["region"],
-                    "band_m": t,
-                    "s": p.get(f"s{t}") or 0.0,
-                    "nv": p.get(f"nv{t}") or 0.0,
-                    "nb": p.get(f"nb{t}") or 0.0,
+                    "band_m": p["band_m"],
+                    "s": p.get(f"s_{i}") or 0.0,
+                    "nv": p.get(f"nv_{i}") or 0.0,
+                    "nb": p.get("nb") or 0.0,
                 }
             )
     return rows
@@ -341,7 +404,9 @@ def _chunks(start: str, end: str, months: int) -> list[tuple[str, str]]:
     return out
 
 
-def modis_daily(start: str, end: str, months_per_call: int = 3) -> pd.DataFrame:
+def modis_daily(
+    start: str, end: str, months_per_call: int = 1, bands: tuple[int, ...] = BANDS_M
+) -> pd.DataFrame:
     """Daily regional FSC and valid share, [start, end), pulled in small tables."""
     import ee
 
@@ -349,9 +414,11 @@ def modis_daily(start: str, end: str, months_per_call: int = 3) -> pd.DataFrame:
     ee.data.setWorkloadTag(EE_TAG)
     rows = []
     for s, e in _chunks(start, end, months_per_call):
-        info = _get_info(_reduce_daily(_modis_daily_collection(s, e), "fsc"), f"MODIS {s}")
-        rows += _rows(info)
-        print(f"MODIS {s} to {e}: {len(info['features'])} region-days")
+        days = [d.strftime("%Y-%m-%d") for d in pd.date_range(s, e, inclusive="left")]
+        daily = _modis_daily_collection(s, e)
+        info = _get_info(_reduce_stack(daily, "fsc", days, bands), f"MODIS {s}")
+        rows += _rows(info, days)
+        print(f"MODIS {s} to {e}: {len(days)} days")
     return _tidy(_from_sums(pd.DataFrame(rows)), "fsc")
 
 
@@ -369,9 +436,13 @@ def era5_swe_daily(start: str, end: str, months_per_call: int = 12) -> pd.DataFr
             .select("snow_depth_water_equivalent")
             .map(lambda i: i.multiply(1000).rename("swe").copyProperties(i, ["system:time_start"]))
         )
-        info = _get_info(_reduce_daily(col, "swe"), f"ERA5 {s}")
-        rows += _rows(info)
-        print(f"ERA5 {s} to {e}: {len(info['features'])} region-days")
+        stamps = _get_info(col.aggregate_array("system:time_start"), f"ERA5 dates {s}")
+        days = [pd.Timestamp(ms, unit="ms").strftime("%Y-%m-%d") for ms in stamps]
+        if not days:
+            continue
+        info = _get_info(_reduce_stack(col, "swe", days), f"ERA5 {s}")
+        rows += _rows(info, days)
+        print(f"ERA5 {s} to {e}: {len(days)} days")
     df = _tidy(_from_sums(pd.DataFrame(rows)), "swe_mm")
     return df.drop(columns="valid_share")
 
@@ -395,7 +466,7 @@ def write_csv(df: pd.DataFrame, path: Path, header: list[str]) -> Path:
     buf = io.StringIO()
     for line in header:
         buf.write(f"# {line}\n")
-    df.to_csv(buf, index=False, float_format="%.5f", lineterminator="\n")
+    df.to_csv(buf, index=False, float_format="%.4f", lineterminator="\n")
     path.write_text(buf.getvalue(), encoding="utf-8")
     return path
 
@@ -404,6 +475,20 @@ def read_csv(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path, comment="#")
     df["date"] = pd.to_datetime(df["date"])
     return df
+
+
+def latest_image_day(source: str) -> pd.Timestamp:
+    """Last day with an image (MODIS: Terra or Aqua; ERA5-Land daily aggregates)."""
+    import ee
+
+    earthengine.init()
+    ids = (
+        ["MODIS/061/MOD10A1", "MODIS/061/MYD10A1"]
+        if source == "modis"
+        else ["ECMWF/ERA5_LAND/DAILY_AGGR"]
+    )
+    last = max(ee.ImageCollection(i).aggregate_max("system:time_start").getInfo() for i in ids)
+    return pd.Timestamp(last, unit="ms").normalize()
 
 
 def today_utc() -> str:

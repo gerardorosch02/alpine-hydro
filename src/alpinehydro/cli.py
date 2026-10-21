@@ -264,6 +264,10 @@ def demo():
     The Dix example scene needs imagery, so the committed PNG is kept as it is.
     """
     _figures(example=False)
+    from alpinehydro import plots_snow
+
+    for p in plots_snow.all_figures():
+        typer.echo(f"wrote {p.relative_to(config.ROOT)}")
 
 
 @app.command("features")
@@ -287,6 +291,125 @@ def h1_cmd():
         mark = "HOLDS" if line["holds"] else "does not hold"
         typer.echo(f"  rule line {k} {mark}: {line['values']}")
     for path in evaluate.figures(r):
+        typer.echo(f"wrote {path.relative_to(config.ROOT)}")
+
+
+@app.command("snow-outlines")
+def snow_outlines_cmd():
+    """Canton outlines (swissBOUNDARIES3D) and 1800/2000 m band areas and polygons (EE)."""
+    from alpinehydro import snow
+
+    typer.echo(json.dumps(snow.build_outlines()))
+    areas = snow.mask_areas()
+    _write_check("snow_masks", {"rows": areas.round(3).to_dict(orient="records")})
+    typer.echo(f"wrote {snow.build_band_polygons().relative_to(config.ROOT)}")
+
+
+@app.command("snow-series")
+def snow_series_cmd(
+    source: str = typer.Argument(..., help="modis or era5"),
+    first_year: int = typer.Option(None),
+    last_year: int = typer.Option(None),
+    band: int = typer.Option(None, help="MODIS: one band only (1800 or 2000)."),
+    spring: bool = typer.Option(False, help="MODIS: only 14 March to 5 May of each year."),
+):
+    """Pull daily regional snow series year by year (Earth Engine, region statistics only).
+
+    Each year is cached in data/interim/snow/, so a stopped run resumes; the combined
+    table is written to data/processed/snow/.
+    """
+    import datetime as dt
+
+    import pandas as pd
+
+    from alpinehydro import features_snow, snow
+
+    cache = config.INTERIM / "snow"
+    cache.mkdir(parents=True, exist_ok=True)
+    # Stop after the last day with an image, so no day is only carried forward.
+    today = snow.latest_image_day(source) + pd.Timedelta(days=1)
+    start = pd.Timestamp(snow.MODIS_START if source == "modis" else snow.ERA5_START)
+    years = range(first_year or start.year, (last_year or today.year) + 1)
+    for y in years:
+        tag = f"{source}{'_' + str(band) if band else ''}{'_spring' if spring else ''}"
+        path = cache / f"{tag}_{y}.csv"
+        if path.exists() and y < today.year:
+            continue
+        if spring:
+            lo, hi = (pd.Timestamp(f"{y}-{md}") for md in snow.SPRING_WINDOW)
+        else:
+            lo, hi = pd.Timestamp(y, 1, 1), pd.Timestamp(y + 1, 1, 1)
+        s = max(start, lo).strftime("%Y-%m-%d")
+        e = min(hi, today).strftime("%Y-%m-%d")
+        if s >= e:
+            continue
+        if source == "modis":
+            df = snow.modis_daily(s, e, bands=(band,) if band else snow.BANDS_M)
+        else:
+            df = snow.era5_swe_daily(s, e)
+        df.to_csv(path, index=False)
+        typer.echo(f"{source} {y}: {len(df)} rows at {dt.datetime.now():%H:%M}")
+    parts = sorted(cache.glob(f"{source}_*.csv"))
+    df = pd.concat([pd.read_csv(p) for p in parts], ignore_index=True)
+    df = df.drop_duplicates(["date", "region", "band_m"], keep="last")
+    stamp = f"pulled_utc: {snow.today_utc()}; Earth Engine workload tag {snow.EE_TAG}"
+    if source == "modis":
+        df = snow.finalise_modis(df)
+        out = snow.write_csv(
+            df,
+            features_snow.MODIS_CSV,
+            [
+                snow.MODIS_CITATION,
+                "fsc: mean fractional snow cover (FSC = -0.01 + 1.45 NDSI, clipped 0-1) over valid",
+                "pixels of the band; Terra where valid, else Aqua; gaps filled from the previous",
+                "8 days; valid_share: valid over band pixels; missing: valid_share below 0.70",
+                "regions: swisstopo swissBOUNDARIES3D cantons; band: GLO-30 mean elevation per",
+                "500 m pixel at or above band_m. Total: all valid pixels of the three cantons.",
+                "band_m 1800: every day from 2000-02-24; band_m 2000 (robustness): only",
+                "14 March to 5 May of each year (the 1 April and 1 May feature windows).",
+                stamp,
+            ],
+        )
+    else:
+        out = snow.write_csv(
+            df,
+            features_snow.ERA5_CSV,
+            [
+                snow.ERA5_CREDIT,
+                "swe_mm: ERA5-Land snow_depth_water_equivalent daily mean (DAILY_AGGR), mm,",
+                "averaged over the 500 m band pixels of each canton (same pixels as MODIS).",
+                stamp,
+            ],
+        )
+    typer.echo(f"wrote {out.relative_to(config.ROOT)} ({len(df)} rows)")
+
+
+@app.command("snow-features")
+def snow_features_cmd():
+    """Build the H3 features and targets, and the yearly H3b target (needs cached prices)."""
+    from alpinehydro import features_snow
+
+    f = features_snow.build(*features_snow.load_inputs())
+    q4 = None
+    if (config.INTERIM / "entsoe_prices_daily.parquet").exists():
+        q4 = features_snow.q4_spread()
+    for p in features_snow.write(f, q4):
+        typer.echo(f"wrote {p.relative_to(config.ROOT)}")
+
+
+@app.command("h3")
+def h3_cmd():
+    """Run H3a, H3b and the Holm update exactly as the H3 analysis plan."""
+    from alpinehydro import evaluate_snow, plots_snow
+
+    r = evaluate_snow.run()
+    p = r["primary"]["walk_forward"]
+    typer.echo(
+        f"H3a verdict: {r['verdict']} (skill vs C1 {p['skill_vs_c1']:+.3f}, vs C0 "
+        f"{p['skill_vs_c0']:+.3f}, CW p {p['clark_west_vs_c1']['p_one_sided']:.3f}, Holm "
+        f"{r['holm']['adjusted_p']['H3a']:.3f})"
+    )
+    for path in plots_snow.all_figures():
         typer.echo(f"wrote {path.relative_to(config.ROOT)}")
 
 
