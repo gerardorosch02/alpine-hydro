@@ -315,9 +315,10 @@ def reservoir_chart(
     _style(ax2)
 
     quality = " (indicative)" if r.get("fill_quality") == "indicative" else ""
-    ax1.set_title(
+    fig.suptitle(
         f"{r['name']}: water level and fill from Sentinel-2 and Landsat{quality}",
-        loc="left",
+        x=0.01,
+        ha="left",
         color=INK,
         fontsize=12,
     )
@@ -331,5 +332,5 @@ def reservoir_chart(
         color=INK_2,
         fontsize=7,
     )
-    fig.tight_layout(rect=(0, 0.045, 1, 1))
+    fig.tight_layout(rect=(0, 0.045, 1, 0.97))
     return _save(fig, out_dir, f"reservoir_{slug}")
