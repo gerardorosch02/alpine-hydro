@@ -502,6 +502,7 @@ was committed before the first fit). None changes a rule after seeing a result.
 | D12 | 2026-10-21 | Verdict labels | If rule line 2 holds: "no effect (equivalence)". Else if line 1 or 3 holds: "no edge". Else: "edge". | The rule defines "no edge"; line 2 is the equivalence case, the stronger statement. |
 | D13 | 2026-10-21 | Benchmark inputs | B1 and B2 use the raw 28-day spread before the origin (not winsorised); B0 and B2 average the clipped training y; controls are not winsorised | The text winsorises only x and y. |
 | D14 | 2026-10-21 | N1 (satellite nowcast of the next SFOE release) | Not run. The Holm family is H2, H3a and H3b. | Part A was closed after the Wallis validation, and the timing ceiling was about EUR 0.2/MWh (section 7 of the pre-registration). Decided in weekend 4, before any H3 fit. |
+| D15 | 2026-10-21 | HDD source for live origins (winter 2026/27 only) | Live CH and DE HDD come from the Copernicus CDS ERA5-Land daily statistics (the source named in the pre-registration), with the same country outlines and area weights as D10. Before first use, the CDS and Earth Engine values are compared on days both hold. The backtest keeps Earth Engine (D10). | Earth Engine's ERA5-Land runs about 10 days behind (11 October on 21 October), so a live HDD window ending 7 days before the origin is only about 89% covered and fails the D9 floor. CDS publishes after about 6 days, as the pre-registration assumed. Found in a dry run on 2026-10-21; owner's choice; decided before any live forecast. |
 
 ## Deviations from the H3 analysis plan
 
