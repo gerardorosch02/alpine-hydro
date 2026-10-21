@@ -361,3 +361,36 @@ def classify(arrays: dict, window: np.ndarray, lake_max: np.ndarray) -> dict:
 def load_arrays(path: Path) -> dict:
     d = np.load(path)
     return {k: d[k] for k in d.files}
+
+
+def pull_rgb(slug: str, date: str) -> np.ndarray:
+    """True-colour Sentinel-2 crop (B4, B3, B2 reflectance x 10000) on the reservoir grid.
+
+    Only for the example figure; cached in data/interim/masks/ (git-ignored).
+    """
+    path = MASK_DIR / slug / f"rgb_{date}.npz"
+    if path.exists():
+        return np.load(path)["rgb"]
+    import ee
+
+    from alpinehydro.earthengine import init
+
+    init()
+    ee.data.setWorkloadTag(WORKLOAD_TAG)
+    win = _window_ee(slug)
+    d0 = ee.Date(date)
+    img = (
+        ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
+        .filterBounds(win)
+        .filterDate(d0, d0.advance(1, "day"))
+        .mosaic()
+        .select(["B4", "B3", "B2"])
+        .toInt16()
+    )
+    px = ee.data.computePixels(
+        {"expression": img, "fileFormat": "NUMPY_NDARRAY", "grid": _grid(slug)}
+    )
+    rgb = np.dstack([px["B4"], px["B3"], px["B2"]])
+    path.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(path, rgb=rgb)
+    return rgb

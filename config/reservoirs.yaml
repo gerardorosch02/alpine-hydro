@@ -163,7 +163,9 @@ reservoirs:
     fill_quality_reason: >-
       The fitted curve below the global DEM floor hit the lower bound b = 1 (the published bed
       gave b = 0.70, so the bed moved 19.7 m down), and 27% of the usable volume lies in that
-      fitted part. Treat Mauvoisin's fill as indicative (decision of 2026-10-20).
+      fitted part. Treat Mauvoisin's fill as indicative (decision of 2026-10-20). The curve
+      continuity check of 2026-10-21 also failed: the area gained per metre in the 5 m below
+      the swissALTI3D floor is 0.23 of that above it (pass mark 0.25). Kept, not repaired.
 
   - name: Lago di Lei
     slug: lei
@@ -212,3 +214,10 @@ reservoirs:
     head_check_source: Handeck 1 547 m + Innertkirchen 1 672 m gross head (swissdams), Grimsel 1 stage not included
     max_depth_m: 100
     max_depth_source: sfoe1983. Sets the bed level h0 of the fitted curve
+    fill_quality: indicative
+    fill_quality_reason: >-
+      Curve continuity check of 2026-10-21: the area gained per metre in the 5 m below the
+      swissALTI3D floor is 0.248 of that above it (pass mark 0.25; only 1.09 m above to
+      compare). Satellite masks on 2023-08-19 and 2023-08-22 were 10 to 12% larger than the
+      curve area at the lidar water level 11 m below the floor, so the GLO-30 curve looks too
+      small there. Kept, not repaired (decision of 2026-10-21).

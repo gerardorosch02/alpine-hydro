@@ -87,20 +87,110 @@ satellite head start is likely worthless. Part A should be framed as
 per-reservoir detail (which reservoirs, which valleys, how they fill),
 not as a faster version of the SFOE number.
 
-## Part A: satellite storage (weekend 2, in progress)
+## Part A: satellite storage (weekend 2, closed)
 
-The Wallis validation and the coverage figures will be added here when the
-Dix, Emosson and Mauvoisin batches are done.
+Part A was an experiment in where free satellite data (Sentinel-2 from 2017,
+Landsat 8 and 9 from 2013) can and can't track Alpine storage. Water masks
+come from MNDWI with a per-scene Otsu threshold. A level is read by matching
+each mask to terrain from swissALTI3D, a global DEM and a fitted curve, and
+volume and energy follow from the reservoir's curve and energy coefficient.
+Machine-readable results: `reports/checks/wallis_validation.json`,
+`data/processed/satellite/`.
 
-**Lac de la Gruyère: fill not usable.** Its scenes table is kept for the
-coverage figure, but its levels and fill are not used. Two problems meet at
-the same heights. Below the swissALTI3D floor (674.02 m), the GLO-30 band is
-nearly flat: the lake area grows by only 0.02 km² per metre from 669 to
-674 m, against 0.38 km² per metre in the 3 m above the floor. And the summer
-water masks cover about 7.9 km², 3 to 5% short of the 8.30 km² lake at the
-floor. On this curve that shortfall alone moves the level by about 6 m. The
-result is a level series flat at 667 to 670 m all year, with no seasonal
-cycle. Of 1,478 scenes, 543 were at least 90% clear; 18 were ok and 425 were
-no_match.
+### Wallis validation: pass
 
-![Gruyère levels](figures/reservoir_gruyere.png)
+Satellite Wallis is the energy sum of Lac des Dix, Lac d'Emosson and Lac de
+Mauvoisin, calibrated to SFOE Wallis with only a scale and an offset, walk-forward
+by hydrological year. The first year (2013/14, 2 ok weeks) is in-sample and left
+out. Scored on anomalies (deviation from the same week's mean across the other
+years) for June to November weeks where all three lakes have an ok scene within
+3 days of the SFOE week end.
+
+| | R² of anomalies | MAE (pp of capacity) | Fill bias (pp) | Fill MAE (pp) | n weeks | Result |
+|---|---|---|---|---|---|---|
+| **Dix + Emosson + Mauvoisin** | **0.695** | 2.67 | +0.31 | 2.04 | 46 | **pass** (mark 0.50) |
+| Sensitivity: without Mauvoisin | 0.715 | 3.33 | +0.98 | 2.56 | 56 | pass |
+
+The sensitivity drops Mauvoisin, whose fill is indicative. It is a check, not
+the main result. Scored years run from 2017/18 to 2025/26. The anomaly bias is
+zero by construction (leave-one-year-out anomalies sum to zero each week), so
+the table gives the bias and error of the calibrated fill itself.
+
+By month (main result). No June or November week had all three lakes ok.
+
+| Month | n | R² | MAE (pp) | SD of SFOE anomaly (pp) |
+|---|---|---|---|---|
+| July | 9 | 0.66 | 4.64 | 9.1 |
+| August | 11 | 0.89 | 2.27 | 7.8 |
+| September | 12 | 0.01 | 2.46 | 3.0 |
+| October | 14 | 0.44 | 1.91 | 3.0 |
+
+![Validation scatter](figures/validation_scatter.png)
+
+**What worked and what failed.** The pass rests on July and August, when the
+lakes are filling and years differ by up to 17 points. In late July 2026, for
+example, SFOE Wallis was 14 to 17 points below the same weeks of other years and
+the satellite showed 15 points below; in early August 2024 SFOE was 13 points
+above and the satellite 8 above. In September and October the lakes sit near
+full and SFOE anomalies are small (SD 3 pp). The satellite cannot see them,
+because near the top the masks run a few percent short of the true area along
+the shore, and that shortfall hides the last metres of level. At Emosson,
+ok levels never pass the swissALTI3D floor (1920.4 m) although full supply is
+1930 m. June and November fail for a different reason: snow, lake ice and
+cloud, so no week has all three lakes clear. Only 54 of the weeks since 2013
+had all three lakes ok, and the sample is small: 46 scored weeks over 13
+calendar weeks. The first out-of-sample year (2017/18) is calibrated on just
+2 Landsat weeks.
+
+**Stated uncertainty: mask edge bias.** Against lidar water levels on the
+flight day, the masks were 1.4% to 15% short of the true lake area
+(clean tests at Sihlsee, Gruyère and Emosson; `reports/checks/mask_edge_bias.json`).
+The shortfall is not consistent between lakes, so it is not corrected. It is
+roughly one 10 m pixel along the whole shore, more on steep wooded banks.
+
+### Coverage
+
+Share of SFOE weeks (from April 2017, in searched months) whose closest scene
+within 3 days falls in each class:
+
+| Reservoir | ok | Level not trusted | Ice or snow | Cloud | No scene |
+|---|---|---|---|---|---|
+| Sihlsee (all months) | 28% | 22% | 15% | 33% | 1% |
+| Lac de la Gruyère (all months) | 3% | 46% | 5% | 45% | 1% |
+| Lac des Dix (June to November) | 40% | 8% | 8% | 41% | 4% |
+| Lac d'Emosson (June to November) | 33% | 10% | 7% | 50% | 1% |
+| Lac de Mauvoisin (June to November) | 37% | 4% | 17% | 39% | 4% |
+
+Share of weeks with an ok scene, by month:
+
+| Month | Dix | Emosson | Mauvoisin |
+|---|---|---|---|
+| June | 33% | 12% | 14% |
+| July | 55% | 36% | 34% |
+| August | 39% | 55% | 45% |
+| September | 42% | 47% | 51% |
+| October | 48% | 42% | 52% |
+| November | 21% | 3% | 21% |
+
+![Coverage map](figures/coverage_map.png)
+
+### Fill quality per reservoir
+
+- **Lac de la Gruyère: fill not usable.** Its scenes table is kept for the
+  coverage figure, but its levels and fill are not used. Two problems meet at
+  the same heights. Below the swissALTI3D floor (674.02 m), the GLO-30 band is
+  nearly flat: the lake area grows by only 0.02 km² per metre from 669 to
+  674 m, against 0.38 km² per metre in the 3 m above the floor. And the summer
+  water masks cover about 7.9 km², 3 to 5% short of the 8.30 km² lake at the
+  floor. On this curve that shortfall alone moves the level by about 6 m. The
+  result is a level series flat at 667 to 670 m all year.
+- **Lac de Mauvoisin: indicative.** Its fitted curve hit the lower bound b = 1,
+  27% of its usable volume is fitted, and its curve failed the continuity check
+  (ratio 0.23 against a mark of 0.25).
+- **Grimsel: indicative** (continuity ratio 0.248). Not run this weekend.
+- Lei and Grimsel batches and the DAHITI altimetry check are out of scope:
+  Part A closed after the Wallis validation.
+- Sihlsee is shown beside the SFOE "rest of Switzerland" region as a visual
+  check only. One lake cannot stand in for a region.
+
+![Sihlsee](figures/sihlsee_showcase.png)

@@ -180,24 +180,90 @@ def masks_cmd(
                 typer.echo(f"  {i}/{len(keep)}")
 
 
-def _hero() -> None:
-    from alpinehydro.fetch import sfoe
-    from alpinehydro.plots import hero_chart
+SATELLITE_SLUGS = ["sihlsee", "gruyere", "dix", "emosson", "mauvoisin"]
 
-    for p in hero_chart(sfoe.load_processed()):
+
+@app.command("scenes")
+def scenes_cmd(only: list[str] = typer.Option(None, "--only", help="Reservoir slugs.")):
+    """Scene tables from the cached masks, merged into data/processed/satellite/scenes.csv."""
+    from alpinehydro import storage
+
+    for slug in only or SATELLITE_SLUGS:
+        df = storage.build(slug)
+        typer.echo(f"{slug}: {len(df)} scenes, {(df['flag'] == 'ok').sum()} ok")
+    typer.echo(f"wrote {storage.write_scenes().relative_to(config.ROOT)}")
+
+
+@app.command("weekly")
+def weekly_cmd():
+    """Weekly series aligned to the SFOE week end: data/processed/satellite/weekly.csv."""
+    from alpinehydro import weekly
+
+    df = weekly.build(SATELLITE_SLUGS)
+    typer.echo(f"wrote {len(df)} rows to {weekly.OUT.relative_to(config.ROOT)}")
+
+
+@app.command("validate")
+def validate_cmd():
+    """Score satellite Wallis against SFOE Wallis, with and without Mauvoisin."""
+    from alpinehydro import validate
+
+    main = validate.run(write=True)
+    sens = validate.run(["dix", "emosson"])
+    out = {"main": main, "sensitivity_without_mauvoisin": sens}
+    _write_check("wallis_validation", out)
+    for label, m in out.items():
+        typer.echo(
+            f"{label}: R2 {m.get('r2')} ({'pass' if m['pass'] else 'fail'}), "
+            f"MAE {m.get('mae_pp')} pp, bias {m.get('bias_pp')} pp, n {m.get('n')}"
+        )
+
+
+def _figures(example: bool) -> None:
+    import pandas as pd
+
+    from alpinehydro import plots, storage, validate
+    from alpinehydro.fetch import sfoe
+
+    st = sfoe.load_processed()
+    sc = storage.load_scenes()
+    wallis_path = validate.OUT
+    wallis = None
+    paths = []
+    if wallis_path.exists():
+        wallis = pd.read_csv(wallis_path, comment="#", parse_dates=["valid_time"])
+        scored = wallis.dropna(subset=["sat_anom_pp", "sfoe_anom_pp"])
+        m = validate.metrics(scored)
+        m["pass"] = bool(m.get("r2", -1) >= validate.PASS_R2)
+        paths += plots.validation_scatter(wallis, m)
+    paths += plots.hero_chart(st, wallis)
+    slugs = list(dict.fromkeys(sc["reservoir"]))
+    order = [s for s in SATELLITE_SLUGS if s in slugs]
+    paths += plots.coverage_map(plots.coverage_table(sc, st, order))
+    paths += plots.sihlsee_showcase(sc)
+    for slug in order:
+        paths += plots.reservoir_chart(slug, sc, st)
+    if example:
+        ok = sc[(sc["reservoir"] == "dix") & (sc["flag"] == "ok") & (sc["sensor"] == "s2")]
+        best = ok.sort_values("clear_fraction", ascending=False).iloc[0]
+        paths += plots.example_scene("dix", best)
+    for p in paths:
         typer.echo(f"wrote {p.relative_to(config.ROOT)}")
 
 
 @app.command("figures")
 def figures():
-    """Draw the hero storage chart."""
-    _hero()
+    """Draw every figure, including the Dix example scene (needs Earth Engine)."""
+    _figures(example=True)
 
 
 @app.command("demo")
 def demo():
-    """Rebuild the hero chart from committed data/processed/ only. No network, no keys."""
-    _hero()
+    """Rebuild the figures from committed data/processed/ only. No network, no keys.
+
+    The Dix example scene needs imagery, so the committed PNG is kept as it is.
+    """
+    _figures(example=False)
 
 
 @app.command("status")

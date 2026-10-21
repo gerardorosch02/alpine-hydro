@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from alpinehydro import config, hypsometry, storage, water_mask, weekly
+from alpinehydro import config, hypsometry, storage, validate, water_mask, weekly
 
 
 def test_otsu_splits_two_peaks():
@@ -127,3 +127,41 @@ def test_dahiti_pairs_within_three_days():
     # Only the scene of 1 July has a DAHITI point within 3 days; the 20 July scene is cloud.
     assert out["n"] == 1
     assert out["mean_difference_m"] == pytest.approx(0.5)
+
+
+def _wallis_frame(seed=0):
+    rng = np.random.default_rng(seed)
+    t = pd.date_range("2018-06-03", "2022-11-27", freq="7D")
+    t = t[(t.month >= 6) & (t.month <= 11)]
+    sat = rng.uniform(500, 2500, len(t))
+    df = pd.DataFrame({"valid_time": t, "sat_gwh": sat, "content_gwh": 100 + 1.5 * sat})
+    df["ok"] = True
+    df["max_gwh"] = 4000.0
+    df["hydro_year"] = validate.hydro_year(df["valid_time"])
+    df["month"] = df["valid_time"].dt.month
+    df["iso_week"] = df["valid_time"].dt.isocalendar().week.astype(int)
+    return df
+
+
+def test_calibration_uses_no_same_year_data():
+    df = _wallis_frame()
+    base = validate.walk_forward(df)
+    first = base["hydro_year"].min()  # June 2018 belongs to hydrological year 2017
+    assert base.loc[base["hydro_year"] == first, "in_sample"].all()
+    assert not base.loc[base["hydro_year"] > first, "in_sample"].any()
+    # Change the SFOE values of hydrological year 2020 only.
+    changed = df.copy()
+    changed.loc[changed["hydro_year"] == 2020, "content_gwh"] *= 3
+    wf = validate.walk_forward(changed)
+    y20 = wf["hydro_year"] == 2020
+    # Year 2020's own calibration must not move; later years must.
+    assert np.allclose(wf.loc[y20, "sat_cal_gwh"], base.loc[y20, "sat_cal_gwh"])
+    y21 = wf["hydro_year"] == 2021
+    assert not np.allclose(wf.loc[y21, "sat_cal_gwh"], base.loc[y21, "sat_cal_gwh"])
+
+
+def test_validation_scores_a_perfect_satellite():
+    s = validate.anomalies(validate.walk_forward(_wallis_frame()))
+    m = validate.metrics(s)
+    assert m["r2"] == pytest.approx(1.0)
+    assert m["mae_pp"] == pytest.approx(0.0, abs=1e-6)
