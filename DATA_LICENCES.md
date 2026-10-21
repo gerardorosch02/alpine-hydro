@@ -4,12 +4,15 @@ The code is MIT licensed (see LICENSE). Data keep the licence of their source.
 Rule for this repo: price data from ENTSO-E, Energy-Charts, EEX or JAO are never
 committed, raw or processed. Only SFOE storage, SMARD-derived prices and my own
 derived statistics may be committed, and no SMARD price series is committed yet.
+One exception, approved on 2026-10-21 for H3b: 11 yearly mean CH minus DE-LU spreads
+(October to December, 2015 to 2025) in `data/processed/snow/h3b_q4_spread.csv`.
+Credit: ENTSO-E Transparency Platform. No daily or hourly price is committed.
 
 | Source | What | Licence | Credit line | Committed |
 |---|---|---|---|---|
 | SFOE ogd17 | Weekly reservoir storage by region | opendata.swiss "terms_by": open use, commercial use allowed, source must be given (ogd17 catalogue entry) | Source: Swiss Federal Office of Energy SFOE | Yes: `data/processed/sfoe_storage_weekly.csv`, release and PDF logs |
 | SFOE weekly PDF | Same storage, published earlier than the CSV | As above | Source: Swiss Federal Office of Energy SFOE | No (only headers and hash in `sfoe_pdf_log.csv`) |
-| ENTSO-E Transparency Platform | Day-ahead prices (art. 12.1.d), reservoir filling (art. 16.1.d) | Terms of Use of 29 March 2023. Neither item is on the CC-BY 4.0 "List of data available for free re-use" (18 October 2023) | ENTSO-E Transparency Platform | No price series. Summary statistics of my own checks, and (from weekend 4) one mean October to December CH minus DE-LU spread per year, 2015 to 2025, in `data/processed/snow/h3b_q4_spread.csv` |
+| ENTSO-E Transparency Platform | Day-ahead prices (art. 12.1.d), reservoir filling (art. 16.1.d) | Terms of Use of 29 March 2023. Neither item is on the CC-BY 4.0 "List of data available for free re-use" (18 October 2023) | ENTSO-E Transparency Platform | No price series. Summary statistics of my own checks, and (from weekend 4) one mean October to December CH minus DE-LU spread per year, 2015 to 2025, in `data/processed/snow/h3b_q4_spread.csv`, credited "ENTSO-E Transparency Platform" |
 | SMARD (Bundesnetzagentur) | Day-ahead prices DE-LU, CH, FR | CC BY 4.0 (smard.de/home/datennutzung, checked 2026-10-20) | Bundesnetzagentur \| SMARD.de | Not yet. Allowed, but kept in `data/interim/` until needed |
 | Energy-Charts | Prices | Not used | n/a | No |
 | EEX | Futures, auctions | Proprietary | n/a | No |
@@ -24,6 +27,10 @@ derived statistics may be committed, and no SMARD price series is committed yet.
 | MODIS MOD10A1 and MYD10A1 v6.1 (NASA NSIDC DAAC) | Daily snow cover, Part C | NASA data: no restrictions on use; citation requested | Hall, D. K. and G. A. Riggs (2021). MODIS/Terra and MODIS/Aqua Snow Cover Daily L3 Global 500m SIN Grid, Version 61. NSIDC DAAC | Regional daily means only, `data/processed/snow/modis_daily.csv`. No imagery |
 | swisstopo swissBOUNDARIES3D (2026-01) | Canton outlines of Valais, Graubünden and Ticino, Part C | swisstopo open government data (free use, source must be given) | Source: Federal Office of Topography swisstopo | Simplified outlines in `data/external/outlines/canton_*.geojson` |
 | JAXA ALOS AW3D30 v4.1 | 30 m surface model, 2006 to 2011, compared only (not chosen anywhere) | JAXA terms of use (free use with credit) | (c) JAXA | Nothing derived from it is used in a curve; its offset and RMSE appear in `reports/checks/curves_global_dem.json` |
+
+Open items
+
+- Recheck ENTSO-E reuse terms before going public (the 11 yearly mean spreads above).
 
 Links
 
