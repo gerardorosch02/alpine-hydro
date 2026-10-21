@@ -16,6 +16,7 @@ weekly mean is taken over the hours that actually exist in that local period.
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
 
 import pandas as pd
@@ -27,10 +28,43 @@ PRICE_DIR = config.RAW / "entsoe" / "prices"
 RES_DIR = config.RAW / "entsoe" / "reservoir"
 
 
+def redact(text: str) -> str:
+    """Remove the API token from text (requests puts the full URL in HTTP errors)."""
+    return re.sub(r"securityToken=[^&\s'\"]+", "securityToken=REDACTED", text)
+
+
+class _SafeClient:
+    """Wraps EntsoePandasClient so no error message or traceback can carry the key.
+
+    NoMatchingDataError passes through unchanged (callers catch it; it holds no URL).
+    Any other error is re-raised as RuntimeError with the token removed and the
+    original exception dropped from the chain, so it is never printed.
+    """
+
+    def __init__(self, client):
+        self._client = client
+
+    def __getattr__(self, name):
+        method = getattr(self._client, name)
+
+        def call(*args, **kwargs):
+            from entsoe.exceptions import NoMatchingDataError
+
+            try:
+                return method(*args, **kwargs)
+            except NoMatchingDataError:
+                raise
+            except Exception as e:
+                msg = f"{type(e).__name__}: {redact(str(e))}"
+            raise RuntimeError(msg)
+
+        return call
+
+
 def _client():
     from entsoe import EntsoePandasClient
 
-    return EntsoePandasClient(api_key=config.secret("ENTSOE_API_KEY"))
+    return _SafeClient(EntsoePandasClient(api_key=config.secret("ENTSOE_API_KEY")))
 
 
 def area_for(zone: str, month_start: pd.Timestamp) -> str:
@@ -240,4 +274,103 @@ def compare_reservoir_with_sfoe(entsoe_mwh: pd.Series, sfoe_total: pd.DataFrame)
     out["by_year"] = {
         int(k): {c: round(float(v), 3) for c, v in row.items()} for k, row in by_year.iterrows()
     }
+    return out
+
+
+# ---------------------------------------------------------------- generation (H1 controls)
+
+GEN_DIR = config.RAW / "entsoe" / "generation"
+# Pre-registered controls: (area, production type). Onshore wind must be fetched by month
+# (year-long requests fail for some years, weekend 1); the others are fetched by year and
+# fall back to months if a year fails.
+GENERATION = {
+    "fr_nuclear": ("FR", "B14", "year"),
+    "ch_nuclear": ("CH", "B14", "year"),
+    "de_wind_offshore": ("DE", "B18", "year"),
+    "de_wind_onshore": ("DE", "B19", "month"),
+}
+
+
+def _generation_query(client, area: str, psr: str, start: pd.Timestamp, end: pd.Timestamp):
+    from entsoe.exceptions import NoMatchingDataError
+
+    try:
+        g = client.query_generation(area, start=start, end=end, psr_type=psr)
+    except NoMatchingDataError:
+        return pd.Series(dtype=float, index=pd.DatetimeIndex([], tz="UTC"))
+    if isinstance(g, pd.DataFrame):
+        if isinstance(g.columns, pd.MultiIndex):
+            # (type, "Actual Aggregated" / "Actual Consumption"): keep generation only.
+            keep = [c for c in g.columns if c[-1] == "Actual Aggregated"]
+            g = g[keep] if keep else g
+        g = g.iloc[:, 0]
+    g = g.dropna().tz_convert("UTC")
+    g = g[(g.index >= start.tz_convert("UTC")) & (g.index < end.tz_convert("UTC"))]
+    return g[~g.index.duplicated(keep="first")].sort_index().astype(float)
+
+
+def _retry(fn, attempts: int = 4, wait_s: float = 20.0):
+    """Retry transient ENTSO-E failures (HTTP 599 and similar), waiting longer each time."""
+    import time
+
+    for i in range(attempts):
+        try:
+            return fn()
+        except RuntimeError:
+            if i == attempts - 1:
+                raise
+            time.sleep(wait_s * (i + 1))
+
+
+def fetch_generation(name: str, first: str = "2015-01-01", refresh: bool = False, log=print):
+    """Cache one pre-registered generation series (native resolution, MW) by period."""
+    area, psr, step = GENERATION[name]
+    client = _client()
+    now = pd.Timestamp.now(tz=TZ)
+    yearly = list(pd.date_range(pd.Timestamp(first, tz=TZ), now, freq="YS"))
+    starts = yearly if step == "year" else months(first)
+    for s in starts:
+        end = s + (pd.offsets.YearBegin(1) if step == "year" else pd.offsets.MonthBegin(1))
+        path = GEN_DIR / name / f"{s:%Y-%m}.parquet"
+        final = end <= now - pd.Timedelta(days=2)
+        if path.exists() and not refresh and final:
+            continue
+        try:
+            g = _retry(lambda s=s, end=end: _generation_query(client, area, psr, s, min(end, now)))
+        except Exception as e:  # a failing year is fetched month by month instead
+            if step != "year":
+                raise
+            log(f"{name} {s:%Y}: year request failed ({type(e).__name__}), fetching by month")
+            g = pd.concat(
+                [
+                    _retry(
+                        lambda m=m: _generation_query(
+                            client, area, psr, m, min(m + pd.offsets.MonthBegin(1), now)
+                        )
+                    )
+                    for m in pd.date_range(s, min(end, now), freq="MS", inclusive="left")
+                ]
+            )
+        path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame({"mw": g}).to_parquet(path)
+        log(f"{name} {s:%Y-%m}: {len(g)} values")
+
+
+def generation_daily(name: str) -> pd.DataFrame:
+    """Daily mean MW per Europe/Zurich day: values averaged to hours, then hours to days.
+
+    15-minute values are averaged, never summed. n_hours counts hours with data.
+    """
+    files = sorted((GEN_DIR / name).glob("*.parquet"))
+    if not files:
+        raise FileNotFoundError(f"No cached generation for {name}")
+    s = pd.concat([pd.read_parquet(f)["mw"] for f in files]).sort_index()
+    s = s[~s.index.duplicated(keep="first")]
+    h = s.resample("1h").mean().dropna()
+    h.index = h.index.tz_convert(TZ)
+    day = h.index.tz_localize(None).normalize()
+    g = h.groupby(day)
+    out = pd.DataFrame({"mw": g.mean(), "n_hours": g.count()})
+    out.index.name = "day"
+    out["expected_hours"] = [hours_in_local_day(d) for d in out.index]
     return out

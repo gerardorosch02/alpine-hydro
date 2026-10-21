@@ -34,10 +34,13 @@ day-ahead price spread. Part C will forecast the summer refill from snow cover.
 
 ## Part A results
 
-**Valais validation: pass.** The three lakes explain 70% of the variance of SFOE
-Valais anomalies on clear June to November weeks (R² 0.695 against a mark of 0.50,
-mean absolute error 2.7 points of capacity, 46 weeks from 2017/18 to 2025/26).
-Without Mauvoisin, whose curve is the weakest, R² is 0.715 on 56 weeks.
+**Valais validation: passes overall (R² 0.70, n 46), driven by the 2026 shortfall;
+without 2026 R² is 0.41 (n 40).** The three lakes are scored on anomalies of SFOE
+Valais on clear June to November weeks, against a mark of 0.50 (mean absolute error
+2.7 points of capacity, 46 weeks from 2017/18 to 2025/26). Without Mauvoisin, whose
+curve is the weakest, R² is 0.715 on 56 weeks. Without 2022 it is 0.74 (n 39), and
+without the first, weakly calibrated year 2017/18 it is 0.74 (n 41). These are
+robustness checks; the pass under the stated rule stands.
 
 The pass rests on July and August (R² 0.66 and 0.89), when the lakes fill and years
 differ by up to 17 points. In September and October the lakes are near full, SFOE
