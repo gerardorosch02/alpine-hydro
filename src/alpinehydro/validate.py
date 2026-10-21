@@ -146,3 +146,19 @@ def run(lakes: list[str] | None = None, write: bool = False) -> dict:
         )
         OUT.write_bytes(text.encode("utf-8"))
     return m
+
+
+def robustness(drop: str) -> dict:
+    """Re-score without some weeks: drop is 'calendar:YYYY' or 'hydro:YYYY'.
+
+    The walk-forward calibration is kept as it is; the dropped weeks leave the scored set
+    and the leave-one-year-out anomalies are recomputed on the weeks that remain.
+    """
+    from alpinehydro.fetch import sfoe
+
+    kind, year = drop.split(":")
+    df = walk_forward(wallis_series(weekly.load(), sfoe.load_processed(), WALLIS))
+    col = df["valid_time"].dt.year if kind == "calendar" else df["hydro_year"]
+    m = metrics(anomalies(df[col != int(year)]))
+    m["pass_under_stated_rule"] = "unchanged (robustness check only)"
+    return m

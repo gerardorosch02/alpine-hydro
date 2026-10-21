@@ -142,6 +142,23 @@ had all three lakes ok, and the sample is small: 46 scored weeks over 13
 calendar weeks. The first out-of-sample year (2017/18) is calibrated on just
 2 Landsat weeks.
 
+**Robustness checks (added 2026-10-21, weekend 3).** These do not change the
+pass recorded under the stated rule. Each drops some weeks from the scored set
+and recomputes the anomalies on the weeks that remain; the walk-forward
+calibration is unchanged (`reports/checks/wallis_robustness.json`).
+
+| Check | R² of anomalies | MAE (pp) | n weeks |
+|---|---|---|---|
+| Stated result, all scored weeks | 0.695 | 2.67 | 46 |
+| Without calendar year 2026 (the most extreme year) | 0.408 | 2.75 | 40 |
+| Without calendar year 2022 | 0.743 | 2.59 | 39 |
+| Without the first scored year 2017/18 (calibrated on 2 Landsat weeks) | 0.744 | 2.80 | 41 |
+
+Without 2026 the R² falls below the 0.50 mark. The 2026 drought summer, with
+SFOE Wallis 14 to 17 points below other years in late July, carries a large
+part of the result. Dropping 2022 or the weakly calibrated first year does not
+weaken it.
+
 **Stated uncertainty: mask edge bias.** Against lidar water levels on the
 flight day, the masks were 1.4% to 15% short of the true lake area
 (clean tests at Sihlsee, Gruyère and Emosson; `reports/checks/mask_edge_bias.json`).

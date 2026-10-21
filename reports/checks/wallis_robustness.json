@@ -1,0 +1,38 @@
+{
+ "calendar:2026": {
+  "n": 40,
+  "r2": 0.408,
+  "corr2": 0.476,
+  "mae_pp": 2.75,
+  "bias_pp": -0.0,
+  "fill_bias_pp": 0.31,
+  "fill_mae_pp": 2.02,
+  "sd_sfoe_anom_pp": 4.65,
+  "years": "2017/2018 to 2025/2026",
+  "pass_under_stated_rule": "unchanged (robustness check only)"
+ },
+ "calendar:2022": {
+  "n": 39,
+  "r2": 0.743,
+  "corr2": 0.744,
+  "mae_pp": 2.59,
+  "bias_pp": -0.0,
+  "fill_bias_pp": 0.27,
+  "fill_mae_pp": 2.12,
+  "sd_sfoe_anom_pp": 6.46,
+  "years": "2017/2018 to 2025/2026",
+  "pass_under_stated_rule": "unchanged (robustness check only)"
+ },
+ "hydro:2017": {
+  "n": 41,
+  "r2": 0.744,
+  "corr2": 0.744,
+  "mae_pp": 2.8,
+  "bias_pp": -0.0,
+  "fill_bias_pp": 0.45,
+  "fill_mae_pp": 1.94,
+  "sd_sfoe_anom_pp": 6.53,
+  "years": "2018/2019 to 2025/2026",
+  "pass_under_stated_rule": "unchanged (robustness check only)"
+ }
+}
