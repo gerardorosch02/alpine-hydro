@@ -75,8 +75,12 @@ def prepare(f: pd.DataFrame, controls: list[str], target: str = "y") -> pd.DataF
     d["y_raw"] = d[target]
     days = d[f"{target}_days"] if f"{target}_days" in d else d["y_days"]
     keep = (d["winter"] >= FIRST_WINTER) & (days == 28)
-    keep &= d[["x", "y", "last28"] + controls].notna().all(axis=1)
-    return d[keep].reset_index(drop=True)
+    keep &= d[["x", "y", "last28"]].notna().all(axis=1)
+    # Deviation D9: a control below 90% coverage is missing and drops the origin.
+    has_controls = d[controls].notna().all(axis=1)
+    out = d[keep & has_controls].reset_index(drop=True)
+    out.attrs["dropped_for_coverage"] = int((keep & ~has_controls).sum())
+    return out
 
 
 def fit_predict(train: pd.DataFrame, test: pd.DataFrame, controls: list[str]) -> pd.DataFrame:

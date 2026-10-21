@@ -178,6 +178,8 @@ def variant(d: pd.DataFrame, controls: list[str], test_winters: list[int]) -> di
         "oos_primary_clipped_y": oos_block(o, "y"),
         "oos_robust_raw_y": oos_block(o, "y_raw"),
         "test_winters": test_winters,
+        "origins": int(len(d)),
+        "dropped_for_coverage": int(d.attrs.get("dropped_for_coverage", 0)),
         "_oos": o,
     }
 

@@ -356,10 +356,10 @@ def fetch_generation(name: str, first: str = "2015-01-01", refresh: bool = False
         log(f"{name} {s:%Y-%m}: {len(g)} values")
 
 
-def generation_daily(name: str) -> pd.DataFrame:
-    """Daily mean MW per Europe/Zurich day: values averaged to hours, then hours to days.
+def generation_hourly(name: str) -> pd.Series:
+    """Hourly mean MW (UTC bins, indexed in Europe/Zurich). Hours without data are absent.
 
-    15-minute values are averaged, never summed. n_hours counts hours with data.
+    15-minute values are averaged, never summed.
     """
     files = sorted((GEN_DIR / name).glob("*.parquet"))
     if not files:
@@ -368,6 +368,15 @@ def generation_daily(name: str) -> pd.DataFrame:
     s = s[~s.index.duplicated(keep="first")]
     h = s.resample("1h").mean().dropna()
     h.index = h.index.tz_convert(TZ)
+    return h.rename(name)
+
+
+def generation_daily(name: str) -> pd.DataFrame:
+    """Daily mean MW per Europe/Zurich day: values averaged to hours, then hours to days.
+
+    n_hours counts hours with data.
+    """
+    h = generation_hourly(name)
     day = h.index.tz_localize(None).normalize()
     g = h.groupby(day)
     out = pd.DataFrame({"mw": g.mean(), "n_hours": g.count()})

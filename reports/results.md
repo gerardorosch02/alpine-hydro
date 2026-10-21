@@ -211,3 +211,26 @@ Share of weeks with an ok scene, by month:
   check only. One lake cannot stand in for a region.
 
 ![Sihlsee](figures/sihlsee_showcase.png)
+
+## Deviations from the pre-registration
+
+The frozen text is `prereg/PREREGISTRATION.md` at tag `v0.1-prereg`; it is not edited.
+Every entry below clarifies a point the text leaves open, or records a data access
+choice. All were fixed on **2026-10-21, before any price model was fitted** (this section
+was committed before the first fit). None changes a rule after seeing a result.
+
+| # | Date | Point | Choice | Reason |
+|---|---|---|---|---|
+| D1 | 2026-10-21 | Month used for the dummies, B0 and B2 | The valid Sunday's month | Origins from late-April Sundays fall on a Thursday in May; the valid Sunday keeps the six season months that define the sample. |
+| D2 | 2026-10-21 | Winsorising test rows | Test x and test y are clipped at the training cut-offs, and the primary scores use that clipped y. A robustness score uses the raw test y. | The text winsorises "y and x" with training cut-offs; applied literally. Cut-offs from pre-crisis training years clip the 2021/22 and 2022/23 test winters, so both scores are reported. |
+| D3 | 2026-10-21 | The "in-sample slope" | Full model on all origins 2015/16 to 2025/26, full-sample cut-offs, Newey-West lag 4 (8 as robustness). Rule 2 uses the 95% interval as written; TOST p-values are reported beside it. | The text says "95% interval … (TOST at 5%)", but TOST at 5% corresponds to a 90% interval. The rule's wording (95%) is applied; the inconsistency is noted, not resolved in either direction after results. |
+| D4 | 2026-10-21 | Crisis-excluded variant | 2021/22 and 2022/23 are dropped from training and test; test winters 2023/24 to 2025/26 | A variant "without the crisis winters" should not learn from them either. |
+| D5 | 2026-10-21 | Clark-West and Diebold-Mariano on overlapping weekly targets | Errors pooled over the 5 test winters. Clark-West: Newey-West lag 4 variance, one-sided normal p. Diebold-Mariano: variance with lags 1 to 3, Harvey-Leybourne-Newbold correction with h = 4, two-sided t p with n − 1 df. | Consistent with the lag-4 primary test; h = 4 weeks of overlap for a 28-day target from weekly origins. |
+| D6 | 2026-10-21 | B1 window | The 28 delivery days ending the day before the origin day | Conservative reading of "the 28 days before the origin". |
+| D7 | 2026-10-21 | Bootstrap | 2,000 resamples of whole winters, seed 20261021. Slope: the 11 winters resampled and re-winsorised each time. Out-of-sample R² against B3: the 5 test winters resampled. | Five test winters give only 126 distinct resamples, so that interval is coarse. |
+| D8 | 2026-10-21 | H2 specification | Origins with a valid Sunday in March or April; target the 28-day CH minus IT-North spread; the H1 controls; the same folds; test = one-sided Clark-West of the full model against B3. Holm family "H2 only so far", recomputed when H3b and N1 are added. | The text names H2 but no test. |
+| D9 | 2026-10-21 | Gaps in the controls | Each generation control is the mean MW over all available hours in its window; partial days count with the hours they have. Pre-stated floor: a window with less than 90% of its expected hours (or days, for HDD) sets that control to missing and drops the origin from that model. Dropped: 0 origins in every model (lowest coverage 96.3%, French nuclear). | French nuclear has 27 days with 1 to 3 missing hours and 2026-01-01 with 1 of 24 hours (confirmed at the source), some inside test-winter windows. "Mean MW over the window" read literally. |
+| D10 | 2026-10-21 | HDD source | ERA5-Land daily aggregates through Earth Engine (`ECMWF/ERA5_LAND/DAILY_AGGR`), country outlines `USDOS/LSIB_SIMPLE/2017`, area-weighted with pixel areas over land cells | Same dataset as the Copernicus portal named in the text; a different access route. |
+| D11 | 2026-10-21 | Crisis-interaction variant | Full-sample in-sample OLS with x, a crisis-winter dummy and x × crisis (2021/22, 2022/23) | The text asks for "a crisis-winter interaction on the slope"; the level dummy keeps the interaction from absorbing a level shift. Reported only; not part of the rule. |
+| D12 | 2026-10-21 | Verdict labels | If rule line 2 holds: "no effect (equivalence)". Else if line 1 or 3 holds: "no edge". Else: "edge". | The rule defines "no edge"; line 2 is the equivalence case, the stronger statement. |
+| D13 | 2026-10-21 | Benchmark inputs | B1 and B2 use the raw 28-day spread before the origin (not winsorised); B0 and B2 average the clipped training y; controls are not winsorised | The text winsorises only x and y. |

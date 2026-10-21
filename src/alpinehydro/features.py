@@ -77,17 +77,43 @@ def daily_spread(a: str = "CH", b: str = "DE_LU") -> pd.Series:
 def daily_controls() -> dict[str, pd.Series]:
     from alpinehydro.fetch import entsoe, era5
 
-    gen = {n: entsoe.generation_daily(n) for n in entsoe.GENERATION}
-    # Keep only complete days, so a partial day never stands in for a whole one.
-    full = {n: g.loc[g["n_hours"] == g["expected_hours"], "mw"] for n, g in gen.items()}
-    wind = (full["de_wind_onshore"] + full["de_wind_offshore"]).dropna()
+    gen = {n: entsoe.generation_hourly(n) for n in entsoe.GENERATION}
+    # German wind counts an hour only when both onshore and offshore have it.
+    wind = (gen["de_wind_onshore"] + gen["de_wind_offshore"]).dropna()
     return {
-        "fr_nuclear": full["fr_nuclear"],
-        "ch_nuclear": full["ch_nuclear"],
+        "fr_nuclear": gen["fr_nuclear"],
+        "ch_nuclear": gen["ch_nuclear"],
         "de_wind": wind,
         "hdd_ch": era5.hdd("CH"),
         "hdd_de": era5.hdd("DE"),
     }
+
+
+HOURLY = ("fr_nuclear", "ch_nuclear", "de_wind")
+MIN_COVERAGE = 0.90  # deviation D9: below this share of expected hours (or days), missing
+
+
+def control_window(
+    series: pd.Series, name: str, start: pd.Timestamp, end: pd.Timestamp
+) -> tuple[float, float]:
+    """Mean over the days start..end (inclusive) and the share of expected data present.
+
+    Generation controls (hourly, Europe/Zurich index): the mean MW over every available
+    hour, so a partial day counts with the hours it has; coverage is hours present over the
+    hours of those local days. HDD (daily): mean over available days; coverage is days present
+    over 28. Below MIN_COVERAGE the control is set to missing (deviation D9).
+    """
+    if name in HOURLY:
+        lo = pd.Timestamp(start.date(), tz=TZ)
+        hi = pd.Timestamp((end + pd.Timedelta(days=1)).date(), tz=TZ)
+        w = series[(series.index >= lo) & (series.index < hi)]
+        expected = (hi - lo) / pd.Timedelta(hours=1)
+    else:
+        w = series.loc[start:end].dropna()
+        expected = (end - start).days + 1
+    cov = len(w) / expected
+    value = float(w.mean()) if len(w) and cov >= MIN_COVERAGE else np.nan
+    return value, round(float(cov), 4)
 
 
 def climatological_hdd(hdd: pd.Series, start: pd.Timestamp, origin_day: pd.Timestamp) -> float:
@@ -131,12 +157,12 @@ def build(write: bool = True) -> tuple[pd.DataFrame, pd.DataFrame]:
         # Controls, primary timing.
         e1 = od - one
         for k in ("fr_nuclear", "de_wind"):
-            v, n = _window_mean(c[k], e1 - (WINDOW_DAYS - 1) * one, e1)
-            row.update({k: v, f"{k}_days": n, f"{k}_last": e1})
+            v, cov = control_window(c[k], k, e1 - (WINDOW_DAYS - 1) * one, e1)
+            row.update({k: v, f"{k}_cov": cov, f"{k}_last": e1})
         e7 = od - LAG_DAYS * one
         for k in ("ch_nuclear", "hdd_ch", "hdd_de"):
-            v, n = _window_mean(c[k], e7 - (WINDOW_DAYS - 1) * one, e7)
-            row.update({k: v, f"{k}_days": n, f"{k}_last": e7})
+            v, cov = control_window(c[k], k, e7 - (WINDOW_DAYS - 1) * one, e7)
+            row.update({k: v, f"{k}_cov": cov, f"{k}_last": e7})
         for k in ("hdd_ch", "hdd_de"):
             row[f"clim_{k}"] = climatological_hdd(c[k], r.target_start, od)
         rows.append(row)
@@ -145,8 +171,8 @@ def build(write: bool = True) -> tuple[pd.DataFrame, pd.DataFrame]:
         rr.update({k: row[k] for k in ("target_end", "winter", "month", "dev_10y_pp", "y")})
         rr.update({k: row[k] for k in ("y_days", "y_it", "y_it_days", "last28")})
         for k in ("fr_nuclear", "de_wind", "ch_nuclear", "hdd_ch", "hdd_de"):
-            v, n = _window_mean(c[k], r.target_start, r.target_end)
-            rr.update({k: v, f"{k}_days": n})
+            v, cov = control_window(c[k], k, r.target_start, r.target_end)
+            rr.update({k: v, f"{k}_cov": cov})
         real.append(rr)
     f, fr = pd.DataFrame(rows), pd.DataFrame(real)
     if write:
