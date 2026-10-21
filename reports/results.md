@@ -212,6 +212,108 @@ Share of weeks with an ok scene, by month:
 
 ![Sihlsee](figures/sihlsee_showcase.png)
 
+## H1 price test (weekend 3, pre-registered)
+
+**Verdict: no edge.** Decided mechanically by line 3 of the frozen no-edge rule:
+
+> The effect disappears without the crisis winters 2021/22 and 2022/23, or the full model
+> beats B3 out of sample in fewer than 3 of the 5 test winters (2021/22 to 2025/26).
+> […] In the crisis-excluded variant the full model must also beat B3 out of sample in at
+> least 2 of the 3 test winters.
+
+Without the crisis winters the full model beat B3 in only **1 of 3** test winters
+(2024/25; not 2023/24 or 2025/26). Lines 1 and 2 do not hold: Clark-West p = 0.030 and
+the out-of-sample R² against B3 is 0.009, and the slope interval lies outside the
+equivalence band.
+
+**Effect:** storage 10 points below its norm goes with a CH minus DE-LU spread
+**7.7 EUR/MWh higher** over the next 28 days (slope −7.72 EUR/MWh per 10 points,
+95% interval −13.19 to −2.25, Newey-West lag 4, 285 origins, 2015/16 to 2025/26). The sign
+is the pre-registered one. **Smallest detectable effect:** 7.8 EUR/MWh per 10 points
+(5% two-sided, 80% power, from the lag-4 standard error). Without the crisis winters the
+slope is −3.58 per 10 points (95% −5.53 to −1.64), with a smallest detectable effect of
+2.8.
+
+Sample: 285 origins with a complete 28-day target, winters 2015/16 to 2025/26; 129 test
+origins in the 5 test winters. No origin was dropped for control coverage (D9). Machine-
+readable results: `reports/checks/h1_results.json`. Price series are never committed.
+
+### Every pre-registered test, in the order of section 4
+
+**1. Newey-West slope.** Lag 4 (primary): −0.772 EUR/MWh per point, standard error 0.279,
+p = 0.006. Lag 8 (robustness): standard error 0.340, p = 0.023.
+
+**2. Clark-West, full model against B3** (nested, one-sided): t = 1.89, **p = 0.030**.
+
+**3. Diebold-Mariano with the Harvey-Leybourne-Newbold correction** (negative statistic =
+the full model is more accurate):
+
+| Against | Statistic | p (two-sided) | Reading |
+|---|---|---|---|
+| B0, seasonal norm | +2.73 | 0.007 | the full model is significantly **worse** than the monthly mean |
+| B1, last 28 days | −1.42 | 0.158 | not significant |
+| B2, persistence plus seasonal change | −1.20 | 0.231 | not significant |
+
+**4. Out-of-sample R²** (primary: test y clipped at training cut-offs, D2; robustness:
+raw test y):
+
+| Against | Clipped y (primary) | Raw y (robustness) |
+|---|---|---|
+| B3, controls only | **0.009** | 0.023 |
+| B0, seasonal norm | −0.490 | −0.142 |
+| B1, last 28 days | 0.472 | −1.391 |
+| B2, persistence plus seasonal change | 0.406 | −1.611 |
+
+The training cut-offs clipped 21 of the 25 test targets in 2021/22 (cut-off 31.4 EUR/MWh;
+raw targets reached 89). They clipped none in 2022/23, whose training already included
+2021/22, 5 in 2023/24 and 1 in 2024/25. The sign of the R² against B1 and B2 depends on
+this clipping; against B3 it does not.
+
+**5. Bootstrap over whole winters** (2,000 resamples, D7): slope 95% interval −17.32 to
++1.90 EUR/MWh per 10 points, which includes zero; out-of-sample R² against B3, −0.253 to
++0.190. Five test winters give only 126 distinct resamples.
+
+**6. Holm correction (secondary tests).** Family so far: H2 only; recomputed when H3b and
+N1 are added. See H2 below.
+
+**7. Crisis variants:**
+
+| Variant | Slope per 10 points | Out-of-sample R² vs B3 | Wins vs B3 | Reading |
+|---|---|---|---|---|
+| Full sample | −7.72 (95% −13.19 to −2.25) | 0.009 | 3 of 5 (2021/22, 2022/23, 2024/25) | meets lines 1 and 3a |
+| 2021/22 and 2022/23 excluded (D4), test 2023/24 to 2025/26 | −3.58 (95% −5.53 to −1.64) | 0.083 | **1 of 3** (2024/25) | same sign, R² above zero, but fails the 2-of-3 check |
+| Crisis interaction (D11) | −4.40 outside crisis winters, −14.33 in them | n/a | n/a | interaction p = 0.002: the crisis winters carry a much steeper slope |
+
+**8. Explanatory variant, realised controls** (not a forecast): slope −9.20 EUR/MWh per
+10 points (95% −13.13 to −5.27); out-of-sample R² against B3 0.238; Clark-West p < 0.001;
+wins 3 of 5. Knowing the window's realised nuclear output, wind and temperature does not
+remove the storage effect.
+
+**Equivalence (rule line 2).** TOST against ±0.2 EUR/MWh per point: p = 0.980; the 95%
+interval is far outside the band, so "no effect" is not shown either.
+
+**Per-winter count, full model against B3:** 3 of 5 (meets the 3-of-5 threshold).
+
+![H1 scorecard](figures/h1_scorecard.png)
+
+![H1 scatter](figures/h1_scatter.png)
+
+![H1 out of sample](figures/h1_out_of_sample.png)
+
+### H2 (exploratory): March to April CH minus IT-North
+
+96 origins (valid Sunday in March or April), 44 test origins. Slope +0.70 EUR/MWh per
+10 points (95% −3.81 to +5.21, p = 0.76). Clark-West against B3: t = −2.23, one-sided
+p = 0.987; out-of-sample R² against B3 −0.143. Holm-adjusted p (family: H2 only so far) =
+0.987. No sign of an effect.
+
+### Live check, winter 2026/27
+
+Not yet possible. The latest SFOE CSV week is Sunday 27 September 2026 (the PDF is at
+12 October). The first live origin is the week of Sunday 1 November 2026, once SFOE
+releases it. `alpinehydro live-forecast` then writes to `data/processed/live_forecasts.csv`.
+The live winter does not enter the no-edge rule.
+
 ## Deviations from the pre-registration
 
 The frozen text is `prereg/PREREGISTRATION.md` at tag `v0.1-prereg`; it is not edited.

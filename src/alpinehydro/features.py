@@ -141,38 +141,10 @@ def build(write: bool = True) -> tuple[pd.DataFrame, pd.DataFrame]:
     spread = daily_spread("CH", "DE_LU")
     spread_it = daily_spread("CH", "IT_NORD")
     c = daily_controls()
-    one = pd.Timedelta(days=1)
     rows, real = [], []
     for r in o.itertuples():
-        od = r.origin_day
-        row = r._asdict()
-        row.pop("Index")
-        y, ny = _window_mean(spread, r.target_start, r.target_end)
-        y2, ny2 = _window_mean(spread_it, r.target_start, r.target_end)
-        row.update(y=y, y_days=ny, y_it=y2, y_it_days=ny2)
-        # B1 input: the 28 delivery days ending the day before the origin day (deviation
-        # D6 of 2026-10-21, the conservative reading of "the 28 days before the origin").
-        last, nl = _window_mean(spread, od - WINDOW_DAYS * one, od - one)
-        row.update(last28=last, last28_days=nl, last28_last=od - one)
-        # Controls, primary timing.
-        e1 = od - one
-        for k in ("fr_nuclear", "de_wind"):
-            v, cov = control_window(c[k], k, e1 - (WINDOW_DAYS - 1) * one, e1)
-            row.update({k: v, f"{k}_cov": cov, f"{k}_last": e1})
-        e7 = od - LAG_DAYS * one
-        for k in ("ch_nuclear", "hdd_ch", "hdd_de"):
-            v, cov = control_window(c[k], k, e7 - (WINDOW_DAYS - 1) * one, e7)
-            row.update({k: v, f"{k}_cov": cov, f"{k}_last": e7})
-        for k in ("hdd_ch", "hdd_de"):
-            row[f"clim_{k}"] = climatological_hdd(c[k], r.target_start, od)
+        row, rr = origin_features(r, spread, spread_it, c)
         rows.append(row)
-        # Realised-controls variant: every control over the target window.
-        rr = {k: row[k] for k in ("valid_time", "known_time", "origin_day", "target_start")}
-        rr.update({k: row[k] for k in ("target_end", "winter", "month", "dev_10y_pp", "y")})
-        rr.update({k: row[k] for k in ("y_days", "y_it", "y_it_days", "last28")})
-        for k in ("fr_nuclear", "de_wind", "ch_nuclear", "hdd_ch", "hdd_de"):
-            v, cov = control_window(c[k], k, r.target_start, r.target_end)
-            rr.update({k: v, f"{k}_cov": cov})
         real.append(rr)
     f, fr = pd.DataFrame(rows), pd.DataFrame(real)
     if write:
@@ -180,6 +152,40 @@ def build(write: bool = True) -> tuple[pd.DataFrame, pd.DataFrame]:
         f.to_parquet(OUT)
         fr.to_parquet(OUT_REALISED)
     return f, fr
+
+
+def origin_features(r, spread: pd.Series, spread_it: pd.Series, c: dict) -> tuple[dict, dict]:
+    """Primary and realised-control features of one origin (a row of `origins`)."""
+    one = pd.Timedelta(days=1)
+    od = r.origin_day
+    row = r._asdict()
+    row.pop("Index", None)
+    y, ny = _window_mean(spread, r.target_start, r.target_end)
+    y2, ny2 = _window_mean(spread_it, r.target_start, r.target_end)
+    row.update(y=y, y_days=ny, y_it=y2, y_it_days=ny2)
+    # B1 input: the 28 delivery days ending the day before the origin day (deviation
+    # D6 of 2026-10-21, the conservative reading of "the 28 days before the origin").
+    last, nl = _window_mean(spread, od - WINDOW_DAYS * one, od - one)
+    row.update(last28=last, last28_days=nl, last28_last=od - one)
+    # Controls, primary timing.
+    e1 = od - one
+    for k in ("fr_nuclear", "de_wind"):
+        v, cov = control_window(c[k], k, e1 - (WINDOW_DAYS - 1) * one, e1)
+        row.update({k: v, f"{k}_cov": cov, f"{k}_last": e1})
+    e7 = od - LAG_DAYS * one
+    for k in ("ch_nuclear", "hdd_ch", "hdd_de"):
+        v, cov = control_window(c[k], k, e7 - (WINDOW_DAYS - 1) * one, e7)
+        row.update({k: v, f"{k}_cov": cov, f"{k}_last": e7})
+    for k in ("hdd_ch", "hdd_de"):
+        row[f"clim_{k}"] = climatological_hdd(c[k], r.target_start, od)
+    # Realised-controls variant: every control over the target window.
+    rr = {k: row[k] for k in ("valid_time", "known_time", "origin_day", "target_start")}
+    rr.update({k: row[k] for k in ("target_end", "winter", "month", "dev_10y_pp", "y")})
+    rr.update({k: row[k] for k in ("y_days", "y_it", "y_it_days", "last28")})
+    for k in ("fr_nuclear", "de_wind", "ch_nuclear", "hdd_ch", "hdd_de"):
+        v, cov = control_window(c[k], k, r.target_start, r.target_end)
+        rr.update({k: v, f"{k}_cov": cov})
+    return row, rr
 
 
 def load(realised: bool = False) -> pd.DataFrame:

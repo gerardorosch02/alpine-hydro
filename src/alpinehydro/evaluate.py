@@ -283,3 +283,146 @@ def run(write: bool = True) -> dict:
         for k, v in oos.items():  # forecasts and realised spreads: local only
             v.to_parquet(config.INTERIM / f"oos_{k}.parquet")
     return res
+
+
+# ---------------------------------------------------------------- scorecard and figures
+
+
+def _pf(ok: bool) -> str:
+    return "pass" if ok else "fail"
+
+
+def scorecard_rows(r: dict) -> list[tuple[str, str, str, str]]:
+    """(test, pre-registered, result, outcome). 'pass' means the result favours H1 at the
+    pre-registered threshold; 'reported' rows are not part of the rule."""
+    full = r["h1_full_sample"]
+    i, o, b = full["in_sample"], full["oos_primary_clipped_y"], full["bootstrap"]
+    ex = r["h1_crisis_excluded"]
+    exo, ii = ex["oos_primary_clipped_y"], r["h1_crisis_interaction"]
+    re = r["h1_realised_controls"]
+    h2 = r["h2"]["oos_primary_clipped_y"]["clark_west_vs_b3"]
+    rows = [
+        (
+            "Slope, Newey-West lag 4",
+            "Negative sign; HAC lag exactly 4",
+            f"{i['per10']:.2f} EUR/MWh per 10 pts, 95% [{i['per10_ci95'][0]:.2f}, "
+            f"{i['per10_ci95'][1]:.2f}], p = {i['p_nw4']:.3f}",
+            _pf(i["slope"] < 0 and i["p_nw4"] < 0.05),
+        ),
+        (
+            "Slope, Newey-West lag 8",
+            "Robustness",
+            f"p = {i['p_nw8']:.3f}",
+            _pf(i["slope"] < 0 and i["p_nw8"] < 0.05),
+        ),
+        (
+            "Clark-West vs B3",
+            "One-sided, p < 0.05 (rule line 1)",
+            f"t = {o['clark_west_vs_b3']['stat']:.2f}, "
+            f"p = {o['clark_west_vs_b3']['p_one_sided']:.3f}",
+            _pf(o["clark_west_vs_b3"]["p_one_sided"] < 0.05),
+        ),
+    ]
+    for bn in ("b0", "b1", "b2"):
+        dm = o["dm_hln"][bn]
+        rows.append(
+            (
+                f"Diebold-Mariano (HLN) vs {bn.upper()}",
+                "Full model more accurate",
+                f"stat = {dm['stat']:.2f} (negative favours the full model), "
+                f"p = {dm['p_two_sided']:.3f}",
+                _pf(dm["stat"] < 0 and dm["p_two_sided"] < 0.05),
+            )
+        )
+    for bn in ("b3", "b0", "b1", "b2"):
+        rows.append(
+            (
+                f"Out-of-sample R² vs {bn.upper()}",
+                "Above zero" + (" (rule line 1)" if bn == "b3" else ""),
+                f"{o['oos_r2'][bn]:.3f} (raw y: {full['oos_robust_raw_y']['oos_r2'][bn]:.3f})",
+                _pf(o["oos_r2"][bn] > 0),
+            )
+        )
+    rows += [
+        (
+            "Bootstrap, slope",
+            "Whole winters, 95% interval",
+            f"[{b['slope_per10_ci95'][0]:.2f}, {b['slope_per10_ci95'][1]:.2f}] per 10 pts",
+            _pf(b["slope_per10_ci95"][1] < 0),
+        ),
+        (
+            "Bootstrap, OOS R² vs B3",
+            "Whole test winters, 95% interval",
+            f"[{b['oos_r2_b3_ci95'][0]:.3f}, {b['oos_r2_b3_ci95'][1]:.3f}]",
+            _pf(b["oos_r2_b3_ci95"][0] > 0),
+        ),
+        (
+            "TOST equivalence",
+            "95% interval inside +/- 2 per 10 pts means no effect (rule line 2)",
+            f"TOST p = {i['tost_p']:.3f}; interval not inside the band",
+            _pf(not r["verdict"]["lines"]["2"]["holds"]),
+        ),
+        (
+            "Per-winter wins vs B3",
+            "At least 3 of 5 test winters (rule line 3)",
+            f"{o['winters_full_beats_b3']} of 5",
+            _pf(o["winters_full_beats_b3"] >= 3),
+        ),
+        (
+            "Crisis excluded: OOS R² vs B3",
+            "Above zero (rule line 3)",
+            f"{exo['oos_r2']['b3']:.3f}",
+            _pf(exo["oos_r2"]["b3"] > 0),
+        ),
+        (
+            "Crisis excluded: slope sign",
+            "Same sign as full sample (rule line 3)",
+            f"{ex['in_sample']['per10']:.2f} per 10 pts",
+            _pf((ex["in_sample"]["slope"] < 0) == (i["slope"] < 0)),
+        ),
+        (
+            "Crisis excluded: wins vs B3",
+            "At least 2 of 3 (rule line 3)",
+            f"{exo['winters_full_beats_b3']} of 3",
+            _pf(exo["winters_full_beats_b3"] >= 2),
+        ),
+        (
+            "Crisis interaction",
+            "Reported",
+            f"non-crisis {ii['per10']:.2f}, crisis {10 * ii['slope_crisis']:.2f} per 10 pts "
+            f"(interaction p = {ii['interaction_p_nw4']:.3f})",
+            "reported",
+        ),
+        (
+            "Realised controls",
+            "Explanatory only, not a forecast",
+            f"{re['in_sample']['per10']:.2f} per 10 pts, OOS R² vs B3 "
+            f"{re['oos_primary_clipped_y']['oos_r2']['b3']:.3f}",
+            "reported",
+        ),
+        (
+            "H2 (exploratory)",
+            "Clark-West, Holm (H2 only so far)",
+            f"p = {h2['p_one_sided']:.3f}, Holm p = {r['holm']['adjusted_p']['H2']:.3f}",
+            _pf(r["holm"]["adjusted_p"]["H2"] < 0.05),
+        ),
+        (
+            "Verdict (section 5)",
+            "No edge if any rule line holds",
+            f"{r['verdict']['verdict']}, decided by line "
+            f"{', '.join(r['verdict']['deciding_lines'])}",
+            r["verdict"]["verdict"],
+        ),
+    ]
+    return rows
+
+
+def figures(r: dict) -> list:
+    import pandas as pd
+
+    from alpinehydro import features, plots
+
+    paths = plots.h1_scatter(features.load())
+    paths += plots.h1_oos(pd.read_parquet(config.INTERIM / "oos_h1_full_sample.parquet"))
+    paths += plots.h1_scorecard(scorecard_rows(r))
+    return paths

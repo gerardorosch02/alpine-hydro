@@ -1,0 +1,4 @@
+# Live H1 forecasts, winter 2026/27 (pre-registration section 9). Forecasts and
+# their inputs only; realised_spread will hold one derived number per window (the
+# mean CH minus DE-LU baseload spread), never a price series.
+valid_sunday,known_time,known_time_source,origin_day,target_start,target_end,dev_10y_pp,fr_nuclear,de_wind,ch_nuclear,hdd_ch,hdd_de,clim_hdd_ch,clim_hdd_de,forecast_full,forecast_b3,made_at_utc,model,realised_spread

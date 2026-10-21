@@ -266,6 +266,46 @@ def demo():
     _figures(example=False)
 
 
+@app.command("features")
+def features_cmd():
+    """Build the point-in-time H1 feature tables (data/interim/, never committed)."""
+    from alpinehydro import features
+
+    f, fr = features.build()
+    typer.echo(f"{len(f)} origins written to {features.OUT.relative_to(config.ROOT)}")
+
+
+@app.command("h1")
+def h1_cmd():
+    """Run every pre-registered H1 test, H2, and print the mechanical verdict."""
+    from alpinehydro import evaluate
+
+    r = evaluate.run()
+    v = r["verdict"]
+    typer.echo(f"verdict: {v['verdict']}")
+    for k, line in v["lines"].items():
+        mark = "HOLDS" if line["holds"] else "does not hold"
+        typer.echo(f"  rule line {k} {mark}: {line['values']}")
+    for path in evaluate.figures(r):
+        typer.echo(f"wrote {path.relative_to(config.ROOT)}")
+
+
+@app.command("live-forecast")
+def live_forecast_cmd():
+    """Live check 2026/27: forecast the next 28-day CH minus DE-LU spread if a new origin."""
+    from alpinehydro import live
+
+    s = live.forecast()
+    if s["made"]:
+        f = s["forecast"]
+        typer.echo(
+            f"origin {f['valid_sunday']}: forecast {f['forecast_full']} EUR/MWh for "
+            f"{f['target_start']} to {f['target_end']} (B3 {f['forecast_b3']})"
+        )
+    else:
+        typer.echo(f"no forecast made: {s['reason']}")
+
+
 @app.command("status")
 def status():
     """Show the latest SFOE week, fill and deviation from the norms."""

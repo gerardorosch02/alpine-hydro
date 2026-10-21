@@ -701,3 +701,107 @@ def example_scene(slug: str, scene: pd.Series, out_dir: Path = config.FIGURES) -
     for p in paths:
         Image.open(p).convert("RGB").quantize(256).save(p, optimize=True)
     return paths
+
+
+# ---------------------------------------------------------------- H1 price test
+
+PRICE_CREDIT = (
+    "Prices: ENTSO-E Transparency Platform (day-ahead, CH and DE-LU; not redistributed). "
+    "Storage: Swiss Federal Office of Energy SFOE."
+)
+
+
+def h1_scatter(f: pd.DataFrame, out_dir: Path = config.FIGURES) -> list[Path]:
+    """Deviation against the next-28-day CH minus DE-LU spread, one dot per origin."""
+
+    d = f[(f["winter"] >= 2015) & (f["y_days"] == 28)]
+    fig, ax = plt.subplots(figsize=(9, 5.8), dpi=150)
+    fig.patch.set_facecolor(SURFACE)
+    winters = sorted(d["winter"].unique())
+    cmap = plt.get_cmap("Blues")
+    for i, w in enumerate(winters):
+        g = d[d["winter"] == w]
+        crisis = w in (2021, 2022)
+        ax.plot(
+            g["dev_10y_pp"],
+            g["y"],
+            "D" if crisis else "o",
+            color=CURRENT
+            if w == 2021
+            else ("#b8461b" if w == 2022 else cmap(0.35 + 0.6 * i / len(winters))),
+            ms=5 if crisis else 4,
+            label=f"{w}/{str(w + 1)[2:]}" + (" (crisis)" if crisis else ""),
+        )
+    ax.axhline(0, color=GRID, lw=0.8)
+    ax.axvline(0, color=GRID, lw=0.8)
+    ax.set_xlabel("Storage deviation from the 10-year norm at the origin, points", color=INK_2)
+    ax.set_ylabel("Mean CH minus DE-LU spread, next 28 days, EUR/MWh", color=INK_2)
+    ax.set_title(
+        "H1 data: one dot per weekly origin, November to April, 2015/16 to 2025/26",
+        loc="left",
+        color=INK,
+        fontsize=11,
+    )
+    ax.legend(loc="upper right", frameon=False, fontsize=7.5, labelcolor=INK_2, ncol=2)
+    _style(ax)
+    ax.xaxis.grid(True, color=GRID, lw=0.8)
+
+    fig.text(0.01, 0.01, PRICE_CREDIT, color=INK_2, fontsize=7)
+    fig.tight_layout(rect=(0, 0.03, 1, 1))
+    return _save(fig, out_dir, "h1_scatter")
+
+
+def h1_oos(o: pd.DataFrame, out_dir: Path = config.FIGURES) -> list[Path]:
+    """Full model and B3 forecasts against the realised spread, by test winter."""
+    winters = sorted(o["winter"].unique())
+    fig, axes = plt.subplots(1, len(winters), figsize=(13, 4.2), dpi=150, sharey=False)
+    fig.patch.set_facecolor(SURFACE)
+    for ax, w in zip(axes, winters, strict=True):
+        g = o[o["winter"] == w].sort_values("origin_day")
+        ax.plot(g["origin_day"], g["y_raw"], color=INK, lw=1.4, label="Realised")
+        ax.plot(g["origin_day"], g["y"], color=INK_2, lw=0.8, ls=":", label="Realised, clipped")
+        ax.plot(g["origin_day"], g["b3"], color=BAND_IQR, lw=1.3, label="B3, controls only")
+        ax.plot(g["origin_day"], g["full"], color=CURRENT, lw=1.3, label="Full model")
+        ax.set_title(f"{w}/{str(w + 1)[2:]}", loc="left", color=INK, fontsize=10)
+        ax.tick_params(axis="x", labelrotation=45, labelsize=7)
+        _style(ax)
+    axes[0].set_ylabel("28-day CH minus DE-LU spread, EUR/MWh", color=INK_2)
+    axes[0].legend(loc="upper left", frameon=False, fontsize=7, labelcolor=INK_2)
+    fig.suptitle(
+        "H1 out of sample: forecasts made at each origin against what happened",
+        x=0.01,
+        ha="left",
+        color=INK,
+        fontsize=11,
+    )
+    fig.text(0.01, 0.01, PRICE_CREDIT, color=INK_2, fontsize=7)
+    fig.tight_layout(rect=(0, 0.04, 1, 0.95))
+    return _save(fig, out_dir, "h1_out_of_sample")
+
+
+def h1_scorecard(
+    rows: list[tuple[str, str, str, str]], out_dir: Path = config.FIGURES
+) -> list[Path]:
+    """Pre-registration scorecard: test, what was pre-registered, result, pass or fail."""
+    fig, ax = plt.subplots(figsize=(12, 0.3 * len(rows) + 0.8), dpi=150)
+    fig.patch.set_facecolor(SURFACE)
+    ax.set_axis_off()
+    table = ax.table(
+        cellText=[list(r) for r in rows],
+        colLabels=["Test", "Pre-registered", "Result", "Outcome"],
+        colWidths=[0.22, 0.33, 0.33, 0.12],
+        loc="upper left",
+        cellLoc="left",
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(7.5)
+    table.scale(1, 1.5)
+    for (r, c), cell in table.get_celld().items():
+        cell.set_edgecolor(GRID)
+        cell.set_facecolor(SURFACE if r else "#f1f0ec")
+        if r and c == 3:
+            txt = cell.get_text().get_text()
+            cell.get_text().set_color(CURRENT if txt in ("fail", "holds") else MEDIAN)
+    ax.set_title("H1 pre-registration scorecard", loc="left", color=INK, fontsize=11)
+    fig.tight_layout()
+    return _save(fig, out_dir, "h1_scorecard")
