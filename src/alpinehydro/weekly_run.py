@@ -132,7 +132,9 @@ def step_snow(ctx: dict) -> dict:
     n_fb = int((t["source"] == "fallback").sum())
     if n_fb:
         ctx["warnings"].append(f"{n_fb} region-days in the tracker use the VIIRS fallback")
-    if not CHOICE.exists() or not json.loads(CHOICE.read_text(encoding="utf-8")).get("chosen"):
+    if not CHOICE.exists():
+        ctx["warnings"].append("MODIS fallback not evaluated yet: the tracker uses MODIS alone")
+    elif not json.loads(CHOICE.read_text(encoding="utf-8")).get("chosen"):
         ctx["warnings"].append("no MODIS fallback is eligible: the tracker relies on MODIS alone")
     tracker_changed = _write_tracker(t)
     out["changed"] = bool(out.get("changed")) or tracker_changed

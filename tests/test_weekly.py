@@ -122,7 +122,12 @@ def repo(tmp_path):
     _git(tmp_path, "config", "user.email", "t@example.com")
     _git(tmp_path, "config", "user.name", "t")
     _git(tmp_path, "config", "commit.gpgsign", "false")
-    for p in ["data/processed/sfoe_storage_merged.csv", "reports/weekly_log.md", "README.md"]:
+    for p in [
+        "data/processed/sfoe_storage_merged.csv",
+        "reports/figures/hero_storage.png",
+        "reports/weekly_log.md",
+        "README.md",
+    ]:
         f = tmp_path / p
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_text("v1\n")
@@ -135,19 +140,39 @@ def _head(repo):
     return _git(repo, "rev-parse", "HEAD").stdout.strip()
 
 
-def test_safe_commit_commits_only_allowlisted_files(repo):
-    (repo / "data/processed/sfoe_storage_merged.csv").write_text("v2\n")
+def test_safe_commit_commits_laptop_files_and_discards_action_files(repo):
+    (repo / "data/processed/sfoe_storage_merged.csv").write_text("v2\n")  # Action-owned
+    (repo / "data/processed/sfoe_new_table.csv").write_text("new\n")  # Action-owned, new
+    (repo / "reports/figures/hero_storage.png").write_bytes(b"local hero")  # Action-owned
     (repo / "reports/weekly_log.md").write_text("v2\n")
-    (repo / "reports/figures").mkdir(parents=True)
     (repo / "reports/figures/live_forecasts.png").write_bytes(b"png")
     r = safe_commit.commit(repo, "weekly")
     assert r["committed"]
+    assert r["paths"] == ["reports/figures/live_forecasts.png", "reports/weekly_log.md"]
+    assert set(r["discarded"]) == {
+        "data/processed/sfoe_new_table.csv",
+        "data/processed/sfoe_storage_merged.csv",
+        "reports/figures/hero_storage.png",
+    }
+    committed = _git(repo, "show", "--name-only", "--format=", "HEAD").stdout.split()
+    assert not any(safe_commit.action_owned(p) for p in committed)
+    assert (repo / "data/processed/sfoe_storage_merged.csv").read_text() == "v1\n"
+    assert not (repo / "data/processed/sfoe_new_table.csv").exists()
     assert _git(repo, "status", "--porcelain").stdout == ""
+
+
+def test_safe_commit_only_action_files_changed_commits_nothing(repo):
+    head = _head(repo)
+    (repo / "reports/figures/hero_storage.png").write_bytes(b"local hero")
+    r = safe_commit.commit(repo, "weekly")
+    assert not r["committed"] and r["reason"] == "nothing changed"
+    assert _head(repo) == head and _git(repo, "status", "--porcelain").stdout == ""
 
 
 def test_safe_commit_blocks_when_any_other_file_changed(repo):
     head = _head(repo)
-    (repo / "data/processed/sfoe_storage_merged.csv").write_text("v2\n")
+    (repo / "data/processed/snow/tracker_daily.csv").parent.mkdir(parents=True)
+    (repo / "data/processed/snow/tracker_daily.csv").write_text("v2\n")
     (repo / "README.md").write_text("edited\n")
     r = safe_commit.commit(repo, "weekly")
     assert not r["committed"]
@@ -164,11 +189,46 @@ def test_safe_commit_blocks_new_untracked_file_outside_list(repo):
 
 
 def test_safe_commit_nothing_changed(repo):
-    assert safe_commit.commit(repo, "weekly") == {"committed": False, "reason": "nothing changed"}
+    r = safe_commit.commit(repo, "weekly")
+    assert not r["committed"] and r["reason"] == "nothing changed"
+
+
+def test_allowlist_split_never_overlaps():
+    """Laptop and Action own disjoint files; the Action commits only what it owns."""
+    import re
+    from pathlib import Path
+
+    samples = [
+        "data/processed/sfoe_storage_weekly.csv",
+        "data/processed/sfoe_storage_pdf.csv",
+        "data/processed/sfoe_storage_merged.csv",
+        "data/processed/sfoe_release_log.csv",
+        "data/processed/sfoe_pdf_log.csv",
+        "data/processed/sfoe_merge_log.csv",
+        "data/processed/snow/tracker_daily.csv",
+        "data/processed/snow/modis_daily.csv",
+        "data/processed/live_forecasts.csv",
+        "reports/figures/hero_storage.png",
+        "reports/figures/hero_storage.svg",
+        "reports/figures/snow_tracker.png",
+        "reports/figures/live_forecasts.png",
+        "reports/weekly_log.md",
+    ]
+    for p in samples:
+        assert safe_commit.allowed(p) != safe_commit.action_owned(p), p
+    for a in safe_commit.ALLOWLIST:
+        for b in safe_commit.ACTION_OWNED:
+            assert not safe_commit.fnmatch.fnmatch(a, b) and not safe_commit.fnmatch.fnmatch(b, a)
+
+    wf = Path(__file__).resolve().parents[1] / ".github" / "workflows" / "sfoe-check.yml"
+    added = re.search(r"git add -- (.+)", wf.read_text(encoding="utf-8")).group(1).split()
+    added = [a.strip("'") for a in added]
+    assert added and all(a in safe_commit.ACTION_OWNED for a in added)
+    assert set(added) == set(safe_commit.ACTION_OWNED)
 
 
 def test_allowlist_patterns():
-    assert safe_commit.allowed("data/processed/sfoe_pdf_log.csv")
+    assert not safe_commit.allowed("data/processed/sfoe_pdf_log.csv")
     assert safe_commit.allowed("data/processed/snow/tracker_daily.csv")
     assert safe_commit.allowed("data/processed/live_forecasts.csv")
     assert not safe_commit.allowed("data/processed/hypsometry/x.csv")

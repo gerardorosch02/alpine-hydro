@@ -30,12 +30,12 @@ jobs:
         run: uv run alpinehydro sfoe-update
       - name: Hero chart and commit, only if an SFOE file changed
         run: |
-          if [ -z "$(git status --porcelain -- 'data/processed/sfoe_*')" ]; then
+          if [ -z "$(git status --porcelain -- 'data/processed/sfoe*')" ]; then
             echo "Nothing new from SFOE."
             exit 0
           fi
           uv run alpinehydro hero
-          git add -- 'data/processed/sfoe_*' reports/figures/hero_storage.png reports/figures/hero_storage.svg
+          git add -- 'data/processed/sfoe*' reports/figures/hero_storage.png reports/figures/hero_storage.svg
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "SFOE check $(date -u +%Y-%m-%dT%H:%MZ): release log, PDF parse, hero chart"
