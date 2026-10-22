@@ -63,7 +63,8 @@ def main(zip_path: str) -> None:
         "# variable: inflows_direct (PREVAH simulated, m3/s hourly), summed over 107 reservoirs\n"
         "# inflow_hm3: calendar-year volume in hm3; hours: hourly values in the year\n"
     )
-    OUT.write_text(header + out.to_csv(index=False, lineterminator="\n"), encoding="utf-8")
+    text = header + out.to_csv(index=False, lineterminator="\n")
+    OUT.write_text(text, encoding="utf-8", newline="\n")
     print(out.to_string(index=False))
 
 

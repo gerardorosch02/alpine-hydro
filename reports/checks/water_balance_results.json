@@ -1,0 +1,1552 @@
+{
+  "post_hoc": true,
+  "plan": "prereg/WATER_BALANCE_PLAN.md (tag v0.4-waterbalance-plan)",
+  "g_source": "SFOE ogd104 Speicherkraft (deviation V1)",
+  "primary": {
+    "2026": {
+      "0.7": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-08-30",
+        "eta": 0.7,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5222.0,
+          "inflow_gwh": 10991.1,
+          "release_gwh": 5769.1
+        },
+        "baseline_mean": {
+          "ds_gwh": 5598.4,
+          "inflow_gwh": 13579.9,
+          "release_gwh": 7981.6
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 11259.4,
+          "release_gwh": 6376.4
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 16546.3,
+          "release_gwh": 10873.3
+        },
+        "anomaly": {
+          "ds_gwh": -376.4,
+          "inflow_gwh": -2588.8,
+          "release_gwh": -2212.5
+        },
+        "inflow_share": 6.879,
+        "release_share": -5.879,
+        "label": "weather story",
+        "weeks": 22
+      },
+      "0.75": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-08-30",
+        "eta": 0.75,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5222.0,
+          "inflow_gwh": 10833.5,
+          "release_gwh": 5611.5
+        },
+        "baseline_mean": {
+          "ds_gwh": 5598.4,
+          "inflow_gwh": 13471.2,
+          "release_gwh": 7872.8
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 11136.9,
+          "release_gwh": 6253.9
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 16422.8,
+          "release_gwh": 10749.8
+        },
+        "anomaly": {
+          "ds_gwh": -376.4,
+          "inflow_gwh": -2637.6,
+          "release_gwh": -2261.3
+        },
+        "inflow_share": 7.008,
+        "release_share": -6.008,
+        "label": "weather story",
+        "weeks": 22
+      },
+      "0.8": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-08-30",
+        "eta": 0.8,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5222.0,
+          "inflow_gwh": 10676.0,
+          "release_gwh": 5454.0
+        },
+        "baseline_mean": {
+          "ds_gwh": 5598.4,
+          "inflow_gwh": 13362.4,
+          "release_gwh": 7764.0
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 11014.5,
+          "release_gwh": 6131.5
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 16299.3,
+          "release_gwh": 10626.3
+        },
+        "anomaly": {
+          "ds_gwh": -376.4,
+          "inflow_gwh": -2686.4,
+          "release_gwh": -2310.0
+        },
+        "inflow_share": 7.138,
+        "release_share": -6.138,
+        "label": "weather story",
+        "weeks": 22
+      }
+    },
+    "2022": {
+      "0.7": {
+        "year": 2022,
+        "window": "2022-03-27 to 2022-08-28",
+        "eta": 0.7,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 4883.0,
+          "inflow_gwh": 11259.4,
+          "release_gwh": 6376.4
+        },
+        "baseline_mean": {
+          "ds_gwh": 5669.9,
+          "inflow_gwh": 13812.0,
+          "release_gwh": 8142.1
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 11791.5,
+          "release_gwh": 6655.9
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 16546.3,
+          "release_gwh": 10873.3
+        },
+        "anomaly": {
+          "ds_gwh": -786.9,
+          "inflow_gwh": -2552.6,
+          "release_gwh": -1765.7
+        },
+        "inflow_share": 3.244,
+        "release_share": -2.244,
+        "label": "weather story",
+        "weeks": 22
+      },
+      "0.75": {
+        "year": 2022,
+        "window": "2022-03-27 to 2022-08-28",
+        "eta": 0.75,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 4883.0,
+          "inflow_gwh": 11136.9,
+          "release_gwh": 6253.9
+        },
+        "baseline_mean": {
+          "ds_gwh": 5669.9,
+          "inflow_gwh": 13704.6,
+          "release_gwh": 8034.7
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 11662.8,
+          "release_gwh": 6503.3
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 16422.8,
+          "release_gwh": 10749.8
+        },
+        "anomaly": {
+          "ds_gwh": -786.9,
+          "inflow_gwh": -2567.7,
+          "release_gwh": -1780.8
+        },
+        "inflow_share": 3.263,
+        "release_share": -2.263,
+        "label": "weather story",
+        "weeks": 22
+      },
+      "0.8": {
+        "year": 2022,
+        "window": "2022-03-27 to 2022-08-28",
+        "eta": 0.8,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 4883.0,
+          "inflow_gwh": 11014.5,
+          "release_gwh": 6131.5
+        },
+        "baseline_mean": {
+          "ds_gwh": 5669.9,
+          "inflow_gwh": 13597.2,
+          "release_gwh": 7927.3
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 11534.0,
+          "release_gwh": 6350.7
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 16299.3,
+          "release_gwh": 10626.3
+        },
+        "anomaly": {
+          "ds_gwh": -786.9,
+          "inflow_gwh": -2582.7,
+          "release_gwh": -1795.8
+        },
+        "inflow_share": 3.282,
+        "release_share": -2.282,
+        "label": "weather story",
+        "weeks": 22
+      }
+    }
+  },
+  "label_2026": "weather story",
+  "label_2026_by_eta": {
+    "0.7": "weather story",
+    "0.75": "weather story",
+    "0.8": "weather story"
+  },
+  "secondary_a_provisional_to_27_september": {
+    "september_pumping_mean_gwh": 375.4,
+    "sd_gwh": 78.7,
+    "minus_1sd": {
+      "0.7": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-09-27",
+        "eta": 0.7,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5422.0,
+          "inflow_gwh": 12549.5,
+          "release_gwh": 7127.5
+        },
+        "baseline_mean": {
+          "ds_gwh": 5833.9,
+          "inflow_gwh": 15366.0,
+          "release_gwh": 9532.1
+        },
+        "baseline_min": {
+          "ds_gwh": 4772.0,
+          "inflow_gwh": 12607.3,
+          "release_gwh": 7418.3
+        },
+        "baseline_max": {
+          "ds_gwh": 6638.0,
+          "inflow_gwh": 18544.1,
+          "release_gwh": 13032.1
+        },
+        "anomaly": {
+          "ds_gwh": -411.9,
+          "inflow_gwh": -2816.5,
+          "release_gwh": -2404.6
+        },
+        "inflow_share": 6.838,
+        "release_share": -5.838,
+        "label": "weather story",
+        "weeks": 26
+      },
+      "0.75": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-09-27",
+        "eta": 0.75,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5422.0,
+          "inflow_gwh": 12377.6,
+          "release_gwh": 6955.6
+        },
+        "baseline_mean": {
+          "ds_gwh": 5833.9,
+          "inflow_gwh": 15238.3,
+          "release_gwh": 9404.4
+        },
+        "baseline_min": {
+          "ds_gwh": 4772.0,
+          "inflow_gwh": 12461.0,
+          "release_gwh": 7272.0
+        },
+        "baseline_max": {
+          "ds_gwh": 6638.0,
+          "inflow_gwh": 18398.5,
+          "release_gwh": 12886.5
+        },
+        "anomaly": {
+          "ds_gwh": -411.9,
+          "inflow_gwh": -2860.8,
+          "release_gwh": -2448.9
+        },
+        "inflow_share": 6.945,
+        "release_share": -5.945,
+        "label": "weather story",
+        "weeks": 26
+      },
+      "0.8": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-09-27",
+        "eta": 0.8,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5422.0,
+          "inflow_gwh": 12205.7,
+          "release_gwh": 6783.7
+        },
+        "baseline_mean": {
+          "ds_gwh": 5833.9,
+          "inflow_gwh": 15110.7,
+          "release_gwh": 9276.8
+        },
+        "baseline_min": {
+          "ds_gwh": 4772.0,
+          "inflow_gwh": 12314.7,
+          "release_gwh": 7125.7
+        },
+        "baseline_max": {
+          "ds_gwh": 6638.0,
+          "inflow_gwh": 18252.8,
+          "release_gwh": 12740.8
+        },
+        "anomaly": {
+          "ds_gwh": -411.9,
+          "inflow_gwh": -2905.1,
+          "release_gwh": -2493.1
+        },
+        "inflow_share": 7.053,
+        "release_share": -6.053,
+        "label": "weather story",
+        "weeks": 26
+      }
+    },
+    "mean": {
+      "0.7": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-09-27",
+        "eta": 0.7,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5422.0,
+          "inflow_gwh": 12499.9,
+          "release_gwh": 7077.9
+        },
+        "baseline_mean": {
+          "ds_gwh": 5833.9,
+          "inflow_gwh": 15366.0,
+          "release_gwh": 9532.1
+        },
+        "baseline_min": {
+          "ds_gwh": 4772.0,
+          "inflow_gwh": 12607.3,
+          "release_gwh": 7418.3
+        },
+        "baseline_max": {
+          "ds_gwh": 6638.0,
+          "inflow_gwh": 18544.1,
+          "release_gwh": 13032.1
+        },
+        "anomaly": {
+          "ds_gwh": -411.9,
+          "inflow_gwh": -2866.0,
+          "release_gwh": -2454.1
+        },
+        "inflow_share": 6.958,
+        "release_share": -5.958,
+        "label": "weather story",
+        "weeks": 26
+      },
+      "0.75": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-09-27",
+        "eta": 0.75,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5422.0,
+          "inflow_gwh": 12324.5,
+          "release_gwh": 6902.5
+        },
+        "baseline_mean": {
+          "ds_gwh": 5833.9,
+          "inflow_gwh": 15238.3,
+          "release_gwh": 9404.4
+        },
+        "baseline_min": {
+          "ds_gwh": 4772.0,
+          "inflow_gwh": 12461.0,
+          "release_gwh": 7272.0
+        },
+        "baseline_max": {
+          "ds_gwh": 6638.0,
+          "inflow_gwh": 18398.5,
+          "release_gwh": 12886.5
+        },
+        "anomaly": {
+          "ds_gwh": -411.9,
+          "inflow_gwh": -2913.9,
+          "release_gwh": -2502.0
+        },
+        "inflow_share": 7.074,
+        "release_share": -6.074,
+        "label": "weather story",
+        "weeks": 26
+      },
+      "0.8": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-09-27",
+        "eta": 0.8,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5422.0,
+          "inflow_gwh": 12149.0,
+          "release_gwh": 6727.0
+        },
+        "baseline_mean": {
+          "ds_gwh": 5833.9,
+          "inflow_gwh": 15110.7,
+          "release_gwh": 9276.8
+        },
+        "baseline_min": {
+          "ds_gwh": 4772.0,
+          "inflow_gwh": 12314.7,
+          "release_gwh": 7125.7
+        },
+        "baseline_max": {
+          "ds_gwh": 6638.0,
+          "inflow_gwh": 18252.8,
+          "release_gwh": 12740.8
+        },
+        "anomaly": {
+          "ds_gwh": -411.9,
+          "inflow_gwh": -2961.7,
+          "release_gwh": -2549.8
+        },
+        "inflow_share": 7.19,
+        "release_share": -6.19,
+        "label": "weather story",
+        "weeks": 26
+      }
+    },
+    "plus_1sd": {
+      "0.7": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-09-27",
+        "eta": 0.7,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5422.0,
+          "inflow_gwh": 12450.3,
+          "release_gwh": 7028.3
+        },
+        "baseline_mean": {
+          "ds_gwh": 5833.9,
+          "inflow_gwh": 15366.0,
+          "release_gwh": 9532.1
+        },
+        "baseline_min": {
+          "ds_gwh": 4772.0,
+          "inflow_gwh": 12607.3,
+          "release_gwh": 7418.3
+        },
+        "baseline_max": {
+          "ds_gwh": 6638.0,
+          "inflow_gwh": 18544.1,
+          "release_gwh": 13032.1
+        },
+        "anomaly": {
+          "ds_gwh": -411.9,
+          "inflow_gwh": -2915.6,
+          "release_gwh": -2503.7
+        },
+        "inflow_share": 7.078,
+        "release_share": -6.078,
+        "label": "weather story",
+        "weeks": 26
+      },
+      "0.75": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-09-27",
+        "eta": 0.75,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5422.0,
+          "inflow_gwh": 12271.3,
+          "release_gwh": 6849.3
+        },
+        "baseline_mean": {
+          "ds_gwh": 5833.9,
+          "inflow_gwh": 15238.3,
+          "release_gwh": 9404.4
+        },
+        "baseline_min": {
+          "ds_gwh": 4772.0,
+          "inflow_gwh": 12461.0,
+          "release_gwh": 7272.0
+        },
+        "baseline_max": {
+          "ds_gwh": 6638.0,
+          "inflow_gwh": 18398.5,
+          "release_gwh": 12886.5
+        },
+        "anomaly": {
+          "ds_gwh": -411.9,
+          "inflow_gwh": -2967.0,
+          "release_gwh": -2555.1
+        },
+        "inflow_share": 7.203,
+        "release_share": -6.203,
+        "label": "weather story",
+        "weeks": 26
+      },
+      "0.8": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-09-27",
+        "eta": 0.8,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5422.0,
+          "inflow_gwh": 12092.4,
+          "release_gwh": 6670.4
+        },
+        "baseline_mean": {
+          "ds_gwh": 5833.9,
+          "inflow_gwh": 15110.7,
+          "release_gwh": 9276.8
+        },
+        "baseline_min": {
+          "ds_gwh": 4772.0,
+          "inflow_gwh": 12314.7,
+          "release_gwh": 7125.7
+        },
+        "baseline_max": {
+          "ds_gwh": 6638.0,
+          "inflow_gwh": 18252.8,
+          "release_gwh": 12740.8
+        },
+        "anomaly": {
+          "ds_gwh": -411.9,
+          "inflow_gwh": -3018.4,
+          "release_gwh": -2606.5
+        },
+        "inflow_share": 7.328,
+        "release_share": -6.328,
+        "label": "weather story",
+        "weeks": 26
+      }
+    }
+  },
+  "update_window_2022": {
+    "0.7": {
+      "year": 2022,
+      "window": "2022-03-27 to 2022-09-25",
+      "eta": 0.7,
+      "baseline_years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "this": {
+        "ds_gwh": 5189.0,
+        "inflow_gwh": 12607.3,
+        "release_gwh": 7418.3
+      },
+      "baseline_mean": {
+        "ds_gwh": 5898.4,
+        "inflow_gwh": 15641.8,
+        "release_gwh": 9743.4
+      },
+      "baseline_min": {
+        "ds_gwh": 4772.0,
+        "inflow_gwh": 14015.7,
+        "release_gwh": 8179.6
+      },
+      "baseline_max": {
+        "ds_gwh": 6638.0,
+        "inflow_gwh": 18544.1,
+        "release_gwh": 13032.1
+      },
+      "anomaly": {
+        "ds_gwh": -709.4,
+        "inflow_gwh": -3034.5,
+        "release_gwh": -2325.1
+      },
+      "inflow_share": 4.278,
+      "release_share": -3.278,
+      "label": "weather story",
+      "weeks": 26
+    },
+    "0.75": {
+      "year": 2022,
+      "window": "2022-03-27 to 2022-09-25",
+      "eta": 0.75,
+      "baseline_years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "this": {
+        "ds_gwh": 5189.0,
+        "inflow_gwh": 12461.0,
+        "release_gwh": 7272.0
+      },
+      "baseline_mean": {
+        "ds_gwh": 5898.4,
+        "inflow_gwh": 15516.1,
+        "release_gwh": 9617.7
+      },
+      "baseline_min": {
+        "ds_gwh": 4772.0,
+        "inflow_gwh": 13865.2,
+        "release_gwh": 8007.2
+      },
+      "baseline_max": {
+        "ds_gwh": 6638.0,
+        "inflow_gwh": 18398.5,
+        "release_gwh": 12886.5
+      },
+      "anomaly": {
+        "ds_gwh": -709.4,
+        "inflow_gwh": -3055.1,
+        "release_gwh": -2345.7
+      },
+      "inflow_share": 4.307,
+      "release_share": -3.307,
+      "label": "weather story",
+      "weeks": 26
+    },
+    "0.8": {
+      "year": 2022,
+      "window": "2022-03-27 to 2022-09-25",
+      "eta": 0.8,
+      "baseline_years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "this": {
+        "ds_gwh": 5189.0,
+        "inflow_gwh": 12314.7,
+        "release_gwh": 7125.7
+      },
+      "baseline_mean": {
+        "ds_gwh": 5898.4,
+        "inflow_gwh": 15390.3,
+        "release_gwh": 9491.9
+      },
+      "baseline_min": {
+        "ds_gwh": 4772.0,
+        "inflow_gwh": 13714.6,
+        "release_gwh": 7834.8
+      },
+      "baseline_max": {
+        "ds_gwh": 6638.0,
+        "inflow_gwh": 18252.8,
+        "release_gwh": 12740.8
+      },
+      "anomaly": {
+        "ds_gwh": -709.4,
+        "inflow_gwh": -3075.7,
+        "release_gwh": -2366.3
+      },
+      "inflow_share": 4.336,
+      "release_share": -3.336,
+      "label": "weather story",
+      "weeks": 26
+    }
+  },
+  "secondary_b_all_sfoe_monthly": {
+    "2026": {
+      "0.7": {
+        "year": 2026,
+        "eta": 0.7,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "provisional": true,
+        "anomaly": {
+          "ds_gwh": -372.9,
+          "inflow_gwh": -2743.7,
+          "release_gwh": -2370.8
+        },
+        "inflow_share": 7.358,
+        "release_share": -6.358,
+        "label_cross_check": "weather story"
+      },
+      "0.75": {
+        "year": 2026,
+        "eta": 0.75,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "provisional": true,
+        "anomaly": {
+          "ds_gwh": -372.9,
+          "inflow_gwh": -2787.7,
+          "release_gwh": -2414.8
+        },
+        "inflow_share": 7.476,
+        "release_share": -6.476,
+        "label_cross_check": "weather story"
+      },
+      "0.8": {
+        "year": 2026,
+        "eta": 0.8,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "provisional": true,
+        "anomaly": {
+          "ds_gwh": -372.9,
+          "inflow_gwh": -2831.6,
+          "release_gwh": -2458.7
+        },
+        "inflow_share": 7.594,
+        "release_share": -6.594,
+        "label_cross_check": "weather story"
+      }
+    },
+    "2022": {
+      "0.7": {
+        "year": 2022,
+        "eta": 0.7,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2023,
+          2024,
+          2025
+        ],
+        "provisional": false,
+        "anomaly": {
+          "ds_gwh": -629.1,
+          "inflow_gwh": -2556.8,
+          "release_gwh": -1927.7
+        },
+        "inflow_share": 4.064,
+        "release_share": -3.064,
+        "label_cross_check": "weather story"
+      },
+      "0.75": {
+        "year": 2022,
+        "eta": 0.75,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2023,
+          2024,
+          2025
+        ],
+        "provisional": false,
+        "anomaly": {
+          "ds_gwh": -629.1,
+          "inflow_gwh": -2567.4,
+          "release_gwh": -1938.4
+        },
+        "inflow_share": 4.081,
+        "release_share": -3.081,
+        "label_cross_check": "weather story"
+      },
+      "0.8": {
+        "year": 2022,
+        "eta": 0.8,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2023,
+          2024,
+          2025
+        ],
+        "provisional": false,
+        "anomaly": {
+          "ds_gwh": -629.1,
+          "inflow_gwh": -2578.1,
+          "release_gwh": -1949.0
+        },
+        "inflow_share": 4.098,
+        "release_share": -3.098,
+        "label_cross_check": "weather story"
+      }
+    }
+  },
+  "secondary_partial_fleet_entsoe": {
+    "2026": {
+      "0.7": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-08-30",
+        "eta": 0.7,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5222.0,
+          "inflow_gwh": 9911.0,
+          "release_gwh": 4689.0
+        },
+        "baseline_mean": {
+          "ds_gwh": 5561.1,
+          "inflow_gwh": 11551.2,
+          "release_gwh": 5990.1
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 9482.0,
+          "release_gwh": 4305.8
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 14410.0,
+          "release_gwh": 8737.0
+        },
+        "anomaly": {
+          "ds_gwh": -339.1,
+          "inflow_gwh": -1640.2,
+          "release_gwh": -1301.1
+        },
+        "inflow_share": 4.837,
+        "release_share": -3.837,
+        "label": "weather story",
+        "weeks": 22
+      },
+      "0.75": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-08-30",
+        "eta": 0.75,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5222.0,
+          "inflow_gwh": 9753.5,
+          "release_gwh": 4531.5
+        },
+        "baseline_mean": {
+          "ds_gwh": 5561.1,
+          "inflow_gwh": 11438.3,
+          "release_gwh": 5877.2
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 9359.6,
+          "release_gwh": 4230.2
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 14286.5,
+          "release_gwh": 8613.5
+        },
+        "anomaly": {
+          "ds_gwh": -339.1,
+          "inflow_gwh": -1684.9,
+          "release_gwh": -1345.8
+        },
+        "inflow_share": 4.969,
+        "release_share": -3.969,
+        "label": "weather story",
+        "weeks": 22
+      },
+      "0.8": {
+        "year": 2026,
+        "window": "2026-03-29 to 2026-08-30",
+        "eta": 0.8,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 5222.0,
+          "inflow_gwh": 9595.9,
+          "release_gwh": 4373.9
+        },
+        "baseline_mean": {
+          "ds_gwh": 5561.1,
+          "inflow_gwh": 11325.4,
+          "release_gwh": 5764.3
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 9237.1,
+          "release_gwh": 4154.5
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 14163.0,
+          "release_gwh": 8490.0
+        },
+        "anomaly": {
+          "ds_gwh": -339.1,
+          "inflow_gwh": -1729.5,
+          "release_gwh": -1390.4
+        },
+        "inflow_share": 5.1,
+        "release_share": -4.1,
+        "label": "weather story",
+        "weeks": 22
+      }
+    },
+    "2022": {
+      "0.7": {
+        "year": 2022,
+        "window": "2022-03-27 to 2022-08-28",
+        "eta": 0.7,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 4883.0,
+          "inflow_gwh": 9482.0,
+          "release_gwh": 4599.0
+        },
+        "baseline_mean": {
+          "ds_gwh": 5636.4,
+          "inflow_gwh": 11781.2,
+          "release_gwh": 6144.7
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 9512.4,
+          "release_gwh": 4305.8
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 14410.0,
+          "release_gwh": 8737.0
+        },
+        "anomaly": {
+          "ds_gwh": -753.4,
+          "inflow_gwh": -2299.1,
+          "release_gwh": -1545.7
+        },
+        "inflow_share": 3.051,
+        "release_share": -2.051,
+        "label": "weather story",
+        "weeks": 22
+      },
+      "0.75": {
+        "year": 2022,
+        "window": "2022-03-27 to 2022-08-28",
+        "eta": 0.75,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 4883.0,
+          "inflow_gwh": 9359.6,
+          "release_gwh": 4476.6
+        },
+        "baseline_mean": {
+          "ds_gwh": 5636.4,
+          "inflow_gwh": 11669.3,
+          "release_gwh": 6032.9
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 9383.6,
+          "release_gwh": 4230.2
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 14286.5,
+          "release_gwh": 8613.5
+        },
+        "anomaly": {
+          "ds_gwh": -753.4,
+          "inflow_gwh": -2309.7,
+          "release_gwh": -1556.3
+        },
+        "inflow_share": 3.066,
+        "release_share": -2.066,
+        "label": "weather story",
+        "weeks": 22
+      },
+      "0.8": {
+        "year": 2022,
+        "window": "2022-03-27 to 2022-08-28",
+        "eta": 0.8,
+        "baseline_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2023,
+          2024,
+          2025
+        ],
+        "this": {
+          "ds_gwh": 4883.0,
+          "inflow_gwh": 9237.1,
+          "release_gwh": 4354.1
+        },
+        "baseline_mean": {
+          "ds_gwh": 5636.4,
+          "inflow_gwh": 11557.5,
+          "release_gwh": 5921.0
+        },
+        "baseline_min": {
+          "ds_gwh": 4289.0,
+          "inflow_gwh": 9254.8,
+          "release_gwh": 4154.5
+        },
+        "baseline_max": {
+          "ds_gwh": 6305.0,
+          "inflow_gwh": 14163.0,
+          "release_gwh": 8490.0
+        },
+        "anomaly": {
+          "ds_gwh": -753.4,
+          "inflow_gwh": -2320.3,
+          "release_gwh": -1566.9
+        },
+        "inflow_share": 3.08,
+        "release_share": -2.08,
+        "label": "weather story",
+        "weeks": 22
+      }
+    }
+  },
+  "snow_link_provisional": {
+    "minus_1sd": {
+      "0.7": {
+        "eta": 0.7,
+        "start_week": "2026-04-26",
+        "end_week": "2026-09-27",
+        "weeks": 22,
+        "h3a_total_forecast_fill": 82.622,
+        "forecast_national_fill": 85.5,
+        "water_normal_operators_fill": 48.3,
+        "actual_national_fill": 74.1,
+        "forecast_miss_pp": 11.4,
+        "share_of_miss_water": 3.254,
+        "share_of_miss_release": -2.254,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "gwh_per_pp": 89.0
+      },
+      "0.75": {
+        "eta": 0.75,
+        "start_week": "2026-04-26",
+        "end_week": "2026-09-27",
+        "weeks": 22,
+        "h3a_total_forecast_fill": 82.622,
+        "forecast_national_fill": 85.5,
+        "water_normal_operators_fill": 47.9,
+        "actual_national_fill": 74.1,
+        "forecast_miss_pp": 11.4,
+        "share_of_miss_water": 3.289,
+        "share_of_miss_release": -2.289,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "gwh_per_pp": 89.0
+      },
+      "0.8": {
+        "eta": 0.8,
+        "start_week": "2026-04-26",
+        "end_week": "2026-09-27",
+        "weeks": 22,
+        "h3a_total_forecast_fill": 82.622,
+        "forecast_national_fill": 85.5,
+        "water_normal_operators_fill": 47.5,
+        "actual_national_fill": 74.1,
+        "forecast_miss_pp": 11.4,
+        "share_of_miss_water": 3.324,
+        "share_of_miss_release": -2.324,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "gwh_per_pp": 89.0
+      }
+    },
+    "mean": {
+      "0.7": {
+        "eta": 0.7,
+        "start_week": "2026-04-26",
+        "end_week": "2026-09-27",
+        "weeks": 22,
+        "h3a_total_forecast_fill": 82.622,
+        "forecast_national_fill": 85.5,
+        "water_normal_operators_fill": 47.8,
+        "actual_national_fill": 74.1,
+        "forecast_miss_pp": 11.4,
+        "share_of_miss_water": 3.303,
+        "share_of_miss_release": -2.303,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "gwh_per_pp": 89.0
+      },
+      "0.75": {
+        "eta": 0.75,
+        "start_week": "2026-04-26",
+        "end_week": "2026-09-27",
+        "weeks": 22,
+        "h3a_total_forecast_fill": 82.622,
+        "forecast_national_fill": 85.5,
+        "water_normal_operators_fill": 47.3,
+        "actual_national_fill": 74.1,
+        "forecast_miss_pp": 11.4,
+        "share_of_miss_water": 3.341,
+        "share_of_miss_release": -2.341,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "gwh_per_pp": 89.0
+      },
+      "0.8": {
+        "eta": 0.8,
+        "start_week": "2026-04-26",
+        "end_week": "2026-09-27",
+        "weeks": 22,
+        "h3a_total_forecast_fill": 82.622,
+        "forecast_national_fill": 85.5,
+        "water_normal_operators_fill": 46.9,
+        "actual_national_fill": 74.1,
+        "forecast_miss_pp": 11.4,
+        "share_of_miss_water": 3.379,
+        "share_of_miss_release": -2.379,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "gwh_per_pp": 89.0
+      }
+    },
+    "plus_1sd": {
+      "0.7": {
+        "eta": 0.7,
+        "start_week": "2026-04-26",
+        "end_week": "2026-09-27",
+        "weeks": 22,
+        "h3a_total_forecast_fill": 82.622,
+        "forecast_national_fill": 85.5,
+        "water_normal_operators_fill": 47.2,
+        "actual_national_fill": 74.1,
+        "forecast_miss_pp": 11.4,
+        "share_of_miss_water": 3.351,
+        "share_of_miss_release": -2.351,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "gwh_per_pp": 89.0
+      },
+      "0.75": {
+        "eta": 0.75,
+        "start_week": "2026-04-26",
+        "end_week": "2026-09-27",
+        "weeks": 22,
+        "h3a_total_forecast_fill": 82.622,
+        "forecast_national_fill": 85.5,
+        "water_normal_operators_fill": 46.7,
+        "actual_national_fill": 74.1,
+        "forecast_miss_pp": 11.4,
+        "share_of_miss_water": 3.393,
+        "share_of_miss_release": -2.393,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "gwh_per_pp": 89.0
+      },
+      "0.8": {
+        "eta": 0.8,
+        "start_week": "2026-04-26",
+        "end_week": "2026-09-27",
+        "weeks": 22,
+        "h3a_total_forecast_fill": 82.622,
+        "forecast_national_fill": 85.5,
+        "water_normal_operators_fill": 46.2,
+        "actual_national_fill": 74.1,
+        "forecast_miss_pp": 11.4,
+        "share_of_miss_water": 3.435,
+        "share_of_miss_release": -2.435,
+        "baseline_years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "gwh_per_pp": 89.0
+      }
+    }
+  }
+}

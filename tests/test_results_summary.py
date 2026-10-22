@@ -23,7 +23,7 @@ def _numbers(text: str) -> list[str]:
 
 def test_summary_has_one_row_per_claim():
     rows, _ = _sections()
-    assert len(rows) == 8
+    assert len(rows) == 9
 
 
 def test_every_summary_number_appears_in_the_detailed_sections():

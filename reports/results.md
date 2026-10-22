@@ -14,6 +14,7 @@ One row per tested claim. Every number is copied from the detailed sections belo
 | H3a: 1 May snow forecasts the end-of-September fill beyond starting storage | `prereg/H3_ANALYSIS_PLAN.md`, `v0.2-h3plan` | Skill vs C1 +0.175; Holm p 0.268 | No added skill from snow | Snow points the right way, but 15 test years cannot tell it apart from luck. |
 | H3b: the 1 May forecast fill deviation predicts the October to December spread | `v0.2-h3plan` | Slope −36.9 EUR/MWh per 10 points; Holm p 0.058; smallest detectable effect 54.5 | Underpowered, not significant | The sign is the expected one, but 11 years cannot detect any plausible effect. |
 | Post-hoc follow-up: a 1 July update (melt, rain, storage) adds skill | `prereg/H3_FOLLOWUP_PLAN.md`, `v0.3-followup-plan` | Skill vs C1 +0.012; Holm p 0.241 | No added skill after 1 May (post-hoc) | Summer weather terms do not explain the record-low 2026 refill. |
+| Post-hoc water balance: was the 2026 storage shortfall weather or operators? | `prereg/WATER_BALANCE_PLAN.md`, `v0.4-waterbalance-plan` | Inflow share 7.01 at eta 0.75 (rule: at least 2/3); inflow anomaly −2,638 GWh, release anomaly −2,261 GWh, 29 March to 30 August | Weather story (post-hoc) | Less water came in than in any year since 2015, and operators released less, not more. |
 | Live check 2026/27: the H1 model forecasts each live week | `v0.1-prereg` section 9 | No live origin yet; first is the week of Sunday 1 November 2026 | In progress | A record only; the live verdict comes after April 2027. |
 
 Weekend 1 (2026-10-20). No price slope, regression or price chart has been
@@ -600,12 +601,120 @@ pulls small (about 16 s of wall time per year). Machine-readable:
 
 ## Water balance 2026 (post-hoc diagnostic)
 
+**Label (post-hoc): weather story.** From the last Sunday of March to the last Sunday of
+August 2026, less water came in than in any year since 2015, and operators took out less
+energy than usual, not more. The inflow share of the storage shortfall is 7.01 at eta 0.75
+(the rule needs at least 2/3); the label is the same at eta 0.70 and 0.80, and in every
+secondary version.
+
+![Water balance 2026](figures/water_balance_2026.png)
+
 **Everything in this section is post-hoc.** The plan
 ([prereg/WATER_BALANCE_PLAN.md](../prereg/WATER_BALANCE_PLAN.md), tag
 [v0.4-waterbalance-plan](https://github.com/gerardorosch02/alpine-hydro/tree/v0.4-waterbalance-plan))
 was written on 2026-10-22, after seeing the 2026 miss, and pushed before any 2026 number
 was computed. It is a diagnostic, not a test, and changes no earlier verdict. Choices the
-plan did not fix are listed under "Deviations from the water balance plan".
+plan did not fix are listed under "Deviations from the water balance plan". G is SFOE
+ogd104 storage production (V1); P is SFOE ogd35 pumping spread over days.
+
+### The 2026 and 2022 decompositions
+
+Primary window, cumulative GWh. Baseline: the mean of 2015 to 2025 without the year itself
+(2026: 11 years; 2022: 10 years). eta 0.75.
+
+| | 2026 (29 Mar to 30 Aug) | 2022 (27 Mar to 28 Aug) | Baseline mean for 2026 | Baseline range for 2026 |
+|---|---|---|---|---|
+| Implied inflow | 10,834 | 11,137 | 13,471 | 11,137 to 16,423 |
+| Release | 5,612 | 6,254 | 7,873 | 6,254 to 10,750 |
+| Storage change | 5,222 | 4,883 | 5,598 | 4,289 to 6,305 |
+| Inflow anomaly | −2,638 | −2,568 | | |
+| Release anomaly | −2,261 | −1,781 | | |
+| Storage-change anomaly | −376 | −787 | | |
+
+Shares of the storage shortfall and the label, by eta:
+
+| Year | eta | Inflow share | Release share | Label |
+|---|---|---|---|---|
+| 2026 | 0.70 | 6.88 | −5.88 | weather story |
+| **2026** | **0.75** | **7.01** | **−6.01** | **weather story** |
+| 2026 | 0.80 | 7.14 | −6.14 | weather story |
+| 2022 | 0.70 | 3.24 | −2.24 | weather story |
+| 2022 | 0.75 | 3.26 | −2.26 | weather story |
+| 2022 | 0.80 | 3.28 | −2.28 | weather story |
+
+The label does not change with eta. The shares are far above 1 because the two anomalies
+almost cancel: 2,638 GWh less water came in, but operators released 2,261 GWh less, so
+storage gained only 376 GWh less than usual over the window. A release share below zero
+means operators did the opposite of draining the lakes.
+
+In plain words: 2026 was a weather story. Its April to August inflow (10,834 GWh) was the
+lowest since 2015, below 2022 (11,137). Operators held water back rather than letting it
+out: release (5,612 GWh) was also the lowest since 2015. 2022 looks the same, a little
+less extreme.
+
+**Extra context, added after seeing these results (V9, descriptive, not part of the rule):**
+
+- The release anomaly in 2026 splits into 1,530 GWh less storage generation (7,975 against
+  9,504) and 976 GWh more pumping (3,151 against 2,175), of which 0.75 counts. Pumping has
+  risen over the baseline years (1,349 GWh in 2015, 3,052 in 2025), so the eta term matters.
+  With eta = 0 (pumping ignored entirely) the 2026 inflow share is still 5.06 and the label
+  is the same.
+- Much of the end-of-season gap was there before the refill began. On Sunday 29 March 2026
+  storage held 1,166 GWh, 566 GWh below the baseline mean for that Sunday. On Sunday 30
+  August it was 943 GWh below, and on 27 September 978 GWh below. So about 58% of the
+  27 September gap was already missing at the end of March, and the refill season added the
+  rest.
+
+**Secondary results (never the label):**
+
+| Version | 2026 inflow share at eta 0.70 / 0.75 / 0.80 | 2026 label | 2022 inflow share at eta 0.75 | 2022 label |
+|---|---|---|---|---|
+| (a) Provisional to 27 September, September pumping = 2015 to 2025 mean (375 GWh) | 6.96 / 7.07 / 7.19 | weather story | 4.31 (complete data) | weather story |
+| (a) September pumping mean − 1 sd (297 GWh) | 6.84 / 6.95 / 7.05 | weather story | | |
+| (a) September pumping mean + 1 sd (454 GWh) | 7.08 / 7.20 / 7.33 | weather story | | |
+| (b) All-SFOE monthly, April to August (2026 provisional) | 7.36 / 7.48 / 7.59 | weather story | 4.08 | weather story |
+| ENTSO-E B12 + B10 "partial fleet", primary window, baseline 2016 to 2025 | 4.84 / 4.97 / 5.10 | weather story | 3.07 | weather story |
+
+To 27 September (provisional, eta 0.75, September at the mean), 2026 inflow was 2,914 GWh
+below the baseline, release 2,502 GWh below, and the storage change 412 GWh below. The
+update with SFOE's published September pumping is still to come.
+
+![Each refill season: inflow anomaly against release anomaly](figures/water_balance_years.png)
+
+### Link to the snow forecast (provisional)
+
+The H3a forecast made on 1 May 2026 said the three Alpine regions would be 82.6% full on
+27 September. Starting from the H3a starting week (Sunday 26 April: three regions 9.2%,
+national 12.1%) and keeping its forecast change in fill points, that is **85.5%**
+nationally. Over the 22 weeks from 26 April to 27 September:
+
+| | National fill on 27 September |
+|---|---|
+| H3a forecast, converted to national | 85.5% |
+| The water that actually came in, with baseline release | 47.3% |
+| Actual | 74.1% |
+
+eta 0.75, September 2026 pumping at the baseline mean. Across eta 0.70 to 0.80 and
+September pumping at the mean ± 1 sd, the middle row is 46.2% to 48.3%.
+
+**The forecast missed the water, not the operators.** With normal releases, the water that
+actually came in would have left storage near 47% full, 38 points below the forecast. The
+forecast miss was 11.4 points; the water alone accounts for 3.3 times that (share 3.34),
+and operators holding back closed about 27 points of it (share −2.34). The snow forecast
+assumed a normal summer of inflow, and 2026's summer brought far less. This is
+provisional until SFOE publishes September 2026 pumping.
+
+### Descriptive only: release and price
+
+![Descriptive: weekly release anomaly against the CH price](figures/release_vs_price.png)
+
+Weekly release anomaly (against the 2015 to 2025 mean of the same ISO week) against the
+weekly mean CH day-ahead price, April to September, 2015 to 2026 (2026 to 30 August).
+**Descriptive.** No conclusion about causes is drawn from it. The weekly prices come from a
+local ENTSO-E cache and are not in this repo, so `alpinehydro demo` skips this figure and
+keeps the committed PNG.
+
+Machine-readable: `reports/checks/water_balance_results.json`.
 
 ### Audit (committed before any 2026 number)
 
@@ -728,3 +837,7 @@ edited. Everything in it is post-hoc. V1 to V6 were written on **2026-10-22, bef
 | V5 | 2026-10-22 | Where the code lives | `src/alpinehydro/fetch/sfoe_daily.py`, `src/alpinehydro/water_balance.py`, `src/alpinehydro/water_balance_audit.py`, `src/alpinehydro/plots_water_balance.py` and `scripts/hpcatch_annual.py`, not `fetch/` and `analysis/` at the top level. | The repo is one package under `src/alpinehydro/`; there is no `analysis/` folder. |
 | V6 | 2026-10-22 | HP-CatCH comparison | `inflows_direct` (PREVAH simulated, m³/s hourly, each sub-basin counted once) summed over its 107 reservoirs, calendar-year volume in hm³, against calendar-year implied inflow in GWh. Pearson correlation only, since the units differ. | The dataset's own reservoir inflow series. Its time axis has 8,760 hours in every year (no 29 February), so leap years lose one day. |
 | V7 | 2026-10-22 | 2015 annual total | Not computed, so the annual range and the HP-CatCH correlation use 2016 onwards. 2015 stays in the April to August and April to September baselines. | The 2015 calendar-year window starts with the week of Monday 29 December 2014, before ogd104 begins on 1 January 2015. |
+| V8 | 2026-10-22 | Baseline release in the snow link | For each baseline year (2015 to 2025), the release over the same 22 weeks, starting from the last Sunday on or before 26 April of that year. | The plan says "over the same weeks" without fixing how weeks map across years. Set while coding, before the link was first run. |
+| V9 | 2026-10-22 | Extra context in the results | Storage level at the window ends against the baseline, the split of the release anomaly into generation and pumping, and the shares at eta = 0. | **Added after seeing the results.** Descriptive only; it does not touch the rule or the label. The rise in pumping over the baseline years made the eta term worth bounding. |
+| V10 | 2026-10-22 | Figure `water_balance_years.png` | Every year against the 2015 to 2025 mean, including the year itself. | One common reference makes the dots comparable. The decomposition tables leave the year out, so the 2022 dot differs slightly from the 2022 row. Display only. |
+| V11 | 2026-10-22 | Descriptive scatter | Release anomaly against the 2015 to 2025 mean of the same ISO week (week 53 counted as 52). Weekly prices are not committed; `alpinehydro demo` skips the figure with the note "release_vs_price skipped: needs local ENTSO-E prices". | Owner's choice: a weekly price series is what the ENTSO-E decision of 22 October keeps out of the repo, and a descriptive chart is not worth loosening that. |

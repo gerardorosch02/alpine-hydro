@@ -23,7 +23,8 @@ from alpinehydro import config
 OUT_DIR = config.PROCESSED / "water_balance"
 WEEKLY = OUT_DIR / "weekly.csv"
 MONTHLY = OUT_DIR / "monthly_sfoe.csv"
-PRICES = OUT_DIR / "weekly_ch_price.csv"
+# Weekly CH prices for the descriptive scatter: the local ENTSO-E cache, never committed.
+PRICE_CACHE = config.INTERIM / "entsoe_prices_weekly.parquet"
 
 ETA = 0.75
 ETAS = (0.70, 0.75, 0.80)
@@ -74,18 +75,6 @@ def build_tables() -> dict[str, int]:
     return {"weeks": len(weeks), "months": len(m)}
 
 
-def build_prices() -> int:
-    """Weekly mean CH day-ahead price per SFOE week (descriptive scatter only)."""
-    w = pd.read_parquet(config.INTERIM / "entsoe_prices_weekly.parquet")
-    w = w[(w["zone"] == "CH") & w["complete"]]
-    out = pd.DataFrame(
-        {"ch_da_eur_mwh": w["baseload"].round(2).to_numpy()},
-        index=pd.DatetimeIndex(pd.to_datetime(w["valid_time"]).to_numpy(), name="valid_time"),
-    )
-    _write(out, PRICES, "weekly price")
-    return len(out)
-
-
 def _monthly_gwh(hourly_mw: pd.Series, min_share: float = 0.90) -> pd.Series:
     naive = hourly_mw.index.tz_localize(None)
     month = naive.to_period("M").to_timestamp()
@@ -125,7 +114,7 @@ def _write(df: pd.DataFrame, path, what: str) -> None:
     )
     out = df.copy()
     out.index = out.index.strftime("%Y-%m-%d")
-    path.write_text(header + out.to_csv(lineterminator="\n"), encoding="utf-8")
+    path.write_text(header + out.to_csv(lineterminator="\n"), encoding="utf-8", newline="\n")
 
 
 # ---------------------------------------------------------------- reading and the identity
@@ -154,8 +143,12 @@ def load_monthly() -> pd.DataFrame:
     return pd.read_csv(MONTHLY, comment="#", index_col=0, parse_dates=[0])
 
 
-def load_prices() -> pd.DataFrame:
-    return pd.read_csv(PRICES, comment="#", index_col=0, parse_dates=[0])
+def load_prices() -> pd.Series:
+    """Weekly mean CH day-ahead price per SFOE week (complete weeks only), from the cache."""
+    w = pd.read_parquet(PRICE_CACHE)
+    w = w[(w["zone"] == "CH") & w["complete"]]
+    idx = pd.DatetimeIndex(pd.to_datetime(w["valid_time"]).to_numpy(), name="valid_time")
+    return pd.Series(w["baseload"].to_numpy(), index=idx, name="ch_da_eur_mwh")
 
 
 def release(w: pd.DataFrame, eta: float = ETA) -> pd.Series:
@@ -382,3 +375,60 @@ def snow_link(w: pd.DataFrame, eta: float = ETA) -> dict:
         "baseline_years": kept,
         "gwh_per_pp": round(cap / 100, 1),
     }
+
+
+# ---------------------------------------------------------------- everything, in plan order
+
+RESULTS = config.REPORTS / "checks" / "water_balance_results.json"
+YEARS = (2026, 2022)
+
+
+def run() -> dict:
+    """Primary decomposition, secondaries (a), (b) and partial fleet, and the snow link."""
+    w = load_weekly()
+    out: dict = {
+        "post_hoc": True,
+        "plan": "prereg/WATER_BALANCE_PLAN.md (tag v0.4-waterbalance-plan)",
+        "g_source": "SFOE ogd104 Speicherkraft (deviation V1)",
+        "primary": {str(y): {str(eta): decompose(w, y, "aug", eta) for eta in ETAS} for y in YEARS},
+    }
+    out["label_2026"] = out["primary"]["2026"][str(ETA)]["label"]
+    out["label_2026_by_eta"] = {k: v["label"] for k, v in out["primary"]["2026"].items()}
+
+    kept, _ = baseline_years(w, "sep")
+    sep_mean, sep_sd = september_pumping_baseline(kept)
+    prov = {"september_pumping_mean_gwh": round(sep_mean, 1), "sd_gwh": round(sep_sd, 1)}
+    for name, gwh in (
+        ("minus_1sd", sep_mean - sep_sd),
+        ("mean", sep_mean),
+        ("plus_1sd", sep_mean + sep_sd),
+    ):
+        wf = with_september_pumping(w, 2026, gwh)
+        prov[name] = {str(eta): decompose(wf, 2026, "sep", eta) for eta in ETAS}
+    out["secondary_a_provisional_to_27_september"] = prov
+    out["update_window_2022"] = {str(eta): decompose(w, 2022, "sep", eta) for eta in ETAS}
+
+    out["secondary_b_all_sfoe_monthly"] = {
+        str(y): {str(eta): decompose_monthly_sfoe(y, eta) for eta in ETAS} for y in YEARS
+    }
+    we = load_weekly("entsoe")
+    out["secondary_partial_fleet_entsoe"] = {
+        str(y): {str(eta): decompose(we, y, "aug", eta) for eta in ETAS} for y in YEARS
+    }
+
+    links = {}
+    for name, gwh in (
+        ("minus_1sd", sep_mean - sep_sd),
+        ("mean", sep_mean),
+        ("plus_1sd", sep_mean + sep_sd),
+    ):
+        wf = with_september_pumping(w, 2026, gwh)
+        links[name] = {str(eta): snow_link(wf, eta) for eta in ETAS}
+    out["snow_link_provisional"] = links
+    return out
+
+
+def write_results(out: dict) -> None:
+    import json
+
+    RESULTS.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8", newline="\n")

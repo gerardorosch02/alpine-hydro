@@ -356,9 +356,37 @@ def demo():
     never committed, so those PNGs are kept as they are.
     """
     _figures(example=False)
-    from alpinehydro import live, plots_snow
+    from alpinehydro import live, plots_snow, plots_water_balance
 
-    for p in plots_snow.all_figures() + live.chart():
+    for p in (
+        plots_snow.all_figures() + live.chart() + plots_water_balance.all_figures(log=typer.echo)
+    ):
+        typer.echo(f"wrote {p.relative_to(config.ROOT)}")
+
+
+@app.command("water-balance-build")
+def water_balance_build_cmd():
+    """Fetch SFOE ogd104/ogd35 and ENTSO-E B12/B10 (key needed) and write the derived tables."""
+    from alpinehydro import water_balance
+    from alpinehydro.fetch import entsoe, sfoe_daily
+
+    for name in sfoe_daily.URLS:
+        sfoe_daily.download(name, refresh=True)
+    for name in entsoe.HYDRO:
+        entsoe.fetch_generation(name, first="2015-01-01", log=lambda m: None)
+    typer.echo(json.dumps(water_balance.build_tables()))
+
+
+@app.command("water-balance")
+def water_balance_cmd():
+    """Post-hoc water balance: audit, decomposition and figures from committed tables."""
+    from alpinehydro import plots_water_balance, water_balance, water_balance_audit
+
+    typer.echo(f"wrote {_write_check('water_balance_audit', water_balance_audit.run())}")
+    out = water_balance.run()
+    water_balance.write_results(out)
+    typer.echo(f"label 2026 (primary window, eta 0.75): {out['label_2026']}")
+    for p in plots_water_balance.all_figures(log=typer.echo):
         typer.echo(f"wrote {p.relative_to(config.ROOT)}")
 
 
