@@ -550,11 +550,6 @@ def load_grid(slug: str) -> Grid:
     )
 
 
-def load_join(slug: str) -> np.ndarray:
-    """Join levels on the hybrid terrain (what the waterline method uses)."""
-    return np.load(hybrid_path(slug))["join"]
-
-
 def load_curve(slug: str) -> pd.DataFrame:
     return pd.read_csv(CURVE_DIR / f"{slug}.csv", comment="#")
 

@@ -1,7 +1,5 @@
 # Pipeline settings. Paths are relative to the repo root unless absolute.
 
-obsidian_vault: C:/Users/gerar/Vaults/Main
-
 sfoe:
   csv_url: https://www.uvek-gis.admin.ch/BFE/ogd/17/ogd17_fuellungsgrad_speicherseen.csv
   pdf_collection_url: https://pubdb.bfe.admin.ch/en/sammlungen/energiestatistik-fuellungsgrad-der-speicherseen

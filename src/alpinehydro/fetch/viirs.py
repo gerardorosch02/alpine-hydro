@@ -23,10 +23,10 @@ from alpinehydro import config, fallback
 
 SHORT_NAME = "VJ210A1"
 VERSION = "2"
-TILE = "h18v04"
 CREDIT = (
-    "Riggs, G. A., D. K. Hall and M. O. Roman. VIIRS/NOAA-21 Snow Cover Daily L3 Global "
-    "375m SIN Grid, Version 2 (VJ210A1). NASA National Snow and Ice Data Center DAAC."
+    "Riggs, G. A. and D. K. Hall (2026). VIIRS/JPSS2 Snow Cover Daily L3 Global 375m SIN "
+    "Grid, Version 2 (VJ210A1). NASA National Snow and Ice Data Center DAAC. "
+    "doi:10.5067/IX3NQYYS3MOV"
 )
 CRS = "+proj=sinu +R=6371007.181 +lon_0=0 +x_0=0 +y_0=0 +units=m +no_defs"
 UL_X, UL_Y = 0.0, 5559752.598333

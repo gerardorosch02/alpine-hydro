@@ -265,10 +265,10 @@ def chart(out_dir=config.FIGURES) -> list:
         0.01,
         0.01,
         "Storage: Swiss Federal Office of Energy SFOE. Realised spread: one derived mean per"
-        " window from ENTSO-E Transparency Platform day-ahead prices. Not part of the no-edge"
+        " window from ENTSO-E Transparency Platform day-ahead prices.\nNot part of the no-edge"
         " rule.",
         color=INK_2,
         fontsize=6.5,
     )
-    fig.tight_layout(rect=(0, 0.04, 1, 1))
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
     return _save(fig, out_dir, "live_forecasts")

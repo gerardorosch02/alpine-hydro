@@ -352,12 +352,13 @@ def figures():
 def demo():
     """Rebuild the figures from committed data/processed/ only. No network, no keys.
 
-    The Dix example scene needs imagery, so the committed PNG is kept as it is.
+    The Dix example scene needs imagery and the H1 figures need price series, which are
+    never committed, so those PNGs are kept as they are.
     """
     _figures(example=False)
-    from alpinehydro import plots_snow
+    from alpinehydro import live, plots_snow
 
-    for p in plots_snow.all_figures():
+    for p in plots_snow.all_figures() + live.chart():
         typer.echo(f"wrote {p.relative_to(config.ROOT)}")
 
 

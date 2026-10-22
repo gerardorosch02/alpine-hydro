@@ -369,17 +369,3 @@ def generation_hourly(name: str) -> pd.Series:
     h = s.resample("1h").mean().dropna()
     h.index = h.index.tz_convert(TZ)
     return h.rename(name)
-
-
-def generation_daily(name: str) -> pd.DataFrame:
-    """Daily mean MW per Europe/Zurich day: values averaged to hours, then hours to days.
-
-    n_hours counts hours with data.
-    """
-    h = generation_hourly(name)
-    day = h.index.tz_localize(None).normalize()
-    g = h.groupby(day)
-    out = pd.DataFrame({"mw": g.mean(), "n_hours": g.count()})
-    out.index.name = "day"
-    out["expected_hours"] = [hours_in_local_day(d) for d in out.index]
-    return out

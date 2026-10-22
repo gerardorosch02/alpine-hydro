@@ -17,9 +17,9 @@
 param([switch]$NoPush)
 
 $ErrorActionPreference = "Stop"
-$Repo = "C:\Users\gerar\Projects\alpine-hydro"
-$Uv = "C:\Users\gerar\AppData\Local\Programs\Python\Python313\Scripts\uv.exe"
-$Git = "C:\Program Files\Git\cmd\git.exe"
+# The repo is the parent of this script's folder. uv and git are found on PATH; set
+# ALPINEHYDRO_UV or ALPINEHYDRO_GIT to a full path if the scheduled task cannot see them.
+$Repo = Split-Path -Parent $PSScriptRoot
 
 Set-Location $Repo
 $LogDir = Join-Path $Repo "data\interim\logs"
@@ -39,6 +39,14 @@ function Invoke-Logged([string]$Exe, [string]$Arguments) {
 }
 
 Write-Log "start"
+
+try {
+    $Uv = if ($env:ALPINEHYDRO_UV) { $env:ALPINEHYDRO_UV } else { (Get-Command uv.exe).Source }
+    $Git = if ($env:ALPINEHYDRO_GIT) { $env:ALPINEHYDRO_GIT } else { (Get-Command git.exe).Source }
+} catch {
+    Write-Log "aborted: uv or git not found on PATH (set ALPINEHYDRO_UV or ALPINEHYDRO_GIT); nothing run"
+    exit 1
+}
 
 $gitDir = (& $Git rev-parse --absolute-git-dir).Trim()
 if ((Test-Path (Join-Path $gitDir "rebase-merge")) -or (Test-Path (Join-Path $gitDir "rebase-apply")) -or (Test-Path (Join-Path $gitDir "MERGE_HEAD"))) {

@@ -93,10 +93,6 @@ def _canton_shapes() -> dict[str, Any]:
     return {region: unary_union(parts[name]) for region, name in CANTONS.items()}
 
 
-def _round6(text: str) -> float:
-    return round(float(text), 6)
-
-
 def build_outlines() -> dict[str, dict]:
     """Write one small GeoJSON per canton (EPSG:4326, simplified by 50 m)."""
     OUTLINE_DIR.mkdir(parents=True, exist_ok=True)
