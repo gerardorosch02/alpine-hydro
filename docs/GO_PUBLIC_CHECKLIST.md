@@ -40,7 +40,10 @@ deleted):
   glacier share, and `h3b_q4_spread.csv` (450 bytes, 11 yearly means).
 
 None was ever a raw price series, raw imagery or a credential. The column headers of
-every table were checked: no price or generation column. No `.parquet`, `.tif`, `.nc`,
+every table were checked: no price or generation column. (Later, on 2026-10-22, the
+post-hoc water balance added weekly and monthly ENTSO-E hydro generation sums in GWh,
+`data/processed/water_balance/`, under the ENTSO-E decision in DATA_LICENCES.md. Still no
+price column.) No `.parquet`, `.tif`, `.nc`,
 `.h5`, `.laz`, `.zip`, `.pdf`, `.ipynb` or `.env` file was ever committed anywhere in
 the history. The only blobs over 1 MB are the two snow tables above. `alpinehydro
 check-repo` passes on HEAD (168 tracked files).

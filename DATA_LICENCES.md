@@ -55,8 +55,11 @@ re-use. Decision by the owner on 2026-10-22: keep the derived figures and statis
 listed in the table above, with these conditions.
 
 - Credit: Source: ENTSO-E Transparency Platform.
-- No raw ENTSO-E data is included in this repo: no price or generation series, only
-  aggregated statistics, model results and charts.
+- No raw ENTSO-E data is included in this repo: no price series and no hourly or daily
+  generation, only aggregated statistics, model results and charts. Since 2026-10-22 the
+  water balance (post-hoc) also keeps weekly and monthly GWh sums of CH reservoir and
+  pumped-storage generation in `data/processed/water_balance/`, under the same conditions
+  (owner's decision for that piece).
 - Any ENTSO-E-derived material will be removed on request from ENTSO-E or a Primary
   Owner of Data.
 

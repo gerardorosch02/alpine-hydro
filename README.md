@@ -30,29 +30,38 @@ stress winters, but in these data it did not give a tradable forecast edge.
 All numbers, with every test: [reports/results.md](reports/results.md). For a trader's
 one-page reading: [docs/DESK_NOTE.md](docs/DESK_NOTE.md).
 
+### Water balance 2026 (post-hoc)
+
+![2026 water balance against 2015 to 2025](reports/figures/water_balance_2026.png)
+
+**Label: weather story.** From April to August 2026 less water reached Swiss reservoirs
+than in any year since 2015, about 2,600 GWh below the 2015 to 2025 mean, and operators
+released about 2,300 GWh less, not more. The 1 May snow forecast missed the water, not the
+operators. A post-hoc diagnostic with its own plan tag,
+[v0.4-waterbalance-plan](https://github.com/gerardorosch02/alpine-hydro/tree/v0.4-waterbalance-plan).
+
 ## How it works
 
-**A. Satellite lakes.** Sentinel-2 and Landsat water masks are matched to a
-level-area-volume curve built from swisstopo terrain, then turned into energy. Three
-Valais lakes are checked against the official weekly numbers of the Swiss Federal
-Office of Energy (SFOE).
+**A. Satellite lakes.** Sentinel-2 and Landsat water masks are matched to
+level-volume curves from swisstopo terrain, turned into energy, and checked on three
+Valais lakes against the weekly numbers of the Swiss Federal Office of Energy (SFOE).
 
-**B. Storage and the Swiss premium.** The SFOE fill minus its 10-year norm, as known
-on release day, against the next 28-day CH minus DE-LU spread, November to April, over
-11 winters with 5 test winters. The model must beat controls alone (nuclear, wind,
-heating degree days) under a fixed no-edge rule.
+**B. Storage and the Swiss premium.** SFOE fill minus its 10-year norm, as known on
+release day, against the next 28-day CH minus DE-LU spread (November to April, 11
+winters, 5 tested). It must beat controls alone (nuclear, wind, heating degree days).
 
 **C. Snow and refill.** MODIS snow cover above 1800 m on 1 May, against how full the
 Alpine regions are at the end of September, beyond what starting storage says.
 
 ## Integrity
 
-- Three tags froze each plan before its fit:
+- Tags froze each plan before its fit:
   [v0.1-prereg](https://github.com/gerardorosch02/alpine-hydro/tree/v0.1-prereg) (H1, H2),
   [v0.2-h3plan](https://github.com/gerardorosch02/alpine-hydro/tree/v0.2-h3plan) (H3a, H3b) and
   [v0.3-followup-plan](https://github.com/gerardorosch02/alpine-hydro/tree/v0.3-followup-plan)
   (post-hoc). v0.1 and v0.3 were pushed before their fits; v0.2 was tagged locally
-  before any snow series existed but pushed after the H3 fit.
+  before any snow series existed but pushed after the H3 fit. v0.4 (water balance) was
+  pushed before any 2026 number.
 - Every open choice is dated in the deviations sections:
   [pre-registration](reports/results.md#deviations-from-the-pre-registration),
   [H3 plan](reports/results.md#deviations-from-the-h3-analysis-plan) and
@@ -61,13 +70,11 @@ Alpine regions are at the end of September, beyond what starting storage says.
 
 ## Live this winter
 
-- **Snow tracker** ([figure](reports/figures/snow_tracker.png)): daily snow cover for
-  2026/27 against 2000 to 2025.
-- **Live forecast** ([figure](reports/figures/live_forecasts.png)): one H1 forecast per
-  SFOE week, November 2026 to April 2027, scored after April. A record, not a verdict.
-- A keyless GitHub Action (Tuesday to Friday) picks up each SFOE week and redraws the
-  hero chart. A weekly job on my laptop updates the snow and the live forecast. Runs are
-  logged in [reports/weekly_log.md](reports/weekly_log.md).
+- [Snow tracker](reports/figures/snow_tracker.png): daily snow cover against 2000 to 2025.
+- [Live forecast](reports/figures/live_forecasts.png): one H1 forecast per SFOE week,
+  November 2026 to April 2027, scored after April. A record, not a verdict.
+- A keyless GitHub Action redraws the hero chart each SFOE week; a weekly laptop job
+  updates snow and the live forecast ([log](reports/weekly_log.md)).
 
 ## Reproduce
 
@@ -86,38 +93,36 @@ Engine, Copernicus Climate Data Store and NASA Earthdata (see `.env.example`).
 | Source | Used for | In this repo |
 |---|---|---|
 | SFOE weekly storage | Storage, validation, live weeks | Processed weekly tables |
-| ENTSO-E Transparency Platform | Prices and controls | No price series; 11 yearly mean spreads for H3b |
+| ENTSO-E Transparency Platform | Prices, controls, hydro generation | No price series; 11 yearly spreads; weekly hydro GWh |
 | Copernicus Sentinel-2, USGS Landsat | Water masks | Derived tables only |
 | swisstopo, SRTM, Copernicus GLO-30 | Outlines and terrain | Outlines and derived curves |
 | ERA5-Land (Copernicus Climate Change Service) | Ice flag, snow water, temperature | Regional daily means |
 | NASA MODIS and VIIRS snow cover | Snow tracker, Part C | Regional daily means |
 | GLIMS | Glacier share (post-hoc) | Four numbers |
+| SFOE production and pumping, HP-CatCH (ETH) | Water balance (post-hoc) | Weekly and monthly GWh, annual inflow |
 
 Prices and generation: Source: ENTSO-E Transparency Platform. No raw ENTSO-E data is
-included in this repo, only aggregated statistics, model results and charts, and that
-material will be removed on request. Credit lines, links and dates checked:
+included, only aggregated statistics, model results and charts, removed on request. Credit lines, links and dates checked:
 [DATA_LICENCES.md](DATA_LICENCES.md). Code: MIT.
 
 ## Limitations
 
-- **Ice in winter.** Lakes freeze or carry snow from December to May, so the satellite
-  is blind during the price season.
+- **Ice in winter.** Lakes freeze from December to May, so the satellite is blind in
+  the price season.
 - **Terrain floors and mask edges.** swisstopo stores each lake as a flat surface 1 to
-  10 m below full, so the lower curve uses 30 m global terrain. Masks run 1.4% to 15%
-  short of the lake area, hiding the top metres of level.
-- **Only about 11 winters of free prices.** CH prices start in 2015: 5 test winters for
-  H1, 11 years for H3b.
+  10 m below full, so lower curves use 30 m global terrain; masks run 1.4% to 15% short.
+- **Only about 11 winters of free prices** (CH from 2015).
 - **Crisis winters dominate.** The H1 slope is −14.33 per 10 points in 2021/22 and
   2022/23 and −4.40 outside them.
 - **Net refill includes operators' decisions.** End-of-September fill is inflow minus
   what operators chose to generate, not hydrology alone.
+- **ENTSO-E covers only about 79% of Swiss storage hydro production**, so the water
+  balance takes generation from SFOE.
 
 ## What I would do next
 
 - Use the swisstopo lidar ground points to repair the lake curves where they are
   weakest.
-- Add summer prices or generation to the refill model, to test whether operators
-  generating more at high prices explains the 2026 miss. That is an untested hypothesis.
 - Get forward-price data, to test whether the storage signal is already priced in.
 
 ## Author

@@ -35,6 +35,8 @@ luck (Holm p 0.268). In 2026 the 1 May forecast was 82.6% full at the end of Sep
 against an actual 74.0%: the drought came in summer, after the snow reading. A post-hoc
 1 July update did not help either (skill +0.012).
 
+**2026 was a weather story, not an operator story (post-hoc water balance).** From April to August less water came in than in any year since 2015 (about 2,600 GWh below normal) and operators released about 2,300 GWh less, not more, so the snow forecast missed the water.
+
 **Snow and the autumn premium: too few years.** Lower forecast fill went with a higher
 October to December premium (−36.9 EUR/MWh per 10 points), but with 11 years the
 smallest effect the test could detect is 54.5, and the result is not significant after
