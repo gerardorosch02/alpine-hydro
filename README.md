@@ -15,7 +15,7 @@ stress winters, but in these data it did not give a tradable forecast edge.
 ![Swiss hydro storage against its 2000 to 2025 range, and Valais against the satellite check](reports/figures/hero_storage.png)
 
 *As of the SFOE week ending Sunday 18 October 2026: 71.7% full, 12.6 points below the
-10-year norm. The chart is redrawn by the daily GitHub Action.*
+10-year norm. A GitHub Action redraws the chart each new SFOE week.*
 
 ## What I found
 
