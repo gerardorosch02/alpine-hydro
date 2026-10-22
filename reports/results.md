@@ -1,5 +1,21 @@
 # Results
 
+## Summary of results
+
+One row per tested claim. Every number is copied from the detailed sections below, and
+`tests/test_results_summary.py` checks that each one appears there unchanged.
+
+| Claim | Plan and tag | Primary number | Verdict | Meaning |
+|---|---|---|---|---|
+| Part A: satellite Wallis storage tracks SFOE Wallis | Own validation target (not pre-registered) | R² of anomalies 0.695, n 46; 0.408 without 2026 (n 40) | Pass (mark 0.50) | Satellites track the summer refill in big years, but the pass leans on the 2026 drought. |
+| A satellite head start on the SFOE release is worth something | Known before the freeze, `v0.1-prereg` section 7 | Timing ceiling EUR 0.17 to 0.23/MWh | Likely worthless | Seeing storage a few days early is worth far less than EUR 0.5/MWh. |
+| H1: the storage deviation predicts the 28-day CH minus DE-LU spread, November to April | `prereg/PREREGISTRATION.md`, `v0.1-prereg` | Slope −7.72 EUR/MWh per 10 points; Clark-West p 0.030; out-of-sample R² vs B3 0.009 | No edge | Low storage goes with a higher Swiss premium, but the forecast gain over controls alone fails once the crisis winters are removed. |
+| H2: the same deviation predicts the March to April CH minus IT-North spread | `v0.1-prereg`, details in deviation D8 | Slope +0.70 per 10 points; Clark-West p 0.987 | Null | No sign of an effect. |
+| H3a: 1 May snow forecasts the end-of-September fill beyond starting storage | `prereg/H3_ANALYSIS_PLAN.md`, `v0.2-h3plan` | Skill vs C1 +0.175; Holm p 0.268 | No added skill from snow | Snow points the right way, but 15 test years cannot tell it apart from luck. |
+| H3b: the 1 May forecast fill deviation predicts the October to December spread | `v0.2-h3plan` | Slope −36.9 EUR/MWh per 10 points; Holm p 0.058; smallest detectable effect 54.5 | Underpowered, not significant | The sign is the expected one, but 11 years cannot detect any plausible effect. |
+| Post-hoc follow-up: a 1 July update (melt, rain, storage) adds skill | `prereg/H3_FOLLOWUP_PLAN.md`, `v0.3-followup-plan` | Skill vs C1 +0.012; Holm p 0.241 | No added skill after 1 May (post-hoc) | Summer weather terms do not explain the record-low 2026 refill. |
+| Live check 2026/27: the H1 model forecasts each live week | `v0.1-prereg` section 9 | No live origin yet; first is the week of Sunday 1 November 2026 | In progress | A record only; the live verdict comes after April 2027. |
+
 Weekend 1 (2026-10-20). No price slope, regression or price chart has been
 computed. Machine-readable versions of the checks are in `reports/checks/`.
 
