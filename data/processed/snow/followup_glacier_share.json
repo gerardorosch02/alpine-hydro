@@ -1,0 +1,26 @@
+{
+  "source": "GLIMS/20230607 in Earth Engine, src_date 2013 to 2016 (SGI2016 epoch), unioned at 50 m; band area from band_polygons_2500.geojson",
+  "credit": "GLIMS Consortium, GLIMS Glacier Database v1, NSIDC; Swiss Glacier Inventory (University of Zurich, GLAMOS)",
+  "regions": {
+    "Wallis": {
+      "glacier_km2": 612.8113920997539,
+      "band2500_km2": 1868.5506148415593,
+      "share": 0.327960820131017
+    },
+    "Graubuenden": {
+      "glacier_km2": 103.71123805351655,
+      "band2500_km2": 1588.7394968690262,
+      "share": 0.06527894488549144
+    },
+    "Tessin": {
+      "glacier_km2": 5.043710923501167,
+      "band2500_km2": 123.31656067702473,
+      "share": 0.04090051567940678
+    },
+    "Total": {
+      "glacier_km2": 721.5663410767717,
+      "band2500_km2": 3580.60667238761,
+      "share": 0.2015206938648804
+    }
+  }
+}

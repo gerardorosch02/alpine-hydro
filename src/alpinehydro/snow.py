@@ -176,7 +176,7 @@ def _dem():
     return col.mosaic().setDefaultProjection(col.first().projection())
 
 
-def _band_masks():
+def _band_masks(thresholds: tuple[int, ...] = BANDS_M):
     """One 0/1 band per elevation threshold on the MODIS grid, inland water removed."""
     import ee
 
@@ -191,7 +191,7 @@ def _band_masks():
         .max()
         .reproject(proj)
     )
-    return ee.Image.cat([dem500.gte(t).And(water.Not()).rename(f"b{t}") for t in BANDS_M])
+    return ee.Image.cat([dem500.gte(t).And(water.Not()).rename(f"b{t}") for t in thresholds])
 
 
 def mask_areas() -> pd.DataFrame:
@@ -320,10 +320,10 @@ def build_band_polygons() -> Path:
     return BAND_POLYGONS
 
 
-def _band_fc(bands: tuple[int, ...] = BANDS_M):
+def _band_fc(bands: tuple[int, ...] = BANDS_M, polygons: Path = BAND_POLYGONS):
     import ee
 
-    fc = json.loads(BAND_POLYGONS.read_text(encoding="utf-8"))
+    fc = json.loads(Path(polygons).read_text(encoding="utf-8"))
     return ee.FeatureCollection(
         [
             ee.Feature(ee.Geometry(f["geometry"]), f["properties"])
@@ -333,7 +333,7 @@ def _band_fc(bands: tuple[int, ...] = BANDS_M):
     )
 
 
-def _reduce_stack(daily, value_band: str, days: list[str], bands=BANDS_M):
+def _reduce_stack(daily, value_band: str, days: list[str], bands=BANDS_M, polygons=BAND_POLYGONS):
     """Per canton and band: sums of the value, of valid pixels and of band pixels, per day.
 
     The days of a chunk are stacked as bands of one image and reduced once per band
@@ -349,7 +349,7 @@ def _reduce_stack(daily, value_band: str, days: list[str], bands=BANDS_M):
         stack.mask().gt(0).rename([f"nv_{i}" for i in range(n)]),
         ee.Image.constant(1).rename("nb"),
     )
-    return _band_fc(bands).map(
+    return _band_fc(bands, polygons).map(
         lambda f: ee.Feature(
             None, img.reduceRegion(ee.Reducer.sum(), f.geometry(), maxPixels=1e10, **MODIS_GRID)
         ).copyProperties(f, ["region", "band_m"])
@@ -405,18 +405,23 @@ def _chunks(start: str, end: str, months: int) -> list[tuple[str, str]]:
 
 
 def modis_daily(
-    start: str, end: str, months_per_call: int = 1, bands: tuple[int, ...] = BANDS_M
+    start: str,
+    end: str,
+    months_per_call: int = 1,
+    bands: tuple[int, ...] = BANDS_M,
+    polygons: Path = BAND_POLYGONS,
+    tag: str = EE_TAG,
 ) -> pd.DataFrame:
     """Daily regional FSC and valid share, [start, end), pulled in small tables."""
     import ee
 
     earthengine.init()
-    ee.data.setWorkloadTag(EE_TAG)
+    ee.data.setWorkloadTag(tag)
     rows = []
     for s, e in _chunks(start, end, months_per_call):
         days = [d.strftime("%Y-%m-%d") for d in pd.date_range(s, e, inclusive="left")]
         daily = _modis_daily_collection(s, e)
-        info = _get_info(_reduce_stack(daily, "fsc", days, bands), f"MODIS {s}")
+        info = _get_info(_reduce_stack(daily, "fsc", days, bands, polygons), f"MODIS {s}")
         rows += _rows(info, days)
         print(f"MODIS {s} to {e}: {len(days)} days")
     return _tidy(_from_sums(pd.DataFrame(rows)), "fsc")
@@ -530,7 +535,7 @@ def update_modis_recent(tag: str, overlap_days: int = 3, cache: Path = MODIS_CAC
         return {"modis_new_days": 0, "modis_latest": str(last.date()), "changed": changed}
     earthengine.init()
     ee.data.setWorkloadTag(tag)
-    new = modis_daily(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d"), bands=(1800,))
+    new = modis_daily(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d"), bands=(1800,), tag=tag)
     new["date"] = pd.to_datetime(new["date"])
     for y, part in new.groupby(new["date"].dt.year):
         path = cache / f"modis_1800_{y}.csv"
