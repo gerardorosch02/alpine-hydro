@@ -327,7 +327,9 @@ CSV ends at 27 September). No live origin yet. The first is the week of Sunday
 1 November 2026. The forecast is made on the first weekly run after SFOE publishes that
 week. A dry run on 2026-10-21, with that week injected in memory, reached the controls
 and was refused only because the Earth Engine HDD window was under the 90% floor, which
-led to D15.
+led to D15. Check of D15 on 71 days held by both routes (August to 11 October 2026): the
+CDS country mean temperature differs from Earth Engine by at most 0.07 C for CH (mean
+−0.05 C) and 0.007 C for DE. CDS ran to 16 October, Earth Engine to 11 October.
 
 | Valid Sunday | known_time | Window | Full model (EUR/MWh) | B3 (EUR/MWh) | Realised (EUR/MWh) |
 |---|---|---|---|---|---|
