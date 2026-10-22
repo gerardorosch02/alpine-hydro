@@ -525,6 +525,63 @@ HR-WSI was not evaluated, because it was only to be tried if VIIRS failed (W2). 
 uses the corrected VIIRS value only after 7 days in a row without a valid MODIS day; it is
 never used in an H3 test.
 
+## Follow-up (post-hoc)
+
+**Everything in this section is post-hoc.** The plan
+([prereg/H3_FOLLOWUP_PLAN.md](../prereg/H3_FOLLOWUP_PLAN.md), tag
+[v0.3-followup-plan](https://github.com/gerardorosch02/alpine-hydro/tree/v0.3-followup-plan))
+was written on 2026-10-22, after seeing the H3a result and the 2026 miss, but before any
+follow-up feature was computed or any model fitted. Nothing here changes a pre-registered
+verdict, and its Holm family (four tests) is separate from the pre-registered one.
+
+**Verdict (post-hoc): no added skill after 1 May.** The primary version, a 1 July update
+for the three-region total (the 1 May FSC, storage at 1 July, positive degree-days above
+2500 m times the glacier share, and precipitation since 1 May), beat storage alone by
+almost nothing out of sample: skill against C1 +0.012, Clark-West p 0.080, Holm 0.241.
+
+| Version (Total, walk-forward 2012 to 2026) | n | RMSE full | RMSE C1 | Skill vs C1 | Clark-West p | Holm p |
+|---|---|---|---|---|---|---|
+| **1 July update (primary)** | 15 | 3.22 | 3.24 | +0.012 | 0.080 | 0.241 |
+| 1 June update | 15 | 2.81 | 3.52 | +0.364 | 0.051 | 0.205 |
+| 1 August update | 15 | 3.66 | 3.06 | −0.432 | 0.580 | 1.000 |
+| 1 April, FSC at or above 2500 m | 15 | 3.69 | 3.54 | −0.085 | 0.960 | 1.000 |
+
+RMSE in percentage points of capacity. 2001 is dropped from the updates (no 1 May MODIS
+feature) and 2002 from the 1 April version (fewer than 4 valid days), so every version
+has 15 test years.
+
+- The 1 June update is the only one with a sizeable gain (+0.364, p 0.051 before
+  correction). It does not survive Holm, and the pattern across dates (June good, July
+  flat, August worse) does not look like information that builds up over the summer.
+- At or above 2500 m, late-March snow cover is close to saturated every year (mean FSC
+  0.979, standard deviation 0.011, 2002 to 2025), so the higher band adds nothing on
+  1 April either.
+- Primary specification by canton (no correction, as the plan says): Wallis skill −0.465
+  (p 0.240), Graubuenden −0.996 (p 0.832), Tessin +0.231 (p 0.049).
+- Glacier share of land at or above 2500 m (GLIMS, Swiss Glacier Inventory 2016 epoch):
+  Wallis 32.8%, Graubuenden 6.5%, Tessin 4.1%, three regions 20.2%. ERA5-Land cells are
+  lower on average than 2500 m, so the degree-days are those of the cells holding high
+  ground (the same caveat as the H3 SWE series).
+
+**2026 case** (actual end-of-September fill 74.0%):
+
+| Issue date | Full model | C1 (storage only) |
+|---|---|---|
+| 1 April (2500 m) | 85.1 | 85.1 |
+| 1 May (H3a, pre-registered, for reference) | 82.6 | 85.0 |
+| 1 June | 80.9 | 84.5 |
+| 1 July | 79.5 | 83.6 |
+| 1 August | 81.3 | 82.1 |
+
+The summer terms move the 2026 forecast towards the outcome by 1 to 4 points against
+storage alone, but every version still misses 2026 by 5.5 points or more. The record-low
+2026 refill is not explained by melt degree-days or rain in these data.
+
+Earth Engine (tag `alpinehydro-weekend5`): 2500 m polygons about 340 EECU-s for Tessin
+(profiled), so roughly 0.3 to 0.4 EECU-hours for all three plus the one test chunk; data
+pulls small (about 16 s of wall time per year). Machine-readable:
+`reports/checks/h3_followup_results.json`.
+
 ## Deviations from the pre-registration
 
 The frozen text is `prereg/PREREGISTRATION.md` at tag `v0.1-prereg`; it is not edited.
