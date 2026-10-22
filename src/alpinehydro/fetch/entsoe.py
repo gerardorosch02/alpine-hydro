@@ -289,6 +289,12 @@ GENERATION = {
     "de_wind_offshore": ("DE", "B18", "year"),
     "de_wind_onshore": ("DE", "B19", "month"),
 }
+# Water balance (post-hoc, prereg/WATER_BALANCE_PLAN.md). Kept apart from GENERATION so the
+# H1 controls and the weekly job are unchanged. ENTSO-E has no CH pumping consumption.
+HYDRO = {
+    "ch_hydro_reservoir": ("CH", "B12", "year"),
+    "ch_hydro_pumped": ("CH", "B10", "year"),
+}
 
 
 def _generation_query(client, area: str, psr: str, start: pd.Timestamp, end: pd.Timestamp):
@@ -323,8 +329,8 @@ def _retry(fn, attempts: int = 4, wait_s: float = 20.0):
 
 
 def fetch_generation(name: str, first: str = "2015-01-01", refresh: bool = False, log=print):
-    """Cache one pre-registered generation series (native resolution, MW) by period."""
-    area, psr, step = GENERATION[name]
+    """Cache one generation series (native resolution, MW) by period."""
+    area, psr, step = {**GENERATION, **HYDRO}[name]
     client = _client()
     now = pd.Timestamp.now(tz=TZ)
     yearly = list(pd.date_range(pd.Timestamp(first, tz=TZ), now, freq="YS"))
@@ -369,3 +375,26 @@ def generation_hourly(name: str) -> pd.Series:
     h = s.resample("1h").mean().dropna()
     h.index = h.index.tz_convert(TZ)
     return h.rename(name)
+
+
+def sfoe_weeks_gwh(hourly_mw: pd.Series, min_share: float = 0.90) -> pd.DataFrame:
+    """Energy per SFOE week (Monday 00:00 to Sunday 24:00 Europe/Zurich) in GWh.
+
+    hourly_mw is hourly mean MW indexed in Europe/Zurich (generation_hourly). A week with
+    at least min_share of its hours is scaled up: mean MW of the present hours times the
+    hours in the week. Below that it is a gap week and gwh is NaN. valid_time is the
+    Sunday that ends the week, the date of the SFOE reading.
+    """
+    naive = hourly_mw.index.tz_localize(None)
+    week_start = naive.normalize() - pd.to_timedelta(naive.dayofweek, unit="D")
+    g = hourly_mw.groupby(week_start)
+    out = pd.DataFrame({"mean_mw": g.mean(), "n_hours": g.count()})
+    out["expected_hours"] = [
+        sum(hours_in_local_day(ws + pd.Timedelta(days=i)) for i in range(7)) for ws in out.index
+    ]
+    out["share"] = out["n_hours"] / out["expected_hours"]
+    out["gap"] = out["share"] < min_share
+    out["gwh"] = (out["mean_mw"] * out["expected_hours"] / 1000.0).where(~out["gap"])
+    out.index = out.index + pd.Timedelta(days=6)
+    out.index.name = "valid_time"
+    return out

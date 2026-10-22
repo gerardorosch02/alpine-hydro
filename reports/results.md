@@ -598,6 +598,66 @@ Earth Engine (tag `alpinehydro-weekend5`): 2500 m polygons about 340 EECU-s for 
 pulls small (about 16 s of wall time per year). Machine-readable:
 `reports/checks/h3_followup_results.json`.
 
+## Water balance 2026 (post-hoc diagnostic)
+
+**Everything in this section is post-hoc.** The plan
+([prereg/WATER_BALANCE_PLAN.md](../prereg/WATER_BALANCE_PLAN.md), tag
+[v0.4-waterbalance-plan](https://github.com/gerardorosch02/alpine-hydro/tree/v0.4-waterbalance-plan))
+was written on 2026-10-22, after seeing the 2026 miss, and pushed before any 2026 number
+was computed. It is a diagnostic, not a test, and changes no earlier verdict. Choices the
+plan did not fix are listed under "Deviations from the water balance plan".
+
+### Audit (committed before any 2026 number)
+
+**Kill criterion: triggered on ENTSO-E, resolved by switching G (V1).** ENTSO-E CH
+reservoir plus pumped-storage generation (B12 + B10) is about 79% of SFOE storage
+production. Against SFOE daily "Speicherkraft" (ogd104), summed over the same SFOE weeks
+from 12 July 2015 to 27 September 2026:
+
+| Comparison | n | Correlation | Mean difference | Median ratio | Within 10% |
+|---|---|---|---|---|---|
+| ENTSO-E B12 + B10 against ogd104, weekly | 586 weeks | 0.922 | −22.0% | 0.786 | 11.4% |
+| ENTSO-E B12 + B10 against ogd35, monthly | 134 months | 0.919 | −21.7% | 0.787 | 9.0% |
+| ogd104 against ogd35, monthly | 140 months | 0.9999 | +0.04% | 1.000 | 100% |
+
+The ENTSO-E share is not stable: the median weekly ratio by year runs from 0.67 (2015) and
+0.68 (2016) to 0.82 or 0.83 (2018, 2019, 2025, 2026), with 0.75 to 0.76 in 2021 to 2023,
+and no steady trend. More than half of the weeks
+differ by more than 10%, so the plan's stop rule applied. The owner chose to take G from
+ogd104, which matches the SFOE monthly electricity statistics within 0.4% in every month
+from 2015 to 2025 (2026 is provisional; its largest monthly difference is 5.1%). The
+ENTSO-E version is kept as a secondary "partial fleet" result (V4).
+
+**Coverage.** ENTSO-E B12 and B10 have no missing hour from 1 July 2015 to 27 September
+2026 and no gap week. ogd104 has every day from 1 January 2015 to 22 October 2026. SFOE
+ogd35 pumping runs to August 2026 (2026 provisional), so the primary window ends on the
+last Sunday of August. Baseline years with G from ogd104: 2015 to 2025 (none dropped).
+
+**Implied inflow looks like hydrology** (G from ogd104, weeks up to 28 December 2025):
+
+| Check | eta 0.70 | eta 0.75 | eta 0.80 |
+|---|---|---|---|
+| Weeks with negative implied inflow, all (573 weeks) | 0.2% | 0.2% | 0.2% |
+| Weeks with negative implied inflow, April to September | 0% | 0% | 0% |
+| Peak month (mean weekly inflow, 2015 to 2025) | June, 970 GWh | June, 964 GWh | June, 958 GWh |
+| Annual total, 2016 to 2025, range | 16,062 to 23,649 GWh | 15,786 to 23,409 GWh | 15,510 to 23,169 GWh |
+| Annual total, 2016 to 2025, mean | 19,014 GWh | 18,790 GWh | 18,566 GWh |
+
+Mean weekly implied inflow by month at eta 0.75 (GWh): January 84, February 74, March 92,
+April 203, May 497, June 964, July 792, August 629, September 414, October 284, November
+180, December 117. The lowest year is 2022 and the highest 2024.
+
+**External check: HP-CatCH.** Annual implied inflow (eta 0.75) against HP-CatCH simulated
+natural reservoir inflow (ETH Zurich, PREVAH, CC BY 4.0, summed over its 107 reservoirs),
+2016 to 2022: correlation **0.921** (n 7). HP-CatCH also has 2022 as its lowest of those
+years (10,591 hm³) and 2017 next (10,857 hm³). Seven years is few, so this says the series
+moves with simulated hydrology, not that the levels are right.
+
+Machine-readable: `reports/checks/water_balance_audit.json`. Committed inputs:
+`data/processed/water_balance/` (weekly and monthly GWh aggregates and the HP-CatCH annual
+volumes). Credit: Source: Swiss Federal Office of Energy SFOE. Source: ENTSO-E
+Transparency Platform. HP-CatCH: Haddad et al., ETH Zurich, doi:10.3929/ethz-c-000800479.
+
 ## Deviations from the pre-registration
 
 The frozen text is `prereg/PREREGISTRATION.md` at tag `v0.1-prereg`; it is not edited.
@@ -661,9 +721,10 @@ edited. Everything in it is post-hoc. V1 to V6 were written on **2026-10-22, bef
 
 | # | Date | Point | Choice | Reason |
 |---|---|---|---|---|
-| V1 | 2026-10-22 | Kill criterion and the source of G | Kill criterion triggered (ENTSO-E B12+B10 is about 79% of SFOE storage production, 11% of weeks within 10%). G switched to SFOE ogd104 daily Speicherkraft, the official full-coverage series, before any 2026 computation. G is now storage plus pumped-storage generation as one series. | Owner's choice after the stop. ogd104 summed by month equals the ogd35 monthly storage-plant generation within 0.1% in every month from 2015 to 2025, while the ENTSO-E share drifts from 0.68 (2016) to 0.83 (2026) by year, so no fixed scale factor fixes it. |
+| V1 | 2026-10-22 | Kill criterion and the source of G | Kill criterion triggered (ENTSO-E B12+B10 is about 79% of SFOE storage production, 11% of weeks within 10%). G switched to SFOE ogd104 daily Speicherkraft, the official full-coverage series, before any 2026 computation. G is now storage plus pumped-storage generation as one series. | Owner's choice after the stop. ogd104 summed by month equals the ogd35 monthly storage-plant generation within 0.4% in every month from 2015 to 2025 (mean difference 0.04%), while the ENTSO-E share drifts from 0.68 (2016) to 0.83 (2026) by year, so no fixed scale factor fixes it. |
 | V2 | 2026-10-22 | Pumping P | Still SFOE ogd35 monthly pumping spread evenly over days, as the plan says. | ogd104 has no pumping series (its categories are Flusskraft, Kernkraft, Photovoltaik, Speicherkraft, Thermische and Wind). |
 | V3 | 2026-10-22 | Baseline years | 2015 to 2025 (11 years; for 2022, the other 10). Sanity annual totals 2015 to 2025, HP-CatCH correlation 2015 to 2022, secondary (a) September pumping mean and standard deviation over 2015 to 2025. | ogd104 covers every day from 2015-01-01 to 2026-10-22, so 2015 has no gap week under the plan's rule. The plan's "2016" in sections 7 and 9 assumed the ENTSO-E start of 1 July 2015; the brief asked for 2015 to 2025. |
 | V4 | 2026-10-22 | ENTSO-E version | Reported as a secondary "partial fleet" result with G = ENTSO-E B12 + B10 and baseline 2016 to 2025 (2015 has gap weeks). Never the label. | Owner's choice; it shows how much the label depends on the generation source. |
 | V5 | 2026-10-22 | Where the code lives | `src/alpinehydro/fetch/sfoe_daily.py`, `src/alpinehydro/water_balance.py`, `src/alpinehydro/water_balance_audit.py`, `src/alpinehydro/plots_water_balance.py` and `scripts/hpcatch_annual.py`, not `fetch/` and `analysis/` at the top level. | The repo is one package under `src/alpinehydro/`; there is no `analysis/` folder. |
 | V6 | 2026-10-22 | HP-CatCH comparison | `inflows_direct` (PREVAH simulated, m³/s hourly, each sub-basin counted once) summed over its 107 reservoirs, calendar-year volume in hm³, against calendar-year implied inflow in GWh. Pearson correlation only, since the units differ. | The dataset's own reservoir inflow series. Its time axis has 8,760 hours in every year (no 29 February), so leap years lose one day. |
+| V7 | 2026-10-22 | 2015 annual total | Not computed, so the annual range and the HP-CatCH correlation use 2016 onwards. 2015 stays in the April to August and April to September baselines. | The 2015 calendar-year window starts with the week of Monday 29 December 2014, before ogd104 begins on 1 January 2015. |

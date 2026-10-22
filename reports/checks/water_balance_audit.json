@@ -1,0 +1,390 @@
+{
+  "post_hoc": true,
+  "plan": "prereg/WATER_BALANCE_PLAN.md (tag v0.4-waterbalance-plan)",
+  "reconcile_weekly_entsoe_vs_ogd104": {
+    "n": 586,
+    "correlation": 0.922,
+    "mean_pct_diff": -22.01,
+    "median_ratio": 0.7862,
+    "share_within_10pct": 0.114,
+    "first_week": "2015-07-12",
+    "last_week": "2026-09-27",
+    "by_year": {
+      "2015": {
+        "n": 25,
+        "correlation": 0.831,
+        "mean_pct_diff": -33.96,
+        "median_ratio": 0.6669,
+        "share_within_10pct": 0.0
+      },
+      "2016": {
+        "n": 52,
+        "correlation": 0.7332,
+        "mean_pct_diff": -33.54,
+        "median_ratio": 0.6815,
+        "share_within_10pct": 0.058
+      },
+      "2017": {
+        "n": 53,
+        "correlation": 0.9568,
+        "mean_pct_diff": -26.32,
+        "median_ratio": 0.7254,
+        "share_within_10pct": 0.057
+      },
+      "2018": {
+        "n": 52,
+        "correlation": 0.9167,
+        "mean_pct_diff": -16.49,
+        "median_ratio": 0.8188,
+        "share_within_10pct": 0.288
+      },
+      "2019": {
+        "n": 52,
+        "correlation": 0.9668,
+        "mean_pct_diff": -16.37,
+        "median_ratio": 0.8283,
+        "share_within_10pct": 0.231
+      },
+      "2020": {
+        "n": 52,
+        "correlation": 0.9332,
+        "mean_pct_diff": -19.1,
+        "median_ratio": 0.8001,
+        "share_within_10pct": 0.173
+      },
+      "2021": {
+        "n": 52,
+        "correlation": 0.9639,
+        "mean_pct_diff": -23.88,
+        "median_ratio": 0.7587,
+        "share_within_10pct": 0.019
+      },
+      "2022": {
+        "n": 52,
+        "correlation": 0.9264,
+        "mean_pct_diff": -24.23,
+        "median_ratio": 0.7571,
+        "share_within_10pct": 0.096
+      },
+      "2023": {
+        "n": 53,
+        "correlation": 0.953,
+        "mean_pct_diff": -24.76,
+        "median_ratio": 0.7504,
+        "share_within_10pct": 0.038
+      },
+      "2024": {
+        "n": 52,
+        "correlation": 0.975,
+        "mean_pct_diff": -18.99,
+        "median_ratio": 0.8138,
+        "share_within_10pct": 0.019
+      },
+      "2025": {
+        "n": 52,
+        "correlation": 0.9419,
+        "mean_pct_diff": -15.49,
+        "median_ratio": 0.826,
+        "share_within_10pct": 0.173
+      },
+      "2026": {
+        "n": 39,
+        "correlation": 0.9226,
+        "mean_pct_diff": -15.33,
+        "median_ratio": 0.8295,
+        "share_within_10pct": 0.179
+      }
+    }
+  },
+  "reconcile_monthly_entsoe_vs_ogd35": {
+    "n": 134,
+    "correlation": 0.919,
+    "mean_pct_diff": -21.71,
+    "median_ratio": 0.7872,
+    "share_within_10pct": 0.09,
+    "by_year": {
+      "2015": {
+        "n": 6,
+        "correlation": 0.7058,
+        "mean_pct_diff": -34.1,
+        "median_ratio": 0.6881,
+        "share_within_10pct": 0.0
+      },
+      "2016": {
+        "n": 12,
+        "correlation": 0.6731,
+        "mean_pct_diff": -33.4,
+        "median_ratio": 0.6835,
+        "share_within_10pct": 0.0
+      },
+      "2017": {
+        "n": 12,
+        "correlation": 0.981,
+        "mean_pct_diff": -25.99,
+        "median_ratio": 0.7301,
+        "share_within_10pct": 0.0
+      },
+      "2018": {
+        "n": 12,
+        "correlation": 0.865,
+        "mean_pct_diff": -16.22,
+        "median_ratio": 0.802,
+        "share_within_10pct": 0.25
+      },
+      "2019": {
+        "n": 12,
+        "correlation": 0.9773,
+        "mean_pct_diff": -15.86,
+        "median_ratio": 0.8099,
+        "share_within_10pct": 0.25
+      },
+      "2020": {
+        "n": 12,
+        "correlation": 0.9475,
+        "mean_pct_diff": -18.98,
+        "median_ratio": 0.8037,
+        "share_within_10pct": 0.167
+      },
+      "2021": {
+        "n": 12,
+        "correlation": 0.9881,
+        "mean_pct_diff": -23.53,
+        "median_ratio": 0.7602,
+        "share_within_10pct": 0.0
+      },
+      "2022": {
+        "n": 12,
+        "correlation": 0.944,
+        "mean_pct_diff": -23.62,
+        "median_ratio": 0.7437,
+        "share_within_10pct": 0.0
+      },
+      "2023": {
+        "n": 12,
+        "correlation": 0.9685,
+        "mean_pct_diff": -23.7,
+        "median_ratio": 0.7636,
+        "share_within_10pct": 0.0
+      },
+      "2024": {
+        "n": 12,
+        "correlation": 0.9901,
+        "mean_pct_diff": -18.91,
+        "median_ratio": 0.8182,
+        "share_within_10pct": 0.0
+      },
+      "2025": {
+        "n": 12,
+        "correlation": 0.9594,
+        "mean_pct_diff": -15.47,
+        "median_ratio": 0.843,
+        "share_within_10pct": 0.167
+      },
+      "2026": {
+        "n": 8,
+        "correlation": 0.9682,
+        "mean_pct_diff": -14.52,
+        "median_ratio": 0.8552,
+        "share_within_10pct": 0.25
+      }
+    }
+  },
+  "reconcile_monthly_ogd104_vs_ogd35": {
+    "n": 140,
+    "correlation": 0.9999,
+    "mean_pct_diff": 0.04,
+    "median_ratio": 1.0,
+    "share_within_10pct": 1.0,
+    "share_within_5pct": 0.993,
+    "max_abs_pct_2015_2025": 0.38,
+    "max_abs_pct_2026": 5.1
+  },
+  "coverage": {
+    "g_res_missing_hours_pct": 0.0,
+    "g_res_weeks_short": [],
+    "g_ps_missing_hours_pct": 0.0,
+    "g_ps_weeks_short": [],
+    "gap_weeks": [],
+    "ogd104_first_week": "2015-01-11",
+    "ogd104_missing_weeks": 0,
+    "gap_weeks_2022_aug": 0,
+    "gap_weeks_2022_sep": 0,
+    "gap_weeks_2026_aug": 0,
+    "gap_weeks_2026_sep": 0
+  },
+  "kill_criterion": {
+    "triggered": true,
+    "reasons": [
+      "more than half of the overlap weeks differ by more than 10%"
+    ]
+  },
+  "kill_resolution": "G switched to SFOE ogd104 Speicherkraft before any 2026 number (V1)",
+  "baseline_years_aug": [
+    [
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    []
+  ],
+  "baseline_years_aug_entsoe": [
+    [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    [
+      2015
+    ]
+  ],
+  "sanity": {
+    "0.7": {
+      "eta": 0.7,
+      "weeks": 573,
+      "negative_share_all": 0.002,
+      "negative_share_apr_sep": 0.0,
+      "mean_weekly_inflow_by_month_2015_2025": {
+        "1": 87.3,
+        "2": 76.8,
+        "3": 94.7,
+        "4": 206.5,
+        "5": 502.2,
+        "6": 969.6,
+        "7": 797.3,
+        "8": 633.9,
+        "9": 418.0,
+        "10": 288.4,
+        "11": 183.8,
+        "12": 121.0
+      },
+      "peak_month": 6,
+      "annual_inflow_gwh": {
+        "2015": null,
+        "2016": 18134.0,
+        "2017": 17730.0,
+        "2018": 19081.0,
+        "2019": 20519.0,
+        "2020": 18791.0,
+        "2021": 18970.0,
+        "2022": 16062.0,
+        "2023": 19503.0,
+        "2024": 23649.0,
+        "2025": 17704.0
+      },
+      "annual_min": 16062.0,
+      "annual_max": 23649.0,
+      "annual_mean": 19014.0
+    },
+    "0.75": {
+      "eta": 0.75,
+      "weeks": 573,
+      "negative_share_all": 0.002,
+      "negative_share_apr_sep": 0.0,
+      "mean_weekly_inflow_by_month_2015_2025": {
+        "1": 84.3,
+        "2": 74.2,
+        "3": 91.7,
+        "4": 202.6,
+        "5": 497.4,
+        "6": 963.9,
+        "7": 791.9,
+        "8": 628.8,
+        "9": 413.6,
+        "10": 284.4,
+        "11": 180.4,
+        "12": 117.2
+      },
+      "peak_month": 6,
+      "annual_inflow_gwh": {
+        "2015": null,
+        "2016": 17988.0,
+        "2017": 17520.0,
+        "2018": 18882.0,
+        "2019": 20313.0,
+        "2020": 18569.0,
+        "2021": 18765.0,
+        "2022": 15786.0,
+        "2023": 19229.0,
+        "2024": 23409.0,
+        "2025": 17444.0
+      },
+      "annual_min": 15786.0,
+      "annual_max": 23409.0,
+      "annual_mean": 18790.0
+    },
+    "0.8": {
+      "eta": 0.8,
+      "weeks": 573,
+      "negative_share_all": 0.002,
+      "negative_share_apr_sep": 0.0,
+      "mean_weekly_inflow_by_month_2015_2025": {
+        "1": 81.4,
+        "2": 71.6,
+        "3": 88.7,
+        "4": 198.7,
+        "5": 492.6,
+        "6": 958.2,
+        "7": 786.5,
+        "8": 623.7,
+        "9": 409.2,
+        "10": 280.5,
+        "11": 177.0,
+        "12": 113.4
+      },
+      "peak_month": 6,
+      "annual_inflow_gwh": {
+        "2015": null,
+        "2016": 17842.0,
+        "2017": 17311.0,
+        "2018": 18683.0,
+        "2019": 20106.0,
+        "2020": 18347.0,
+        "2021": 18559.0,
+        "2022": 15510.0,
+        "2023": 18954.0,
+        "2024": 23169.0,
+        "2025": 17184.0
+      },
+      "annual_min": 15510.0,
+      "annual_max": 23169.0,
+      "annual_mean": 18566.0
+    }
+  },
+  "hpcatch": {
+    "accessible": true,
+    "years": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "correlation": 0.921,
+    "hpcatch_hm3": {
+      "2016": 12821.1,
+      "2017": 10857.2,
+      "2018": 13027.1,
+      "2019": 14037.4,
+      "2020": 12793.4,
+      "2021": 13168.8,
+      "2022": 10590.9
+    }
+  }
+}
