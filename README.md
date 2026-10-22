@@ -93,7 +93,10 @@ Engine, Copernicus Climate Data Store and NASA Earthdata (see `.env.example`).
 | NASA MODIS and VIIRS snow cover | Snow tracker, Part C | Regional daily means |
 | GLIMS | Glacier share (post-hoc) | Four numbers |
 
-Credit lines, links and dates checked: [DATA_LICENCES.md](DATA_LICENCES.md). Code: MIT.
+Prices and generation: Source: ENTSO-E Transparency Platform. No raw ENTSO-E data is
+included in this repo, only aggregated statistics, model results and charts, and that
+material will be removed on request. Credit lines, links and dates checked:
+[DATA_LICENCES.md](DATA_LICENCES.md). Code: MIT.
 
 ## Limitations
 
@@ -119,4 +122,5 @@ Credit lines, links and dates checked: [DATA_LICENCES.md](DATA_LICENCES.md). Cod
 
 ## Author
 
-Gerardo Rosales, [github.com/gerardorosch02](https://github.com/gerardorosch02).
+Gerardo Rosales: [GitHub](https://github.com/gerardorosch02),
+[LinkedIn](https://www.linkedin.com/in/gerardorosales02/).

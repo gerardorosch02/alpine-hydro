@@ -13,7 +13,7 @@ page on **2026-10-22**.
 |---|---|---|---|---|
 | SFOE ogd17 weekly storage and weekly PDF ("Montagswerte") | Storage by region, validation, live weeks | opendata.swiss "Open use. Must provide the source." (`terms_by`), commercial use allowed. [ogd17 entry](https://opendata.swiss/en/dataset/enstat-fullungsgrad-der-speicherseen-sonntag-24h-wochenbericht-speicherinhalt), [terms](https://opendata.swiss/en/terms-of-use) | Source: Swiss Federal Office of Energy SFOE | Weekly storage tables in `data/processed/sfoe_*.csv` and the release and PDF logs. Not the PDF itself, and not its Rhine flow columns (BAFU) |
 | SFOE dam register, SFOE 2025 reservoir list, SFOE 1983 "Speicherseen der Schweiz" | Reservoir levels, volumes and energy coefficients | Dam register on opendata.swiss: `terms_by`, as above. The two lists are SFOE publications on pubdb.bfe.admin.ch | Source: Swiss Federal Office of Energy SFOE | Single facts per reservoir in `config/reservoirs.yaml` |
-| ENTSO-E Transparency Platform | Day-ahead prices (art. 12.1.d), generation per type (art. 16.1.b and c) for the H1 controls | Terms of Use approved 29 March 2023, applicable from 1 November 2023; list of data for free re-use, last modified 18 October 2023. [Legal terms page](https://transparencyplatform.zendesk.com/hc/en-us/articles/40921911218961-Legal-Terms-and-Conditions). **Neither item is on the free re-use list.** See the open item below | ENTSO-E Transparency Platform | No price or generation series. Derived: 11 yearly mean spreads (`data/processed/snow/h3b_q4_spread.csv`), fitted statistics in `reports/checks/h1_results.json`, the H1 and H3b figures, 28-day mean controls and (from November 2026) one realised mean spread per window in `data/processed/live_forecasts.csv` |
+| ENTSO-E Transparency Platform | Day-ahead prices (art. 12.1.d), generation per type (art. 16.1.b and c) for the H1 controls | Terms of Use approved 29 March 2023, applicable from 1 November 2023; list of data for free re-use, last modified 18 October 2023. [Legal terms page](https://transparencyplatform.zendesk.com/hc/en-us/articles/40921911218961-Legal-Terms-and-Conditions). **Neither item is on the free re-use list.** See the decision below | Source: ENTSO-E Transparency Platform | No price or generation series. Derived: 11 yearly mean spreads (`data/processed/snow/h3b_q4_spread.csv`), fitted statistics in `reports/checks/h1_results.json`, the H1 and H3b figures, 28-day mean controls and (from November 2026) one realised mean spread per window in `data/processed/live_forecasts.csv` |
 | SMARD (Bundesnetzagentur) | Cross-check of ENTSO-E prices only (results, Step 0) | CC BY 4.0. [smard.de/home/datennutzung](https://www.smard.de/home/datennutzung) | Bundesnetzagentur \| SMARD.de | Agreement statistics only, `reports/checks/smard_vs_entsoe.json`. No price series |
 | Copernicus Sentinel-2 (`COPERNICUS/S2_SR_HARMONIZED`) | Water masks, Part A | Copernicus Sentinel Data Terms and Conditions (free, full and open). [Legal notice](https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice) | Contains modified Copernicus Sentinel data 2017-2026 | Per-scene levels and flags in `data/processed/satellite/`. No imagery |
 | Cloud Score+ S2 (`GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED`) | Sentinel-2 cloud screening | CC BY 4.0. [Catalogue page](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_CLOUD_SCORE_PLUS_V1_S2_HARMONIZED) | Cloud Score+: Pasquarella et al. (2023), Google | Nothing directly; it only decides which scenes are clear |
@@ -43,20 +43,26 @@ Checked with `git grep` on 2026-10-22: nothing in `src/`, `config/`, `scripts/` 
 - MeteoSwiss, SLF (snow stations, SPASS, OSHD), Swissgrid, BAFU river flows.
 - Energy-Charts, EEX, JAO.
 
+## ENTSO-E decision (2026-10-22)
+
+Day-ahead prices (12.1.d) and generation per type (16.1.b and c) are not on the ENTSO-E
+list of data for free re-use (CC BY 4.0, 18 October 2023). Clause 3.1 of the Terms of
+Use allows use for any purpose with credit, but asks users not to prejudice the rights
+of the Primary Owner of Data, and does not say whether derived statistics count as
+re-use. Decision by the owner on 2026-10-22: keep the derived figures and statistics
+listed in the table above, with these conditions.
+
+- Credit: Source: ENTSO-E Transparency Platform.
+- No raw ENTSO-E data is included in this repo: no price or generation series, only
+  aggregated statistics, model results and charts.
+- Any ENTSO-E-derived material will be removed on request from ENTSO-E or a Primary
+  Owner of Data.
+
 ## Open items
 
-- **ENTSO-E reuse terms are unclear for what we publish.** Clause 3.1 of the Terms of
-  Use allows use "for any purpose whatsoever" with credit, but the user must not
-  prejudice the copyright or related rights of the Primary Owner of Data, and must seek
-  that owner's agreement where there is a risk of doing so. Only items on the free
-  re-use list (CC BY 4.0) are cleared without that agreement. Day-ahead prices (12.1.d)
-  and generation per type (16.1.b and c) are not on the list. The terms do not say
-  whether summary statistics derived from unlisted items (11 yearly means, 28-day means,
-  regression results, scatter plots) count as re-use. **Decision needed from the owner
-  before the repo goes public.**
-- **Copernicus CDS terms change on 28 October 2026** (ECMWF forum notice of 5 October
-  2026: Article 1 of the CDS Terms of Use is updated; continued use counts as
-  acceptance). Recheck after 28 October 2026 that the ERA5-Land licence and credit line
-  above are unchanged.
+- **Copernicus CDS terms change on 28 October 2026** (not blocking). ECMWF forum notice
+  of 5 October 2026: Article 1 of the CDS Terms of Use is updated, and continued use
+  counts as acceptance. Recheck after 28 October 2026 that the ERA5-Land licence and
+  credit line above are unchanged.
 - The ogd17 entry on opendata.swiss now lists the CSV at `www.bfe-ogd.ch`; the pipeline
   still reads the older `uvek-gis.admin.ch` address, which worked on 2026-10-22.

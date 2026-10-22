@@ -7,10 +7,10 @@ owner's decision.
 |---|---|
 | History secret scan | Clean |
 | History data scan | Clean |
-| Personal details | Fixed in HEAD; two old paths remain in history (see below) |
+| Personal details | Fixed in HEAD; old paths left in history by the owner's choice |
 | Fresh clone, no keys | Pass |
 | Notebooks | No notebook was ever committed |
-| Licences | Two open items, ENTSO-E blocking (see DATA_LICENCES.md) |
+| Licences | ENTSO-E decided 2026-10-22; CDS recheck after 28 October 2026 (not blocking) |
 
 ## 1. History secret scan
 
@@ -60,9 +60,9 @@ check-repo` passes on HEAD (168 tracked files).
   - `config/pipeline.yaml` had an unused `obsidian_vault` path. Removed.
 - **Still in history:** the user name `gerar` in `C:\Users\gerar\...` paths, in older
   versions of `scripts/weekly.ps1` (13 commits) and `config/pipeline.yaml` (50
-  commits). It reveals a Windows account name, not a credential. Removing it needs a
-  history rewrite, which changes every commit hash and so breaks the three tag links.
-  **Owner's choice; not done.**
+  commits). It reveals a Windows account name, not a credential. Removing it would need
+  a history rewrite, which changes every commit hash and breaks the three tag links.
+  **Owner's decision (2026-10-22): leave it.**
 
 ## 4. Fresh clone test
 
@@ -92,7 +92,9 @@ in pre-commit for any future notebook.
 
 ## Blocking before going public
 
-1. ENTSO-E reuse terms for the derived price and generation figures (DATA_LICENCES.md,
-   open items). Owner's decision.
-2. Recheck the Copernicus CDS terms after 28 October 2026.
-3. Decide whether to leave the old `C:\Users\gerar` paths in history.
+Nothing. Decided by the owner on 2026-10-22:
+
+- ENTSO-E: keep the derived figures and statistics, credited, with a removal-on-request
+  line (DATA_LICENCES.md, "ENTSO-E decision").
+- Old paths in history: left as they are.
+- Copernicus CDS: not blocking; the credit wording is rechecked after 28 October 2026.
