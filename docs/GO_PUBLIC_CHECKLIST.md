@@ -10,7 +10,7 @@ owner's decision.
 | Personal details | Fixed in HEAD; old paths left in history by the owner's choice |
 | Fresh clone, no keys | Pass |
 | Notebooks | No notebook was ever committed |
-| Licences | ENTSO-E decided 2026-10-22; CDS recheck after 28 October 2026 (not blocking) |
+| Licences | ENTSO-E decided 2026-10-22; CDS rechecked 2026-10-29 after the 28 October terms update |
 
 ## 1. History secret scan
 
@@ -100,4 +100,6 @@ Nothing. Decided by the owner on 2026-10-22:
 - ENTSO-E: keep the derived figures and statistics, credited, with a removal-on-request
   line (DATA_LICENCES.md, "ENTSO-E decision").
 - Old paths in history: left as they are.
-- Copernicus CDS: not blocking; the credit wording is rechecked after 28 October 2026.
+- Copernicus CDS: rechecked on 2026-10-29 after the 28 October terms update. Both
+  ERA5-Land pages are CC BY 4.0; the dataset DOIs were added to the credit line. Nothing
+  in the README or desk note implies ECMWF or EU endorsement (Article 5).
