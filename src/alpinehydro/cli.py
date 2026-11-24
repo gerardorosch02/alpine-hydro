@@ -524,14 +524,16 @@ def live_forecast_cmd():
     """Live check 2026/27: forecast the next 28-day CH minus DE-LU spread if a new origin."""
     from alpinehydro import live
 
-    s = live.forecast()
-    if s["made"]:
-        f = s["forecast"]
+    s = live.forecast(log=typer.echo)
+    for f in s["forecasts"]:
         typer.echo(
             f"origin {f['valid_sunday']}: forecast {f['forecast_full']} EUR/MWh for "
             f"{f['target_start']} to {f['target_end']} (B3 {f['forecast_b3']})"
+            + (f" [{f['note']}]" if f["note"] else "")
         )
-    else:
+    for w in s["warnings"]:
+        typer.echo(f"warning: {w}")
+    if "reason" in s:
         typer.echo(f"no forecast made: {s['reason']}")
 
 

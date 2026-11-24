@@ -3,7 +3,9 @@
 # 1. Refuses to start unless the repo is on main with a clean working tree, so your own
 #    unfinished work is never touched or committed.
 # 2. Pulls (fast-forward only) to pick up the SFOE commits made by the GitHub Action.
-# 3. Runs `uv run alpinehydro weekly` (keys come from .env or the Windows environment).
+# 3. Runs `uv run alpinehydro weekly` (keys come from .env or the Windows environment),
+#    for at most 100 minutes: after that its whole process tree is killed and the script
+#    goes on to step 4, so the working tree is never left dirty for the next run.
 # 4. Commits only the laptop-owned derived files (alpinehydro safe-commit). Changes to
 #    files the GitHub Action owns (SFOE tables and logs, hero chart) are discarded first.
 #    If any other file changed, nothing is committed and the reason is logged.
@@ -36,6 +38,25 @@ function Invoke-Logged([string]$Exe, [string]$Arguments) {
     $cmd = '"{0}" {1} >> "{2}" 2>&1' -f $Exe, $Arguments, $Log
     cmd.exe /d /c $cmd
     return $LASTEXITCODE
+}
+
+# Like Invoke-Logged, but with a time limit. If the command is still running after
+# $LimitMin minutes, its whole process tree (cmd, uv, python) is killed and $null is
+# returned. On 4 November 2026 Task Scheduler stopped this script after 2 hours while
+# python went on alone for 4 more hours and left the working tree dirty. The limit must
+# stay below the task's own 2-hour limit, and above the 60 minutes the run may spend on
+# the CDS.
+$WeeklyLimitMin = 100
+function Invoke-Limited([string]$Exe, [string]$Arguments, [int]$LimitMin) {
+    $cmd = '/d /c ""{0}" {1} >> "{2}" 2>&1"' -f $Exe, $Arguments, $Log
+    $p = Start-Process -FilePath "cmd.exe" -ArgumentList $cmd -WorkingDirectory $Repo -WindowStyle Hidden -PassThru
+    $null = $p.Handle  # keeps the exit code readable after the process ends
+    if ($p.WaitForExit($LimitMin * 60 * 1000)) {
+        return $p.ExitCode
+    }
+    cmd.exe /d /c ("taskkill /PID {0} /T /F >nul 2>&1" -f $p.Id)
+    $p.WaitForExit(30000) | Out-Null
+    return $null
 }
 
 Write-Log "start"
@@ -71,8 +92,12 @@ if ((Invoke-Logged $Git "pull --ff-only origin main") -ne 0) {
     exit 1
 }
 
-$code = Invoke-Logged $Uv "run alpinehydro weekly"
-Write-Log "alpinehydro weekly exit code $code"
+$code = Invoke-Limited $Uv "run alpinehydro weekly" $WeeklyLimitMin
+if ($null -eq $code) {
+    Write-Log "alpinehydro weekly still running after $WeeklyLimitMin minutes: process tree killed; continuing with safe-commit so the working tree is left clean"
+} else {
+    Write-Log "alpinehydro weekly exit code $code"
+}
 
 $msg = "Weekly live run {0}" -f (Get-Date -Format "yyyy-MM-dd")
 $code = Invoke-Logged $Uv "run alpinehydro safe-commit -m `"$msg`""

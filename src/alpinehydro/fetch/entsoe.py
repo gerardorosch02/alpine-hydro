@@ -81,16 +81,24 @@ def months(start: str, end: pd.Timestamp | None = None) -> list[pd.Timestamp]:
     return list(pd.date_range(first, end, freq="MS", tz=TZ))
 
 
-def _month_is_final(month_start: pd.Timestamp) -> bool:
-    """A month is final once its last delivery day is two days in the past."""
-    month_end = month_start + pd.offsets.MonthBegin(1)
-    return month_end <= pd.Timestamp.now(tz=TZ) - pd.Timedelta(days=2)
+FINAL_AFTER = pd.Timedelta(days=2)
+
+
+def cache_is_final(path, period_end: pd.Timestamp) -> bool:
+    """A cached period is final only if the file was written at least two days after the
+    period ended. A file fetched while the period was still running is partial, however
+    old the period is by now (found on 2026-11-13: October files fetched on 21 October
+    were reused in November, leaving German onshore wind at 63% coverage)."""
+    if not path.exists():
+        return False
+    written = pd.Timestamp(path.stat().st_mtime, unit="s", tz="UTC")
+    return written >= period_end.tz_convert("UTC") + FINAL_AFTER
 
 
 def fetch_month(client, zone: str, month_start: pd.Timestamp, refresh: bool = False) -> pd.Series:
     """Fetch one month of prices at native resolution, cached as parquet in UTC."""
     path = PRICE_DIR / zone / f"{month_start:%Y-%m}.parquet"
-    if path.exists() and not refresh and _month_is_final(month_start):
+    if not refresh and cache_is_final(path, month_start + pd.offsets.MonthBegin(1)):
         return pd.read_parquet(path)["price"]
     from entsoe.exceptions import NoMatchingDataError
 
@@ -338,8 +346,7 @@ def fetch_generation(name: str, first: str = "2015-01-01", refresh: bool = False
     for s in starts:
         end = s + (pd.offsets.YearBegin(1) if step == "year" else pd.offsets.MonthBegin(1))
         path = GEN_DIR / name / f"{s:%Y-%m}.parquet"
-        final = end <= now - pd.Timedelta(days=2)
-        if path.exists() and not refresh and final:
+        if not refresh and cache_is_final(path, end):
             continue
         try:
             g = _retry(lambda s=s, end=end: _generation_query(client, area, psr, s, min(end, now)))

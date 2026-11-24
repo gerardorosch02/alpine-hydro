@@ -15,7 +15,7 @@ One row per tested claim. Every number is copied from the detailed sections belo
 | H3b: the 1 May forecast fill deviation predicts the October to December spread | `v0.2-h3plan` | Slope −36.9 EUR/MWh per 10 points; Holm p 0.058; smallest detectable effect 54.5 | Underpowered, not significant | The sign is the expected one, but 11 years cannot detect any plausible effect. |
 | Post-hoc follow-up: a 1 July update (melt, rain, storage) adds skill | `prereg/H3_FOLLOWUP_PLAN.md`, `v0.3-followup-plan` | Skill vs C1 +0.012; Holm p 0.241 | No added skill after 1 May (post-hoc) | Summer weather terms do not explain the record-low 2026 refill. |
 | Post-hoc water balance: was the 2026 storage shortfall weather or operators? | `prereg/WATER_BALANCE_PLAN.md`, `v0.4-waterbalance-plan` | Inflow share 7.01 at eta 0.75 (rule: at least 2/3); inflow anomaly −2,638 GWh, release anomaly −2,261 GWh, 29 March to 30 August | Weather story (post-hoc) | Less water came in than in any year since 2015, and operators released less, not more. |
-| Live check 2026/27: the H1 model forecasts each live week | `v0.1-prereg` section 9 | No live origin yet; first is the week of Sunday 1 November 2026 | In progress | A record only; the live verdict comes after April 2027. |
+| Live check 2026/27: the H1 model forecasts each live week | `v0.1-prereg` section 9 | Two origins forecast (1 and 8 November 2026), both made late on 13 November; no on-time forecast yet | In progress | A record only; the live verdict comes after April 2027. |
 
 Weekend 1 (2026-10-20). No price slope, regression or price chart has been
 computed. Machine-readable versions of the checks are in `reports/checks/`.
@@ -348,9 +348,66 @@ led to D15. Check of D15 on 71 days held by both routes (August to 11 October 20
 CDS country mean temperature differs from Earth Engine by at most 0.07 C for CH (mean
 −0.05 C) and 0.007 C for DE. CDS ran to 16 October, Earth Engine to 11 October.
 
+**Note of 2026-11-13: one failed run, one aborted run, two forecasts made late.**
+
+- The weekly run of Wednesday 4 November 2026 made no forecast for the first live origin
+  (SFOE week of Sunday 1 November). It waited six hours in the CDS queue for two HDD
+  files and then asked the CDS for November days that were not published yet (HTTP 400).
+  It would have been refused in any case: the cached October file of German onshore wind
+  dated from 21 October, so the wind control had 63% coverage, under the 90% floor (D9).
+  Task Scheduler stopped the script after two hours while its Python process ran on, so
+  nothing was committed and the working tree was left with uncommitted derived files.
+- The run of Wednesday 11 November aborted at once because of those files. It ran nothing.
+- On 13 November the causes were fixed and one run was made by hand. It made both owed
+  forecasts at 20:31 UTC: origin 1 November nine days after its known_time, origin
+  8 November three days after. Four CDS files were needed, requested one at a time; the
+  run took seven hours.
+- Rule (owner, 13 November): a forecast is **late** if it is made after its target window
+  has begun (00:00 Europe/Zurich of the first delivery day). Both forecasts are late: the
+  windows began on 6 and 12 November. Late forecasts carry a note in
+  `live_forecasts.csv`, are listed apart below, and will be reported apart from on-time
+  forecasts in the live verdict.
+- Each late forecast uses only inputs known at its own known_time. The SFOE value is the
+  one first published (6,130 GWh for 1 November, unchanged in the PDF of 9 November; a
+  later revision would be undone from `sfoe_merge_log.csv`). The control windows are the
+  pre-registered ones and end before the origin day: French nuclear and German wind on
+  3 and 9 November, Swiss nuclear and HDD on 28 October and 3 November. No price enters
+  the forecast. Limit: the values inside those windows were downloaded on 13 November,
+  and the sources keep no vintages (pre-registration section 8). For origin 1 November
+  the French and Swiss nuclear means are identical to those in the cache of 4 November,
+  18:10 UTC; German wind and the HDD files could not be compared.
+- known_time of the 1 November week is 4 November 21:39 Europe/Zurich, from the committed
+  PDF log. The laptop had seen the same PDF at 19:00; that log line was never committed.
+- The frozen pre-registration is unchanged. Its section 9 sets no deadline for a live
+  forecast. The code changes (CDS requests in sequence with a time limit, cache rule,
+  every origin without a forecast is made) do not change any window or model.
+
+**Note of 2026-11-24: the two late forecasts were pushed eleven days after they were made.**
+
+- The forecasts for origins 1 and 8 November were made on 13 November (20:31 UTC by the
+  laptop clock) but were only committed and pushed on 24 November, together with the code
+  changes above. The time of that push on GitHub is the only one a reader can verify; the
+  13 November time is the laptop's own record.
+- Because those files lay uncommitted, the weekly run of Wednesday 18 November aborted at
+  once (working tree not clean) and ran nothing. No forecast was made for the origin of
+  Sunday 15 November (known_time 17 November 22:59 Europe/Zurich, window from
+  19 November).
+- The origins of 15 and 22 November are due in the run of Wednesday 25 November. Each is
+  marked by the rule of 13 November from its own made time: origin 15 November will be
+  late, because its window began on 19 November.
+
+On-time forecasts:
+
 | Valid Sunday | known_time | Window | Full model (EUR/MWh) | B3 (EUR/MWh) | Realised (EUR/MWh) |
 |---|---|---|---|---|---|
 | none yet | | | | | |
+
+Late forecasts (made after the window began; reported apart):
+
+| Valid Sunday | known_time | Window | Deviation (pp) | Full model (EUR/MWh) | B3 (EUR/MWh) | Made (UTC) | Realised (EUR/MWh) |
+|---|---|---|---|---|---|---|---|
+| 1 Nov 2026 | 4 Nov 2026 21:39 | 6 Nov to 3 Dec 2026 | −11.81 | 31.34 | 15.06 | 13 Nov 2026 20:31 | |
+| 8 Nov 2026 | 10 Nov 2026 21:41 | 12 Nov to 9 Dec 2026 | −12.97 | 34.00 | 19.65 | 13 Nov 2026 20:31 | |
 
 ![Live forecasts](figures/live_forecasts.png)
 

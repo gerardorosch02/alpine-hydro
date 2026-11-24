@@ -1,4 +1,8 @@
 # Live H1 forecasts, winter 2026/27 (pre-registration section 9). Forecasts and
 # their inputs only; realised_spread will hold one derived number per window (the
-# mean CH minus DE-LU baseload spread), never a price series.
-valid_sunday,known_time,known_time_source,origin_day,target_start,target_end,dev_10y_pp,fr_nuclear,de_wind,ch_nuclear,hdd_ch,hdd_de,clim_hdd_ch,clim_hdd_de,forecast_full,forecast_b3,made_at_utc,model,realised_spread
+# mean CH minus DE-LU baseload spread), never a price series. note is empty for a
+# forecast made before its target window began and starts with 'late' otherwise;
+# late forecasts are reported apart from the on-time ones.
+valid_sunday,known_time,known_time_source,origin_day,target_start,target_end,dev_10y_pp,fr_nuclear,de_wind,ch_nuclear,hdd_ch,hdd_de,clim_hdd_ch,clim_hdd_de,forecast_full,forecast_b3,made_at_utc,model,realised_spread,note
+2026-11-01,2026-11-04T21:39:19+01:00,"SFOE weekly PDF, first seen in sfoe_pdf_log.csv",2026-11-04,2026-11-06,2026-12-03,-11.814,38137.858,21071.655,2900.938,7.208,4.109,15.539,11.021,31.34,15.06,2026-11-13T20:31:12Z,"full H1 model, OLS on 285 origins, winters 2015/16 to 2025/26",,late: made after the target window began on 2026-11-06; inputs as known at known_time
+2026-11-08,2026-11-10T21:41:21+01:00,"SFOE weekly PDF, first seen in sfoe_pdf_log.csv",2026-11-10,2026-11-12,2026-12-09,-12.969,38955.261,18342.114,2629.908,9.328,5.773,16.457,11.821,34.0,19.65,2026-11-13T20:31:12Z,"full H1 model, OLS on 285 origins, winters 2015/16 to 2025/26",,late: made after the target window began on 2026-11-12; inputs as known at known_time

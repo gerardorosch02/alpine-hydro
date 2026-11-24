@@ -1,7 +1,7 @@
 """`alpinehydro weekly`: the live run for winter 2026/27, safe to repeat.
 
 Order: release log, SFOE values (CSV and PDF merge), snow (MODIS 1800 m, fallback if
-MODIS is silent for 7 days), live H1 forecast (only when a new season origin has none),
+MODIS is silent for 7 days), live H1 forecast (for every live origin that has none),
 realised spreads (only for windows that have fully passed), figures, run log.
 
 Every step reports whether it changed a committed file. Figures and the run log are
@@ -162,8 +162,8 @@ def step_live(ctx: dict) -> dict:
         w = live.latest_week()
         return {
             "changed": False,
-            "summary": f"no new season origin (latest week {w['valid_sunday'].date()}); the first"
-            " origin is the week of Sunday 1 November 2026",
+            "summary": "no live origin without a forecast (latest week"
+            f" {w['valid_sunday'].date()})",
         }
     if not config.has_secret("ENTSOE_API_KEY"):
         ctx["warnings"].append("ENTSOE_API_KEY not set: live forecast not made")
@@ -171,15 +171,17 @@ def step_live(ctx: dict) -> dict:
     _refresh_controls_and_prices()
     ctx["prices_refreshed"] = True
     s = live.forecast()
+    ctx["warnings"] += s["warnings"]
+    for k in s["skipped"]:
+        ctx["warnings"].append(f"live forecast not made for {k['valid_sunday']}: {k['reason']}")
     if not s["made"]:
-        ctx["warnings"].append(f"live forecast not made: {s['reason']}")
-        return {"changed": False, "summary": f"no forecast: {s['reason']}"}
-    f = s["forecast"]
-    return {
-        "changed": True,
-        "summary": f"forecast for origin {f['valid_sunday']}: {f['forecast_full']} EUR/MWh "
-        f"(B3 {f['forecast_b3']}), window {f['target_start']} to {f['target_end']}",
-    }
+        return {"changed": False, "summary": f"no forecast: {s.get('reason', 'see warnings')}"}
+    parts = [
+        f"origin {f['valid_sunday']}{' (made late)' if f['note'] else ''}: {f['forecast_full']}"
+        f" EUR/MWh (B3 {f['forecast_b3']}), window {f['target_start']} to {f['target_end']}"
+        for f in s["forecasts"]
+    ]
+    return {"changed": True, "summary": "forecast for " + "; ".join(parts)}
 
 
 def step_realised(ctx: dict) -> dict:
