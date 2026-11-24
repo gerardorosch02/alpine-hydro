@@ -441,9 +441,10 @@ of a CSV week).**
   8,895 GWh for TotalCH (and the same values in all four regions), and its known_time
   stays 17 November 22:59 Europe/Zurich, the PDF's first-seen time.
 - The change was written and tested on 24 November, before any forecast was made under
-  it. No window, control or model changed, and the frozen pre-registration is unchanged
-  (its section 9 does not say which SFOE file an origin comes from). Tests:
-  `tests/test_live_late.py`.
+  it. No window, control or model changed, and the frozen pre-registration is unchanged.
+  Its section 9 says the live check uses "known_time from the release log"; it does not
+  say what to do when a week is in both logs (PDF and CSV), which is what this rule
+  settles. Tests: `tests/test_live_late.py`.
 
 On-time forecasts:
 
