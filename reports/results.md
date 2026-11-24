@@ -760,6 +760,9 @@ To 27 September (provisional, eta 0.75, September at the mean), 2026 inflow was 
 below the baseline, release 2,502 GWh below, and the storage change 412 GWh below. The
 update with SFOE's published September pumping is still to come.
 
+*Added 2026-11-24: the update has been made; see "Update of 2026-11-24" below. The
+figures above are left as published.*
+
 ![Each refill season: inflow anomaly against release anomaly](figures/water_balance_years.png)
 
 ### Link to the snow forecast (provisional)
@@ -784,6 +787,76 @@ forecast miss was 11.4 points; the water alone accounts for 3.3 times that (shar
 and operators holding back closed about 27 points of it (share −2.34). The snow forecast
 assumed a normal summer of inflow, and 2026's summer brought far less. This is
 provisional until SFOE publishes September 2026 pumping.
+
+*Added 2026-11-24: no longer provisional; see the update below. The figures above are
+left as published.*
+
+### Update of 2026-11-24: to 27 September with published September pumping
+
+**Post-hoc, like the rest of this section. The primary result and its label are
+unchanged.** This is the update the plan announced in sections 3, 5 and 7a: SFOE published
+September 2026 pumping on 6 November 2026 (467 GWh, provisional), so the window from
+Sunday 29 March to Sunday 27 September no longer needs an assumed September. It replaces
+secondary (a) and the provisional snow link; the decision rule applies to the primary
+window only, so this update sets no label.
+
+Two inputs changed since the published run of 22 October:
+
+- **September pumping:** 467 GWh, against the assumed 2015 to 2025 mean of 375 GWh. That
+  is 1.16 standard deviations above the mean, just outside the published ± 1 sd range
+  (297 to 454 GWh).
+- **Storage generation (V12):** SFOE revised ogd104 "Speicherkraft" after 22 October.
+  Over the four weeks ending 6 to 27 September 2026 it is 169.6 GWh lower (1,559.5 to
+  1,389.9 GWh). No week before July 2026 changed.[^primary-g]
+
+Before and after, 29 March to 27 September 2026, cumulative GWh, eta 0.75. Baseline: mean
+of 2015 to 2025.
+
+| | Published 22 Oct: (a), provisional | Published pumping, G as of 22 Oct | **Update: published pumping, G as revised** | Baseline mean |
+|---|---|---|---|---|
+| September 2026 pumping | 375 (assumed) | 467 | **467** | |
+| Storage generation G | 9,534 | 9,534 | **9,365** | |
+| Implied inflow | 12,325 | 12,263 | **12,093** | 15,238 |
+| Release | 6,903 | 6,841 | **6,671** | 9,404 |
+| Storage change | 5,422 | 5,422 | **5,422** | 5,834 |
+| Inflow anomaly | −2,914 | −2,976 | **−3,145** | |
+| Release anomaly | −2,502 | −2,564 | **−2,734** | |
+| Storage-change anomaly | −412 | −412 | **−412** | |
+| Inflow share at eta 0.70 / 0.75 / 0.80 | 6.96 / 7.07 / 7.19 | 7.10 / 7.22 / 7.35 | **7.51 / 7.64 / 7.76** | |
+| Release share at eta 0.75 | −6.07 | −6.22 | **−6.64** | |
+| Reading under the 2/3 rule (not a label) | weather story | weather story | **weather story** | |
+
+In plain words: with the real September, the picture is the same and slightly stronger.
+To 27 September 2026, 3,145 GWh less water came in than usual and operators released
+2,734 GWh less than usual. Both are still the lowest since 2015 (lowest baseline year:
+inflow 12,461, release 7,272). More pumping than assumed moves 62 GWh from release to
+missing inflow; the ogd104 revision moves another 170 GWh. For 2022 the same window was
+already complete (inflow share 4.31).
+
+Link to the snow forecast, updated (22 weeks from 26 April to 27 September, eta 0.75):
+
+| | Published 22 Oct, provisional | Published pumping, G as of 22 Oct | **Update** |
+|---|---|---|---|
+| H3a forecast, converted to national | 85.5% | 85.5% | **85.5%** |
+| The water that actually came in, with baseline release | 47.3% | 46.6% | **44.7%** |
+| Actual | 74.1% | 74.1% | **74.1%** |
+| Share of the 11.4-point miss due to water | 3.34 | 3.40 | **3.57** |
+| Share due to release | −2.34 | −2.40 | **−2.57** |
+
+Across eta 0.70 to 0.80 the middle row of the update is 44.2% to 45.2%. The conclusion
+stands: the forecast missed the water, not the operators.
+
+Files: `data/processed/water_balance/weekly_update_2026-11-24.csv` (the published weekly
+table with pumping and Speicherkraft rebuilt from the SFOE files of 24 November; every
+other column copied) and `reports/checks/water_balance_update_2026-11-24.json`. The
+published `weekly.csv`, `monthly_sfoe.csv`, `water_balance_results.json` and the three
+figures are unchanged. Rebuild with `alpinehydro water-balance-update`.
+
+[^primary-g]: Effect on the published primary window (29 March to 30 August), which is not
+    restated: the revised file changes three weeks by ±0.1 GWh, and storage generation
+    over the window goes from 7,974.8 to 7,974.7 GWh (−0.1 GWh). Inflow and release each
+    change by −0.1 GWh; the inflow share stays 7.008 at eta 0.75 (6.879 and 7.138 at eta
+    0.70 and 0.80).
 
 ### Descriptive only: release and price
 
@@ -922,3 +995,4 @@ edited. Everything in it is post-hoc. V1 to V6 were written on **2026-10-22, bef
 | V9 | 2026-10-22 | Extra context in the results | Storage level at the window ends against the baseline, the split of the release anomaly into generation and pumping, and the shares at eta = 0. | **Added after seeing the results.** Descriptive only; it does not touch the rule or the label. The rise in pumping over the baseline years made the eta term worth bounding. |
 | V10 | 2026-10-22 | Figure `water_balance_years.png` | Every year against the 2015 to 2025 mean, including the year itself. | One common reference makes the dots comparable. The decomposition tables leave the year out, so the 2022 dot differs slightly from the 2022 row. Display only. |
 | V11 | 2026-10-22 | Descriptive scatter | Release anomaly against the 2015 to 2025 mean of the same ISO week (week 53 counted as 52). Weekly prices are not committed; `alpinehydro demo` skips the figure with the note "release_vs_price skipped: needs local ENTSO-E prices". | Owner's choice: a weekly price series is what the ENTSO-E decision of 22 October keeps out of the repo, and a descriptive chart is not worth loosening that. |
+| V12 | 2026-11-24 | ogd104 revised after the published run | The update to 27 September uses ogd104 as downloaded on 24 November 2026 (Last-Modified 24 Nov 2026 09:00 UTC) and September pumping as published in ogd35 (Last-Modified 6 Nov 2026). The same update with G as of 22 October is shown alongside. The primary result (29 March to 30 August) stays as published; its change would be −0.1 GWh. Decided by the owner on 24 November 2026. | SFOE revised "Speicherkraft" on 44 days from July to October 2026, 29 of them in September (−169.6 GWh over the weeks ending 6 to 27 September). The plan did not say which vintage of ogd104 an update should use. The size of the revision was known when the choice was made; its effect on the shares was not yet computed. The 22 October file is kept on the laptop only (raw data are not committed); its weekly sums are in the published `weekly.csv`. |

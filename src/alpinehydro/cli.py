@@ -377,6 +377,26 @@ def water_balance_build_cmd():
     typer.echo(json.dumps(water_balance.build_tables()))
 
 
+@app.command("water-balance-update")
+def water_balance_update_cmd(
+    refresh: bool = typer.Option(False, help="Download ogd104 and ogd35 again first."),
+):
+    """Post-hoc water balance, update to 27 September 2026 with published September pumping.
+
+    Writes its own table and results file next to the published ones, which stay as they are.
+    """
+    from alpinehydro import water_balance_update as wbu
+    from alpinehydro.fetch import sfoe_daily
+
+    if refresh:
+        for name in sfoe_daily.URLS:
+            sfoe_daily.download(name, refresh=True)
+        typer.echo(json.dumps(wbu.build_table(), indent=2))
+    out = wbu.run()
+    wbu.write_results(out)
+    typer.echo(f"wrote {wbu.RESULTS.relative_to(config.ROOT)}")
+
+
 @app.command("water-balance")
 def water_balance_cmd():
     """Post-hoc water balance: audit, decomposition and figures from committed tables."""

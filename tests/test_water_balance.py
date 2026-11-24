@@ -159,3 +159,49 @@ def test_release_anomaly_is_zero_on_average_in_baseline():
     t = release_vs_price_table(w, pd.Series(50.0, index=idx))
     base = t[t["year"].between(2015, 2025)]
     assert abs(base["release_anom_gwh"].mean()) < 5.0
+
+
+# ---------------------------------------------------------------- update of 2026-11-24
+
+
+def test_update_table_changes_only_pumping_and_speicherkraft_and_only_from_july_2026():
+    from alpinehydro import water_balance_update as wbu
+
+    old, new = wbu._read(wb.WEEKLY), wbu._read(wbu.WEEKLY_UPDATE)
+    same = [c for c in old.columns if c not in wbu.REPLACED]
+    pd.testing.assert_frame_equal(old[same], new[same])
+    before = old.index < pd.Timestamp("2026-07-01")
+    pd.testing.assert_frame_equal(old.loc[before, wbu.REPLACED], new.loc[before, wbu.REPLACED])
+    ch = wbu.changed_weeks(old, new)
+    assert list(ch["pumping_gwh"]["weeks_new"]) == [
+        "2026-09-06",
+        "2026-09-13",
+        "2026-09-20",
+        "2026-09-27",
+    ]
+    assert ch["pumping_gwh"]["weeks_revised"] == {}
+    assert ch["sfoe_speicherkraft_gwh"]["weeks_new"] == {}
+
+
+def test_update_results_rebuild_from_committed_files_and_leave_the_primary_alone():
+    import json
+
+    from alpinehydro import water_balance_update as wbu
+
+    out = json.loads(json.dumps(wbu.run()))
+    assert out == json.loads(wbu.RESULTS.read_text(encoding="utf-8"))
+    published = json.loads(wb.RESULTS.read_text(encoding="utf-8"))
+    assert published["primary"]["2026"]["0.75"]["inflow_share"] == 7.008  # as published
+    assert (
+        out["primary_window_2026_with_revised_g_footnote"]["published"]
+        == (published["primary"]["2026"])
+    )
+    assert out["september_2026_pumping_gwh"]["sfoe_ogd35_provisional"] == 467.0
+    u = out["update_window_2026"]
+    for version in ("g_revised", "g_as_of_2026-10-22"):
+        for eta in ("0.7", "0.75", "0.8"):
+            d = u[version][eta]
+            assert d["window"] == "2026-03-29 to 2026-09-27" and d["weeks"] == 26
+            a = d["anomaly"]
+            assert abs(a["ds_gwh"] - (a["inflow_gwh"] - a["release_gwh"])) < 0.15
+    assert u["g_revised"]["0.75"]["inflow_share"] == 7.636
