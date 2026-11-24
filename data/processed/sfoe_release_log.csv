@@ -7,3 +7,4 @@ valid_sunday,first_seen_utc,method,http_last_modified
 2026-11-01,,backfill_url_move,
 2026-11-08,,backfill_url_move,
 2026-11-15,,backfill_url_move,"Tue, 17 Nov 2026 14:22:14 GMT"
+2026-11-22,2026-11-24T23:21:54Z,csv_poll,"Tue, 24 Nov 2026 15:35:56 GMT"
