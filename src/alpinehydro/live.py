@@ -41,6 +41,9 @@ COLUMNS = [
 LIVE_FIRST = pd.Timestamp("2026-11-01")
 LIVE_LAST = pd.Timestamp("2027-04-30")
 MERGE_LOG = config.PROCESSED / "sfoe_merge_log.csv"
+RELEASE_LOG = config.PROCESSED / "sfoe_release_log.csv"
+PDF_TABLE = config.PROCESSED / "sfoe_storage_pdf.csv"
+PDF_SEEN = "SFOE weekly PDF, first seen in sfoe_pdf_log.csv"
 
 
 def train() -> dict:
@@ -61,16 +64,31 @@ def train() -> dict:
 
 
 def _week(row: pd.Series, storage: pd.DataFrame) -> dict:
-    """One TotalCH week of the merged table, its source and its first-seen time."""
+    """One TotalCH week of the merged table, its source and its first-seen time.
+
+    A PDF week was first seen at the known_time of its row. A CSV week was first seen at
+    the earlier of its release-log time and the first-seen time of the same week in the
+    PDF table: the CSV replaces a PDF week in the merged table, but the week stays known
+    from the PDF. A release-log row without a time (a backfilled week) counts as no time.
+    """
+    from alpinehydro.fetch import sfoe_pdf
+
     last = row["valid_time"]
     if row["source"] == "pdf":
         seen = row["known_time"].tz_convert("UTC")
-        src = "SFOE weekly PDF, first seen in sfoe_pdf_log.csv"
+        src = PDF_SEEN
     else:
-        rel = pd.read_csv(config.PROCESSED / "sfoe_release_log.csv", parse_dates=["valid_sunday"])
-        hit = rel.loc[rel["valid_sunday"] == last, "first_seen_utc"]
-        seen = pd.Timestamp(hit.iloc[0]) if len(hit) else None
-        src = "SFOE CSV, first seen in sfoe_release_log.csv"
+        seen, src = None, "SFOE CSV, first seen in sfoe_release_log.csv"
+        rel = pd.read_csv(RELEASE_LOG, dtype=str, keep_default_na=False)
+        hit = rel.loc[rel["valid_sunday"] == str(last.date()), "first_seen_utc"]
+        if len(hit) and hit.iloc[0]:
+            seen = pd.Timestamp(hit.iloc[0])
+        pdf = sfoe_pdf.load_pdf_table(PDF_TABLE)
+        p = pdf[(pdf["region"] == "TotalCH") & (pdf["valid_time"] == last)]
+        if len(p):
+            t = p["known_time"].iloc[0].tz_convert("UTC")
+            if seen is None or t < seen:
+                seen, src = t, PDF_SEEN
     return {"valid_sunday": last, "first_seen_utc": seen, "source": src, "storage": storage}
 
 

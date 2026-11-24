@@ -342,3 +342,36 @@ def test_table_keeps_the_note_and_reads_an_old_file_without_it(tmp_path):
     cols = [c for c in live.COLUMNS if c != "note"]
     old.write_text(",".join(cols) + "\n" + ",".join("x" for _ in cols) + "\n", encoding="utf-8")
     assert list(live.load(old)["note"]) == [""]
+
+
+def test_a_csv_week_keeps_the_first_seen_time_of_its_pdf(tmp_path, monkeypatch):
+    """After the SFOE address move of 24 November 2026 the CSV replaced seven PDF weeks.
+    Their release-log rows are backfilled and hold no time; the week was first seen in
+    the PDF, and that time stays its known_time."""
+    s = _storage()
+    s["source"] = "csv"
+    pdf = s[["valid_time", "known_time", "region", "content_gwh", "max_gwh", "fill"]].copy()
+    pdf["datum"] = pdf["valid_time"] + pd.Timedelta(days=1)
+    pdf["pdf_filename"] = "x.pdf"
+    pdf = pdf[pdf["valid_time"] != pd.Timestamp("2026-11-08")]  # 8 Nov: never in a PDF
+    body = pdf.assign(known_time=pdf["known_time"].map(lambda t: t.isoformat()))
+    body.to_csv(tmp_path / "pdf.csv", index=False)
+    rel = tmp_path / "rel.csv"
+    rel.write_text(
+        "valid_sunday,first_seen_utc,method,http_last_modified\n"
+        "2026-10-25,2026-10-27T09:00:00Z,csv_poll,\n"  # CSV seen before the PDF
+        "2026-11-01,,backfill_url_move,\n"
+        "2026-11-08,,backfill_url_move,\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(live, "RELEASE_LOG", rel)
+    monkeypatch.setattr(live, "PDF_TABLE", tmp_path / "pdf.csv")
+    total = s[s["region"] == "TotalCH"].set_index("valid_time", drop=False)
+    w = live._week(total.loc[pd.Timestamp("2026-11-01")], s)
+    assert w["first_seen_utc"] == pd.Timestamp("2026-11-04T21:00", tz="Europe/Zurich")
+    assert w["source"] == live.PDF_SEEN
+    w = live._week(total.loc[pd.Timestamp("2026-10-25")], s)
+    assert w["first_seen_utc"] == pd.Timestamp("2026-10-27T09:00:00Z")
+    assert w["source"].startswith("SFOE CSV")
+    w = live._week(total.loc[pd.Timestamp("2026-11-08")], s)
+    assert w["first_seen_utc"] is None  # no time anywhere: the forecast is skipped, not dated

@@ -66,5 +66,8 @@ listed in the table above, with these conditions.
 
 ## Open items
 
-- The ogd17 entry on opendata.swiss now lists the CSV at `www.bfe-ogd.ch`; the pipeline
-  still reads the older `uvek-gis.admin.ch` address, which worked on 2026-10-22.
+- Closed on 2026-11-24: the pipeline now reads ogd17 from `www.bfe-ogd.ch`, the address
+  in the opendata.swiss entry. The older `uvek-gis.admin.ch` address still answered but
+  had not been updated since 29 September 2026 (see the correction under "Step 0
+  findings" in `reports/results.md`). It is the same opendata.swiss entry as in the table
+  above; its terms were not rechecked on that day.

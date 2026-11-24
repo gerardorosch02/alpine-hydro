@@ -1,2 +1,9 @@
 valid_sunday,first_seen_utc,method,http_last_modified
 2026-09-27,2026-10-20T13:57:25Z,baseline,"Tue, 29 Sep 2026 13:55:03 GMT"
+2026-10-04,,backfill_url_move,
+2026-10-11,,backfill_url_move,
+2026-10-18,,backfill_url_move,
+2026-10-25,,backfill_url_move,
+2026-11-01,,backfill_url_move,
+2026-11-08,,backfill_url_move,
+2026-11-15,,backfill_url_move,"Tue, 17 Nov 2026 14:22:14 GMT"

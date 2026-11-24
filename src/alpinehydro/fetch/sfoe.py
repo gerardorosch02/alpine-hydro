@@ -33,6 +33,64 @@ RELEASE_LOG = config.PROCESSED / "sfoe_release_log.csv"
 PDF_LOG = config.PROCESSED / "sfoe_pdf_log.csv"
 
 RELEASE_COLUMNS = ["valid_sunday", "first_seen_utc", "method", "http_last_modified"]
+# Weeks found when the CSV address changed: they were published while the pipeline was
+# still reading the old, stopped address, so no first-seen time exists for them.
+BACKFILL = "backfill_url_move"
+
+# SFOE marks a file it has stopped updating with a line that starts "Diese Daten werden
+# nicht mehr weitergeführt. Neuer Link: ...". The umlaut arrives in cp1252, so only the
+# part before it is matched.
+STOP_NOTICE = "nicht mehr weitergef"
+# A file whose newest date is older than this many days has stopped updating. ogd17 is
+# weekly (28 days allows the year-end break), ogd104 daily with a few days' delay, ogd35
+# monthly and published five to eight weeks after the month ends.
+MAX_AGE_DAYS = {"ogd17": 28, "ogd104": 14, "ogd35": 100}
+
+
+class SourceStopped(RuntimeError):
+    """An SFOE file carries the stop notice or has not been updated for too long."""
+
+
+def decode(content: bytes) -> str:
+    try:
+        return content.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return content.decode("cp1252", errors="replace")
+
+
+def check_notice(name: str, text: str, url: str = "") -> None:
+    """Raise SourceStopped if any line of the file is the SFOE stop notice."""
+    for line in text.splitlines():
+        if STOP_NOTICE in line.lower():
+            raise SourceStopped(f"{name} ({url}): SFOE has stopped this file: {line.strip()[:200]}")
+
+
+def check_source(
+    name: str, text: str, last_date, today: pd.Timestamp | None = None, url: str = ""
+) -> None:
+    """Raise SourceStopped if the file has the stop notice or its newest date is too old.
+
+    last_date is the newest date with data in the file (ogd17: last Datum; ogd104: last day
+    with a Speicherkraft value; ogd35: last day of the last month with pumping).
+    """
+    check_notice(name, text, url)
+    today = pd.Timestamp.now(tz="UTC").tz_localize(None) if today is None else today
+    age = (pd.Timestamp(today).normalize() - pd.Timestamp(last_date).normalize()).days
+    if age > MAX_AGE_DAYS[name]:
+        raise SourceStopped(
+            f"{name} ({url}): newest date {pd.Timestamp(last_date).date()} is {age} days old"
+            f" (limit {MAX_AGE_DAYS[name]}); the file has stopped updating or has moved"
+        )
+
+
+def last_datum(text: str) -> pd.Timestamp:
+    """Newest Datum of an ogd17 file (lines that do not start with a date are skipped)."""
+    days = re.findall(r"^(\d{4}-\d{2}-\d{2}),", text, flags=re.MULTILINE)
+    if not days:
+        raise SourceStopped("ogd17: no dated row in the file")
+    return pd.Timestamp(max(days))
+
+
 PDF_COLUMNS = [
     "first_seen_utc",
     "pdf_url",
@@ -61,6 +119,9 @@ def download_csv(refresh: bool = False) -> tuple[Path, dict]:
     url = config.pipeline()["sfoe"]["csv_url"]
     r = requests.get(url, timeout=TIMEOUT, headers=HEADERS)
     r.raise_for_status()
+    text = decode(r.content)
+    check_notice("ogd17", text, url)
+    check_source("ogd17", text, last_datum(text), url=url)  # before the cache is replaced
     path.write_bytes(r.content)
     meta = {
         "url": url,
@@ -126,8 +187,8 @@ def _format_for_csv(df: pd.DataFrame) -> pd.DataFrame:
 def write_processed(df: pd.DataFrame, meta: dict, path: Path = STORAGE_CSV) -> bool:
     """Write the tidy table with a provenance header. Returns True if the file changed.
 
-    If the data rows are identical to the existing file, nothing is rewritten, so
-    repeated runs do not create noise in Git.
+    If the data rows and the source address are identical to the existing file, nothing
+    is rewritten, so repeated runs do not create noise in Git.
     """
     body = _format_for_csv(df).to_csv(index=False, lineterminator="\n")
     if path.exists():
@@ -136,7 +197,7 @@ def write_processed(df: pd.DataFrame, meta: dict, path: Path = STORAGE_CSV) -> b
             for line in path.read_text(encoding="utf-8").splitlines(keepends=True)
             if not line.startswith("#")
         )
-        if old_body == body:
+        if old_body == body and processed_source_url(path) == meta["url"]:
             return False
     header = [
         f"# source: {meta['url']}",
@@ -151,6 +212,18 @@ def write_processed(df: pd.DataFrame, meta: dict, path: Path = STORAGE_CSV) -> b
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(header) + "\n" + body, encoding="utf-8")
     return True
+
+
+def processed_source_url(path: Path = STORAGE_CSV) -> str:
+    """The address in the '# source:' line of the committed storage table ('' if none)."""
+    if not path.exists():
+        return ""
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("# source: "):
+            return line[len("# source: ") :].strip()
+        if not line.startswith("#"):
+            break
+    return ""
 
 
 def load_processed(path: Path = STORAGE_CSV) -> pd.DataFrame:
@@ -181,12 +254,21 @@ def _read_log(path: Path, columns: list[str]) -> pd.DataFrame:
 
 
 def update_release_log(
-    sundays: list[str], seen_utc: str, http_last_modified: str, path: Path = RELEASE_LOG
+    sundays: list[str],
+    seen_utc: str,
+    http_last_modified: str,
+    path: Path = RELEASE_LOG,
+    url_moved: bool = False,
 ) -> list[str]:
     """Append weeks not yet in the log. Returns the Sundays that were added.
 
     On an empty log only the latest week is recorded, with method "baseline",
     because its first_seen_utc is only an upper bound on the true release time.
+
+    url_moved: this is the first poll of a new CSV address. The new weeks were published
+    while the old address was still being read, so they get method BACKFILL and an empty
+    first_seen_utc: no first-seen time is invented. Only the latest week keeps the file's
+    HTTP Last-Modified (the file was last changed when that week was added).
     """
     log = _read_log(path, RELEASE_COLUMNS)
     sundays = sorted(set(sundays))
@@ -207,6 +289,10 @@ def update_release_log(
             "http_last_modified": http_last_modified,
         }
     )
+    if url_moved and method == "csv_poll":
+        add["method"] = BACKFILL
+        add["first_seen_utc"] = ""
+        add.loc[add.index[:-1], "http_last_modified"] = ""
     out = pd.concat([log, add], ignore_index=True)[RELEASE_COLUMNS]
     path.parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(path, index=False, lineterminator="\n")
@@ -261,12 +347,16 @@ def update_pdf_log(
 def log_release() -> dict:
     """Download the CSV and the current PDF, and log anything new."""
     seen = _now_utc()
+    before = processed_source_url()
     csv_path, meta = download_csv(refresh=True)
     df = parse_csv(csv_path.read_text(encoding="utf-8"))
     sundays = df["valid_time"].dt.strftime("%Y-%m-%d").unique().tolist()
-    added = update_release_log(sundays, seen, meta["http_last_modified"])
+    moved = bool(before) and before != meta["url"]
+    added = update_release_log(sundays, seen, meta["http_last_modified"], url_moved=moved)
 
     result = {"csv_latest_sunday": max(sundays), "csv_new_weeks": added}
+    if moved:
+        result["csv_url_moved_from"] = before
     try:
         pdf_url = current_pdf_url()
         r = requests.get(pdf_url, timeout=TIMEOUT, headers=HEADERS)

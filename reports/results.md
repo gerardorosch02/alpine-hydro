@@ -31,6 +31,30 @@ also watches the PDF, and a PDF parser is planned for weekend 6. Both files
 have so far appeared on a Tuesday, earlier than the conservative Thursday
 23:59 known_time used for history.
 
+**Correction of 2026-11-24: that CSV was not lagging, it had stopped.** SFOE moved its
+open data from `www.uvek-gis.admin.ch` to `www.bfe-ogd.ch`. The old ogd17 file was last
+changed on 29 September 2026 and carries no notice (the old ogd35 and ogd51 files say
+"Diese Daten werden nicht mehr weitergeführt"). The pipeline read the old address until
+24 November.
+
+- No value was wrong. The old and new ogd17 files are identical in all 1,396 weeks they
+  share (to Sunday 27 September 2026). The seven later weeks (4 October to 15 November)
+  had come from the weekly PDF; TotalCH is the same in the new CSV in all seven. Two
+  regional values of 1 November differ by 1 GWh (Wallis 3,093 in the PDF, 3,092 in the
+  CSV; Graubünden 1,260 and 1,261). The CSV replaced them under the merge rule; all 35
+  replacements are in `sfoe_merge_log.csv`.
+- What was lost: the times at which those seven CSV weeks first appeared. They are in
+  `sfoe_release_log.csv` with method `backfill_url_move` and an empty first-seen time.
+  The only fact kept is the HTTP Last-Modified of the new file when it was first read
+  (Tue 17 Nov 2026 14:22 UTC, three minutes after the PDF with the same week).
+- The live forecasts are not affected: a week keeps the first-seen time of its PDF when
+  the CSV has none or a later one, and a late forecast still uses the value first
+  published.
+- From now on a download fails if the file carries that notice or its newest date is too
+  old (ogd17 28 days, ogd104 14 days, ogd35 100 days after the month), and the daily
+  SFOE check tests the three files. ogd104 and ogd35 were read from the new address from
+  the start (22 October).
+
 **Maximum capacity changes often.** TotalCH maximum moves between 8,500 GWh
 (2000) and 8,900 GWh, with small steps up and down (8,820 in 2015/16,
 8,895 since March 2023, 8,900 for September to December 2024). Fill is

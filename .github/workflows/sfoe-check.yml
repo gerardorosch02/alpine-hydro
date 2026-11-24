@@ -40,3 +40,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "SFOE check $(date -u +%Y-%m-%dT%H:%MZ): release log, PDF parse, hero chart"
           git push
+      # Last, and always: fails the job if ogd17, ogd104 or ogd35 has stopped updating or
+      # carries SFOE's "nicht mehr weitergeführt" notice (the address move of 2026).
+      - name: SFOE source files are still updated
+        if: always()
+        env:
+          ALPINEHYDRO_NETWORK: "1"
+        run: uv run pytest -q tests/test_sfoe_sources.py

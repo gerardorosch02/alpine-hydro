@@ -67,3 +67,30 @@ def test_pdf_log_records_only_changes(tmp_path):
     log = pd.read_csv(path, dtype=str)
     assert list(log["monday_in_filename"]) == ["2026-10-12", "2026-10-19"]
     assert list(log["first_seen_utc"]) == ["T0", "T2"]
+
+
+def test_weeks_found_after_a_url_move_are_backfilled_without_a_first_seen_time(tmp_path):
+    path = tmp_path / "log.csv"
+    sfoe.update_release_log(["2026-09-27"], "T0", "LM0", path)
+    weeks = ["2026-09-27", "2026-10-04", "2026-10-11", "2026-11-15"]
+    added = sfoe.update_release_log(weeks, "T1", "LM1", path, url_moved=True)
+    assert added == weeks[1:]
+    log = pd.read_csv(path, dtype=str, keep_default_na=False)
+    assert list(log["method"]) == ["baseline"] + [sfoe.BACKFILL] * 3
+    assert list(log["first_seen_utc"]) == ["T0", "", "", ""]  # never invented
+    assert list(log["http_last_modified"]) == ["LM0", "", "", "LM1"]
+    # the next poll of the new address is an ordinary one again
+    assert sfoe.update_release_log([*weeks, "2026-11-22"], "T2", "LM2", path) == ["2026-11-22"]
+    log = pd.read_csv(path, dtype=str, keep_default_na=False)
+    assert list(log.iloc[-1]) == ["2026-11-22", "T2", "csv_poll", "LM2"]
+
+
+def test_processed_table_is_rewritten_when_only_the_source_address_changes(tmp_path):
+    df = sfoe.parse_csv(make_csv(["2026-01-05"], [4685]))
+    path = tmp_path / "storage.csv"
+    meta = {"url": "https://old.example/a.csv", "downloaded_utc": "T", "http_last_modified": ""}
+    assert sfoe.write_processed(df, meta, path)
+    assert not sfoe.write_processed(df, meta, path)
+    assert sfoe.processed_source_url(path) == "https://old.example/a.csv"
+    assert sfoe.write_processed(df, {**meta, "url": "https://new.example/a.csv"}, path)
+    assert sfoe.processed_source_url(path) == "https://new.example/a.csv"

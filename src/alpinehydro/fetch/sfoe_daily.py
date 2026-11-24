@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -21,6 +22,7 @@ import pandas as pd
 import requests
 
 from alpinehydro import config
+from alpinehydro.fetch import sfoe
 from alpinehydro.fetch.sfoe import HEADERS, TIMEOUT
 
 RAW_DIR = config.RAW / "sfoe_daily"
@@ -39,6 +41,7 @@ def download(name: str, refresh: bool = False) -> tuple[Path, dict]:
         return path, json.loads(meta_path.read_text(encoding="utf-8"))
     r = requests.get(URLS[name], timeout=TIMEOUT, headers=HEADERS)
     r.raise_for_status()
+    check(name, r.content)  # before the cache is replaced
     path.write_bytes(r.content)
     meta = {
         "url": URLS[name],
@@ -48,6 +51,38 @@ def download(name: str, refresh: bool = False) -> tuple[Path, dict]:
     }
     meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
     return path, meta
+
+
+def last_date(name: str, text: str) -> pd.Timestamp:
+    """Newest date with data: ogd104 the last day with a Speicherkraft value, ogd35 the
+    last day of the last month with pumping. Lines that are not data rows are skipped."""
+    lines = text.splitlines()
+    if name == "ogd104":
+        days = re.findall(r"^(\d{4}-\d{2}-\d{2}),Speicherkraft,-?\d", text, flags=re.MULTILINE)
+        if days:
+            return pd.Timestamp(max(days))
+    else:
+        head = next((ln.split(",") for ln in lines if ln.startswith("Jahr,")), [])
+        rows = [ln.split(",") for ln in lines if re.match(r"^\d{4},\d{1,2},", ln)]
+        if "Verbrauch_Speicherpumpen_GWh" in head:
+            i = head.index("Verbrauch_Speicherpumpen_GWh")
+            months = [
+                pd.Timestamp(year=int(r[0]), month=int(r[1]), day=1)
+                for r in rows
+                if len(r) > i and r[i] not in ("", "NULL")
+            ]
+            if months:
+                return max(months) + pd.offsets.MonthEnd(0)
+    raise sfoe.SourceStopped(f"{name}: no dated row with data in the file")
+
+
+def check(name: str, content: bytes, today: pd.Timestamp | None = None) -> pd.Timestamp:
+    """Raise sfoe.SourceStopped if the file is stopped or stale; return its newest date."""
+    text = sfoe.decode(content)
+    sfoe.check_notice(name, text, URLS[name])  # first: a stopped file may still parse
+    last = last_date(name, text)
+    sfoe.check_source(name, text, last, today, URLS[name])
+    return last
 
 
 def daily_storage_production(path: Path | None = None) -> pd.Series:

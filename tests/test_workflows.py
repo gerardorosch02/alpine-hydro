@@ -47,4 +47,8 @@ def test_sfoe_check_runs_only_keyless_commands():
         assert cmd not in text, cmd
     runs = re.findall(r"uv run alpinehydro ([\w-]+)", text)
     assert set(runs) == {"log-release", "sfoe-update", "hero"}
+    # the stopped-source check runs last and even if an earlier step failed
+    tail = text[text.index("git push") :]
+    assert "if: always()" in tail and "pytest -q tests/test_sfoe_sources.py" in tail
+    assert 'ALPINEHYDRO_NETWORK: "1"' in tail
     assert "ubuntu-24.04" in text and "ubuntu-latest" not in text

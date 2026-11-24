@@ -1,7 +1,9 @@
 # Pipeline settings. Paths are relative to the repo root unless absolute.
 
 sfoe:
-  csv_url: https://www.uvek-gis.admin.ch/BFE/ogd/17/ogd17_fuellungsgrad_speicherseen.csv
+  # SFOE moved its open data to www.bfe-ogd.ch in 2026. The old address
+  # (www.uvek-gis.admin.ch/BFE/ogd/17/) stopped at Datum 2026-09-28 without a notice.
+  csv_url: https://www.bfe-ogd.ch/ogd17/ogd17_fuellungsgrad_speicherseen.csv
   pdf_collection_url: https://pubdb.bfe.admin.ch/en/sammlungen/energiestatistik-fuellungsgrad-der-speicherseen
   pdf_download_base: https://pubdb.bfe.admin.ch/de/publication/download/
   regions: [Wallis, Graubuenden, Tessin, UebrigCH, TotalCH]
