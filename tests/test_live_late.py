@@ -370,8 +370,83 @@ def test_a_csv_week_keeps_the_first_seen_time_of_its_pdf(tmp_path, monkeypatch):
     w = live._week(total.loc[pd.Timestamp("2026-11-01")], s)
     assert w["first_seen_utc"] == pd.Timestamp("2026-11-04T21:00", tz="Europe/Zurich")
     assert w["source"] == live.PDF_SEEN
+    assert w["pdf_value"] == (6130.0, 8895.0) and w["csv_first_seen_utc"] is None
     w = live._week(total.loc[pd.Timestamp("2026-10-25")], s)
     assert w["first_seen_utc"] == pd.Timestamp("2026-10-27T09:00:00Z")
     assert w["source"].startswith("SFOE CSV")
+    assert w["pdf_value"] is None  # the CSV came first: its own value, its own time
     w = live._week(total.loc[pd.Timestamp("2026-11-08")], s)
     assert w["first_seen_utc"] is None  # no time anywhere: the forecast is skipped, not dated
+    assert w["pdf_value"] is None
+
+
+def _csv_week_seen_first_in_the_pdf(tmp_path, monkeypatch, csv_gwh, csv_seen):
+    """Origin 1 November: PDF said 6,130 GWh on 4 November; the CSV row says csv_gwh."""
+    s = _storage()
+    s["source"] = "csv"
+    pdf = s[["valid_time", "known_time", "region", "content_gwh", "max_gwh", "fill"]].copy()
+    pdf["datum"] = pdf["valid_time"] + pd.Timedelta(days=1)
+    pdf["pdf_filename"] = "x.pdf"
+    pdf.assign(known_time=pdf["known_time"].map(lambda t: t.isoformat())).to_csv(
+        tmp_path / "pdf.csv", index=False
+    )
+    vs = pd.Timestamp("2026-11-01")
+    s.loc[(s["valid_time"] == vs) & (s["region"] == "TotalCH"), "content_gwh"] = csv_gwh
+    (tmp_path / "rel.csv").write_text(
+        "valid_sunday,first_seen_utc,method,http_last_modified\n"
+        f"2026-11-01,{csv_seen},{'csv_poll' if csv_seen else 'backfill_url_move'},\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(live, "RELEASE_LOG", tmp_path / "rel.csv")
+    monkeypatch.setattr(live, "PDF_TABLE", tmp_path / "pdf.csv")
+    total = s[s["region"] == "TotalCH"].set_index("valid_time", drop=False)
+    return live._plan(live._week(total.loc[vs], s)), vs
+
+
+@pytest.mark.parametrize("csv_seen", ["", "2026-11-20T10:00:00Z"])
+def test_a_differing_csv_value_is_not_used_before_its_own_first_seen_time(
+    tmp_path, monkeypatch, csv_seen
+):
+    p, vs = _csv_week_seen_first_in_the_pdf(tmp_path, monkeypatch, 6140.0, csv_seen)
+    assert p["kt"] == pd.Timestamp("2026-11-04T21:00", tz="Europe/Zurich")  # the PDF's time
+    none = pd.DataFrame()  # even with the replacement missing from the merge log
+    d = live.storage_as_known(p["storage"], vs, p["kt"], none, pdf_value=p["pdf_value"])
+    got = d[d["valid_time"] == vs].iloc[0]
+    assert (got["content_gwh"], got["max_gwh"]) == (6130.0, 8895.0)  # the PDF value
+    assert got["fill"] == round(6130.0 / 8895.0, 6)
+    note = live.csv_pdf_difference(p, d)
+    assert "CSV value (6140 of 8895 GWh) differs from the PDF value" in note
+    assert "(6130 of 8895 GWh); the forecast uses the PDF value" in note
+    if csv_seen:
+        assert note.endswith("counts as known only from 2026-11-20T10:00:00Z")
+    else:
+        assert note.endswith("counts as known never (backfilled week, no first-seen time)")
+    # earlier weeks are untouched
+    assert d.loc[d["valid_time"] == pd.Timestamp("2026-10-25"), "content_gwh"].iloc[0] == 6258.0
+
+
+def test_equal_csv_and_pdf_values_give_no_difference_note(tmp_path, monkeypatch):
+    # Origin 15 November 2026 in real life: PDF 5,546 GWh, CSV 5,546 GWh.
+    p, vs = _csv_week_seen_first_in_the_pdf(tmp_path, monkeypatch, 6130.0, "")
+    d = live.storage_as_known(p["storage"], vs, p["kt"], pd.DataFrame(), pdf_value=p["pdf_value"])
+    assert live.csv_pdf_difference(p, d) == ""
+
+
+def test_a_later_pdf_revision_is_still_undone_for_an_inherited_week(tmp_path, monkeypatch):
+    # The PDF table holds the latest PDF value (6,130); the first one published was 6,125.
+    p, vs = _csv_week_seen_first_in_the_pdf(tmp_path, monkeypatch, 6140.0, "")
+    cols = ["logged_utc", "valid_sunday", "region", "old_content_gwh", "old_max_gwh"]
+    log = pd.DataFrame(
+        [["2026-11-10T20:41:25Z", "2026-11-01", "TotalCH", 6125.0, 8895.0]], columns=cols
+    )
+    d = live.storage_as_known(p["storage"], vs, p["kt"], log, pdf_value=p["pdf_value"])
+    assert d.loc[d["valid_time"] == vs, "content_gwh"].iloc[0] == 6125.0
+
+
+def test_a_csv_week_seen_before_its_pdf_uses_the_csv_value_and_time(tmp_path, monkeypatch):
+    p, vs = _csv_week_seen_first_in_the_pdf(tmp_path, monkeypatch, 6140.0, "2026-11-03T09:00:00Z")
+    assert p["kt"] == pd.Timestamp("2026-11-03T09:00:00Z").tz_convert("Europe/Zurich")
+    assert p["pdf_value"] is None and p["source"].startswith("SFOE CSV")
+    d = live.storage_as_known(p["storage"], vs, p["kt"], pd.DataFrame(), pdf_value=p["pdf_value"])
+    assert d.loc[d["valid_time"] == vs, "content_gwh"].iloc[0] == 6140.0
+    assert live.csv_pdf_difference(p, d) == ""

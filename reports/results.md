@@ -420,6 +420,31 @@ CDS country mean temperature differs from Earth Engine by at most 0.07 C for CH 
   marked by the rule of 13 November from its own made time: origin 15 November will be
   late, because its window began on 19 November.
 
+**Note of 2026-11-24: a change to the live code after the season began (first-seen time
+of a CSV week).**
+
+- Why: on 24 November the SFOE CSV address was corrected (see the correction under "Step 0
+  findings"), and the CSV replaced seven PDF weeks in the merged table, among them the
+  origin of 15 November, which has no forecast yet. Until then every live origin had been
+  a PDF week. The seven CSV weeks have no first-seen time of their own (backfilled), so
+  without a rule that origin would have been skipped.
+- Rule: a CSV week that is also in the PDF table takes the PDF's first-seen time if the
+  PDF was seen first or the CSV has no time. It inherits that time only together with what
+  was known then: the forecast uses the PDF value as first published. The CSV value counts
+  as known only from the CSV's own first-seen time, and never for a backfilled week. If
+  the two values differ, the forecast still uses the PDF value and the difference is
+  written to the run log (`reports/weekly_log.md`); the replacement itself is in
+  `sfoe_merge_log.csv`. A CSV week seen before its PDF keeps its own time and value.
+- Effect on forecasts already made: none. Origins 1 and 8 November were PDF weeks when
+  they were forecast, and their rows in `live_forecasts.csv` are unchanged.
+- Effect on origin 15 November: none on the numbers. PDF and CSV both give 5,546 GWh of
+  8,895 GWh for TotalCH (and the same values in all four regions), and its known_time
+  stays 17 November 22:59 Europe/Zurich, the PDF's first-seen time.
+- The change was written and tested on 24 November, before any forecast was made under
+  it. No window, control or model changed, and the frozen pre-registration is unchanged
+  (its section 9 does not say which SFOE file an origin comes from). Tests:
+  `tests/test_live_late.py`.
+
 On-time forecasts:
 
 | Valid Sunday | known_time | Window | Full model (EUR/MWh) | B3 (EUR/MWh) | Realised (EUR/MWh) |

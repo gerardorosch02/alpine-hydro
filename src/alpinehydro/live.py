@@ -67,29 +67,36 @@ def _week(row: pd.Series, storage: pd.DataFrame) -> dict:
     """One TotalCH week of the merged table, its source and its first-seen time.
 
     A PDF week was first seen at the known_time of its row. A CSV week was first seen at
-    the earlier of its release-log time and the first-seen time of the same week in the
-    PDF table: the CSV replaces a PDF week in the merged table, but the week stays known
-    from the PDF. A release-log row without a time (a backfilled week) counts as no time.
+    its release-log time. A release-log row without a time (a backfilled week) counts as
+    no time: the CSV value of such a week is never "known" at any time.
+
+    Rule of 2026-11-24 for a CSV week that is also in the PDF table: if the PDF was seen
+    first (or the CSV has no time), the week takes the PDF's first-seen time, and with it
+    only what was known at that time, which is the PDF value (`pdf_value`, content and
+    maximum in GWh). The CSV value counts as known only from the CSV's own first-seen
+    time. forecast() therefore uses the PDF value for such an origin, also when the CSV
+    value differs, and reports the difference.
     """
     from alpinehydro.fetch import sfoe_pdf
 
     last = row["valid_time"]
+    out = {"valid_sunday": last, "storage": storage, "pdf_value": None, "csv_first_seen_utc": None}
     if row["source"] == "pdf":
-        seen = row["known_time"].tz_convert("UTC")
-        src = PDF_SEEN
-    else:
-        seen, src = None, "SFOE CSV, first seen in sfoe_release_log.csv"
-        rel = pd.read_csv(RELEASE_LOG, dtype=str, keep_default_na=False)
-        hit = rel.loc[rel["valid_sunday"] == str(last.date()), "first_seen_utc"]
-        if len(hit) and hit.iloc[0]:
-            seen = pd.Timestamp(hit.iloc[0])
-        pdf = sfoe_pdf.load_pdf_table(PDF_TABLE)
-        p = pdf[(pdf["region"] == "TotalCH") & (pdf["valid_time"] == last)]
-        if len(p):
-            t = p["known_time"].iloc[0].tz_convert("UTC")
-            if seen is None or t < seen:
-                seen, src = t, PDF_SEEN
-    return {"valid_sunday": last, "first_seen_utc": seen, "source": src, "storage": storage}
+        return {**out, "first_seen_utc": row["known_time"].tz_convert("UTC"), "source": PDF_SEEN}
+    seen, src = None, "SFOE CSV, first seen in sfoe_release_log.csv"
+    rel = pd.read_csv(RELEASE_LOG, dtype=str, keep_default_na=False)
+    hit = rel.loc[rel["valid_sunday"] == str(last.date()), "first_seen_utc"]
+    if len(hit) and hit.iloc[0]:
+        seen = pd.Timestamp(hit.iloc[0])
+    out["csv_first_seen_utc"] = seen
+    pdf = sfoe_pdf.load_pdf_table(PDF_TABLE)
+    p = pdf[(pdf["region"] == "TotalCH") & (pdf["valid_time"] == last)]
+    if len(p) and pd.notna(p["known_time"].iloc[0]):
+        t = p["known_time"].iloc[0].tz_convert("UTC")
+        if seen is None or t < seen:
+            seen, src = t, PDF_SEEN
+            out["pdf_value"] = (float(p["content_gwh"].iloc[0]), float(p["max_gwh"].iloc[0]))
+    return {**out, "first_seen_utc": seen, "source": src}
 
 
 def _total(storage: pd.DataFrame | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -129,6 +136,7 @@ def storage_as_known(
     valid_sunday: pd.Timestamp,
     known_time: pd.Timestamp,
     merge_log: pd.DataFrame | None = None,
+    pdf_value: tuple[float, float] | None = None,
 ) -> pd.DataFrame:
     """TotalCH rows up to the origin week, with that week's value as it stood at known_time.
 
@@ -136,8 +144,17 @@ def storage_as_known(
     such replacement is in sfoe_merge_log.csv with the old value. If the week was replaced
     after known_time, the value before the earliest of those replacements is put back, so
     a forecast made late sees what a forecast made on time would have seen.
+
+    pdf_value (content, maximum): given when the origin is a CSV week whose first-seen time
+    is its PDF's (see _week). The week's value is then set to the PDF value first, so the
+    CSV value is not used even if the replacement is missing from the merge log; a later
+    PDF revision found in the log is still undone as above.
     """
     d = storage[(storage["region"] == "TotalCH") & (storage["valid_time"] <= valid_sunday)].copy()
+    if pdf_value is not None:
+        row = d["valid_time"] == valid_sunday
+        d.loc[row, "content_gwh"], d.loc[row, "max_gwh"] = pdf_value
+        d.loc[row, "fill"] = round(pdf_value[0] / pdf_value[1], 6)
     if merge_log is None:
         merge_log = pd.read_csv(MERGE_LOG) if MERGE_LOG.exists() else pd.DataFrame()
     if merge_log.empty:
@@ -156,6 +173,31 @@ def storage_as_known(
     d.loc[row, "max_gwh"] = float(first["old_max_gwh"])
     d.loc[row, "fill"] = round(float(first["old_content_gwh"]) / float(first["old_max_gwh"]), 6)
     return d
+
+
+def csv_pdf_difference(w: dict, used: pd.DataFrame) -> str:
+    """'' unless the origin took its first-seen time from the PDF and the CSV value of the
+    week differs from the value the forecast uses. Otherwise a sentence for the run log."""
+    if w.get("pdf_value") is None:
+        return ""
+    vs = w["valid_sunday"]
+    s = w["storage"]
+    csv = s[(s["region"] == "TotalCH") & (s["valid_time"] == vs)].iloc[0]
+    use = used[used["valid_time"] == vs].iloc[0]
+    if csv["content_gwh"] == use["content_gwh"] and csv["max_gwh"] == use["max_gwh"]:
+        return ""
+    seen = w.get("csv_first_seen_utc")
+    since = (
+        "never (backfilled week, no first-seen time)"
+        if seen is None
+        else f"only from {seen.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+    )
+    return (
+        f"origin {vs.date()}: the CSV value ({csv['content_gwh']:.0f} of"
+        f" {csv['max_gwh']:.0f} GWh) differs from the PDF value known at known_time"
+        f" ({use['content_gwh']:.0f} of {use['max_gwh']:.0f} GWh); the forecast uses the PDF"
+        f" value; the CSV value counts as known {since}"
+    )
 
 
 def hdd_window(origin_day: pd.Timestamp) -> tuple[pd.Timestamp, pd.Timestamp]:
@@ -235,7 +277,12 @@ def forecast(write: bool = True, now: pd.Timestamp | None = None, log=lambda m: 
     pc = models.PRIMARY_CONTROLS
     for p in plans:
         vs, kt, od, start = p["valid_sunday"], p["kt"], p["od"], p["start"]
-        d = add_norms(storage_as_known(p["storage"], vs, kt), windows=(10,))
+        known = storage_as_known(p["storage"], vs, kt, pdf_value=p["pdf_value"])
+        diff = csv_pdf_difference(p, known)
+        if diff:
+            status["warnings"].append(diff)
+            log(diff)
+        d = add_norms(known, windows=(10,))
         x = float(d.loc[d["valid_time"] == vs, "dev_10y_pp"].iloc[0])
         r = pd.DataFrame(
             [
