@@ -6,7 +6,7 @@
 # 500 m pixel at or above band_m. Total: all valid pixels of the three cantons.
 # band_m 1800: every day from 2000-02-24; band_m 2000 (robustness): only
 # 14 March to 5 May of each year (the 1 April and 1 May feature windows).
-# pulled_utc: 2026-11-13; Earth Engine workload tag alpinehydro-weekend5
+# pulled_utc: 2026-11-25; Earth Engine workload tag alpinehydro-weekend5
 date,region,band_m,fsc,valid_share,missing
 2000-02-24,Graubuenden,1800,,0.0000,True
 2000-02-25,Graubuenden,1800,,0.1751,True
@@ -38095,6 +38095,17 @@ date,region,band_m,fsc,valid_share,missing
 2026-11-09,Graubuenden,1800,0.4616,0.9985,False
 2026-11-10,Graubuenden,1800,0.4778,0.9967,False
 2026-11-11,Graubuenden,1800,0.4806,0.9892,False
+2026-11-12,Graubuenden,1800,0.4808,0.9885,False
+2026-11-13,Graubuenden,1800,0.5892,0.9959,False
+2026-11-14,Graubuenden,1800,0.8034,0.9953,False
+2026-11-15,Graubuenden,1800,0.7641,0.9955,False
+2026-11-16,Graubuenden,1800,0.7169,0.9974,False
+2026-11-17,Graubuenden,1800,0.7450,0.9883,False
+2026-11-18,Graubuenden,1800,0.6837,0.9915,False
+2026-11-19,Graubuenden,1800,0.7118,0.9929,False
+2026-11-20,Graubuenden,1800,0.7385,0.9942,False
+2026-11-21,Graubuenden,1800,0.7161,0.9951,False
+2026-11-22,Graubuenden,1800,0.7206,0.9941,False
 2026-01-01,Tessin,1800,0.8206,0.9998,False
 2026-01-02,Tessin,1800,0.7935,0.9993,False
 2026-01-03,Tessin,1800,0.7239,0.9993,False
@@ -38410,6 +38421,17 @@ date,region,band_m,fsc,valid_share,missing
 2026-11-09,Tessin,1800,0.4080,0.9918,False
 2026-11-10,Tessin,1800,0.4258,0.9775,False
 2026-11-11,Tessin,1800,0.5299,0.7692,False
+2026-11-12,Tessin,1800,0.5315,0.7664,False
+2026-11-13,Tessin,1800,0.6938,0.9476,False
+2026-11-14,Tessin,1800,0.6650,0.9562,False
+2026-11-15,Tessin,1800,0.6604,0.9560,False
+2026-11-16,Tessin,1800,0.5893,0.9740,False
+2026-11-17,Tessin,1800,0.6266,0.9754,False
+2026-11-18,Tessin,1800,0.6895,0.9843,False
+2026-11-19,Tessin,1800,0.6814,0.9857,False
+2026-11-20,Tessin,1800,0.6150,0.9895,False
+2026-11-21,Tessin,1800,0.6810,0.9909,False
+2026-11-22,Tessin,1800,0.6871,0.9913,False
 2026-01-01,Total,1800,0.8938,0.9996,False
 2026-01-02,Total,1800,0.8644,0.9996,False
 2026-01-03,Total,1800,0.8068,0.9995,False
@@ -38725,6 +38747,17 @@ date,region,band_m,fsc,valid_share,missing
 2026-11-09,Total,1800,0.5500,0.9983,False
 2026-11-10,Total,1800,0.5689,0.9959,False
 2026-11-11,Total,1800,0.5807,0.9712,False
+2026-11-12,Total,1800,0.5813,0.9699,False
+2026-11-13,Total,1800,0.6702,0.9923,False
+2026-11-14,Total,1800,0.7918,0.9928,False
+2026-11-15,Total,1800,0.7703,0.9930,False
+2026-11-16,Total,1800,0.7368,0.9955,False
+2026-11-17,Total,1800,0.7608,0.9852,False
+2026-11-18,Total,1800,0.7322,0.9857,False
+2026-11-19,Total,1800,0.7422,0.9867,False
+2026-11-20,Total,1800,0.7490,0.9879,False
+2026-11-21,Total,1800,0.7482,0.9929,False
+2026-11-22,Total,1800,0.7495,0.9877,False
 2026-01-01,Wallis,1800,0.9313,0.9998,False
 2026-01-02,Wallis,1800,0.9152,0.9998,False
 2026-01-03,Wallis,1800,0.8683,0.9994,False
@@ -39040,6 +39073,17 @@ date,region,band_m,fsc,valid_share,missing
 2026-11-09,Wallis,1800,0.7078,0.9998,False
 2026-11-10,Wallis,1800,0.7300,0.9996,False
 2026-11-11,Wallis,1800,0.7266,0.9993,False
+2026-11-12,Wallis,1800,0.7278,0.9977,False
+2026-11-13,Wallis,1800,0.7750,0.9990,False
+2026-11-14,Wallis,1800,0.8076,0.9990,False
+2026-11-15,Wallis,1800,0.8063,0.9992,False
+2026-11-16,Wallis,1800,0.8015,0.9986,False
+2026-11-17,Wallis,1800,0.8173,0.9834,False
+2026-11-18,Wallis,1800,0.8109,0.9782,False
+2026-11-19,Wallis,1800,0.8006,0.9786,False
+2026-11-20,Wallis,1800,0.7990,0.9789,False
+2026-11-21,Wallis,1800,0.8099,0.9903,False
+2026-11-22,Wallis,1800,0.8062,0.9779,False
 2000-03-14,Graubuenden,2000,0.9675,0.9996,False
 2000-03-15,Graubuenden,2000,0.9618,0.9979,False
 2000-03-16,Graubuenden,2000,0.9613,0.9933,False
